@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Framefield.Tooll.TextButtonEdit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             x:Name="textEditButton"
+             mc:Ignorable="d" 
+             d:DesignWidth="100" Margin="0,0,-10,0" Padding="0,0,15,0">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBox Name="XTextEdit" 
+                 Visibility="Collapsed" 
+                 LostFocus="TextEdit_LostFocus" 
+                 VerticalContentAlignment="Center" 
+                 KeyUp="TextButtonEditKeyUp_Handler"                  
+                 MinHeight="25" Padding="1,1,10,1"
+                 AcceptsReturn="False"
+                 Margin="0,0,20,0">Some text</TextBox>
+        <Button Name="XButton" MinHeight="25"
+                 Visibility="Visible" 
+                MouseMove="Button_MouseMove"                 
+                KeyUp="ButtonKeyUp_Handler"
+                VerticalAlignment="Top"
+                >
+            <TextBlock x:Name="XButtonText"                        
+                       Text="Some Text"                        
+                       TextAlignment="Left"/>
+        </Button>
+    </Grid>
+</UserControl>

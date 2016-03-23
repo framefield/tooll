@@ -1,0 +1,322 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Framefield.Tooll.Components.SearchForOpWindow.ReplaceOperatorWindow"
+        Title="ReplaceOperatorWindow" Width="1000" Height="600">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type ListView}">
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Background" Value="#FF1F1F1F"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Padding" Value="0,5,5,5"/>
+        </Style>
+        <Style TargetType="{x:Type Popup}">
+            <Setter Property="MaxHeight" Value="400"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Background" Value="#FF1F1F1F"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style x:Key="ListTextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="MaxHeight" Value="20"/>
+        </Style>
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="MaxHeight" Value="18"/>
+        </Style>
+        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource ToggleButtonStyle}">
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Background" Value="#FF2E2E2E"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <Border Background="Transparent" BorderThickness="1" BorderBrush="Black">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Template">
+                       <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type RadioButton}">
+                                <Border BorderBrush="SteelBlue" BorderThickness="1">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>    
+                                </Border>
+                           </ControlTemplate>
+                       </Setter.Value>
+                   </Setter>
+               </Trigger>
+           </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#FF303030" Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2.8*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="20,0">
+            <Label Content="Search for Operator"/>
+            <TextBox x:Name="XSearchTextBox" TextChanged="OnSearchTextChanged" KeyUp="OnSearchKeyUp"/>
+            <Popup IsOpen="{Binding ElementName=XSearchPopupList, Path=HasItems, Mode=OneWay}" PlacementTarget="{Binding ElementName=XSearchTextBox}">
+                <ListView x:Name="XSearchPopupList" ItemsSource="{Binding}" MouseLeftButtonUp="SearchPopupOnClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Content}" Style="{StaticResource ListTextBlockStyle}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Popup>
+        </StackPanel>
+
+        <ListView x:Name="XResultList" Grid.Row="2" Grid.RowSpan="2" Margin="20,26" ItemsSource="{Binding}"
+                  SelectionChanged="ResultOnSelctionChanged" VerticalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Name="PathBlock" Text="{Binding Path=Path}" Style="{StaticResource ListTextBlockStyle}"/>
+                        <TextBlock Name="NameBlock" Text="{Binding Path=Name}" FontWeight="Bold" Style="{StaticResource ListTextBlockStyle}"/>
+                        <TextBlock Name="InstanceNameBlock" Text="{Binding Path=InstanceName}" FontWeight="Bold" Style="{StaticResource ListTextBlockStyle}"/>
+                    </StackPanel>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsReplaced}" Value="true">
+                            <Setter TargetName="PathBlock" Property="TextDecorations" Value="Strikethrough"/>
+                            <Setter TargetName="NameBlock" Property="TextDecorations" Value="Strikethrough"/>
+                            <Setter TargetName="InstanceNameBlock" Property="TextDecorations" Value="Strikethrough"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackPanel Grid.Row="1"  Margin="20,0">
+            <Label Content="Only in path"/>
+            <Grid x:Name="XsearchOptionGrid"  Margin="0" VerticalAlignment="Top" Height="{Binding ElementName=XPathTextBox, Path=Height}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="XPathTextBox" IsEnabled="False"/>
+                <RadioButton x:Name="XHomeButton" GroupName="PathButtons" Content="Home" Grid.Column="1" IsChecked="True" Checked="PathOptionChecked"/>
+                <RadioButton x:Name="XCurrentButton" GroupName="PathButtons" Content="Current" Grid.Column="2" Checked="PathOptionChecked" />
+                <RadioButton x:Name="XEveryWhereButton" GroupName="PathButtons" Content="Meta" IsEnabled="False" Grid.Column="3"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="0" Margin="20,0">
+            <Label Content="Replace selected with"/>
+            <TextBox x:Name="XReplaceWithTextBox" TextChanged="OnReplaceTextChanged" KeyUp="OnReplaceTextBoxKeyUp"/>
+            <Popup x:Name="XReplacePopup" IsOpen="{Binding ElementName=XReplacePopupList, Path=HasItems, Mode=OneWay}" PlacementTarget="{Binding ElementName=XReplaceWithTextBox}">
+                <ListView x:Name="XReplacePopupList" ItemsSource="{Binding}" SelectionChanged="ReplacePopupOnSelectionChanged" MouseLeftButtonUp="ReplacePopupOnClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Content}" Style="{StaticResource ListTextBlockStyle}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Popup>
+        </StackPanel>
+        <Grid Grid.Column="1" Grid.Row="2" Margin="20,0" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label x:Name="XOldInputLabel" Content="Old Inputs"/>
+            <Label Content="Assigned new Inputs" Grid.Column="2"/>
+            <ListView x:Name="XOldInputs" Grid.Row="1" ItemsSource="{Binding}" ScrollViewer.ScrollChanged="InputsOnScrollChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <Image x:Name="XIsConnected"
+                                   Visibility="Hidden"
+                                   Source="/Images/icon-input-connected.png" DockPanel.Dock="Left">
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="true">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                                </Image>
+                                    <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsConnected}" Value="true">
+                                <Setter TargetName="XIsConnected" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Column="1" Grid.Row="1">
+
+            </ListView>
+            <ListView x:Name="XNewInputs" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding}" 
+                          AllowDrop="True" ScrollViewer.ScrollChanged="InputsOnScrollChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <Image x:Name="XIsConnected"
+                                               Visibility="Hidden"
+                                               Source="/Images/icon-input-connected.png" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                        <EventSetter Event="DragEnter" Handler="NewOpPartItemOnDragEnter"/>
+                        <EventSetter Event="DragLeave" Handler="NewOpPartItemOnDragLeave"/>
+                        <EventSetter Event="Drop" Handler="NewOpPartItemOnDrop"/>
+                        <EventSetter Event="MouseRightButtonUp" Handler="NewOpPartItemOnRightClick"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <Label Content="Unassigned Inputs" Grid.Column="2" Grid.Row="2"/>
+            <ListView x:Name="XUnassignedInputs" ItemsSource="{Binding}"
+                              PreviewMouseLeftButtonDown="InputOnStartDrag"
+                              MouseMove="OnMouseMove"
+                              Grid.Column="2" Grid.Row="3">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="3" Margin="20,0" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Old Outputs"/>
+            <Label Content="Assigned new Outputs" Grid.Column="2"/>
+            <ListView x:Name="XOldOutputs" Grid.Row="1" ItemsSource="{Binding}" ScrollViewer.ScrollChanged="OutputsOnScrollChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <Image x:Name="XIsConnected"
+                                           Visibility="Hidden"
+                                           Source="/Images/icon-input-connected.png" DockPanel.Dock="Left">
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="true">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsConnected}" Value="true">
+                                <Setter TargetName="XIsConnected" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Column="1" Grid.Row="1">
+
+            </ListView>
+            <ListView x:Name="XNewOutputs" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding}" 
+                          AllowDrop="True" ScrollViewer.ScrollChanged="OutputsOnScrollChanged">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                        <EventSetter Event="DragEnter" Handler="NewOpPartItemOnDragEnter"/>
+                        <EventSetter Event="DragLeave" Handler="NewOpPartItemOnDragLeave"/>
+                        <EventSetter Event="Drop" Handler="NewOpPartItemOnDrop"/>
+                        <EventSetter Event="MouseRightButtonUp" Handler="NewOpPartItemOnRightClick"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <Image x:Name="XIsConnected"
+                                               Visibility="Hidden"
+                                               Source="/Images/icon-input-connected.png" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Label Content="Unassigned Outputs" Grid.Column="2" Grid.Row="2"/>
+            <ListView x:Name="XUnassignedOutputs" ItemsSource="{Binding}"
+                              PreviewMouseLeftButtonDown="OutputOnStartDrag"
+                              MouseMove="OnMouseMove"
+                              Grid.Column="2" Grid.Row="3">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="False">
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding Path=Value}" Style="{StaticResource ListTextBlockStyle}" DockPanel.Dock="Right"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <Grid FlowDirection="RightToLeft" Margin="20,0,20,10" Grid.Column="1" Grid.Row="4" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="1.5*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Cancel" Grid.Column="2" Margin="5,0" Height="25" Foreground="White" Background="#FF303030" BorderBrush="Black" Click="CancelOnClick"/>
+            <Button Content="Replace All" Grid.Column="1" Margin="5,0" Height="25" Foreground="White" Background="#FF303030" BorderBrush="Black" Click="ReplaceAllButtonOnClick"/>
+            <Button Content="Replace" Grid.Column="0" Margin="0,0,5,0" Height="25" Foreground="White" Background="#FF303030" BorderBrush="Black" Click="ReplaceButtonOnClick"/>
+        </Grid>
+    </Grid>
+</Window>

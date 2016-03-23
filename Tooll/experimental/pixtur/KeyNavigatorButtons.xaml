@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="Tooll.experimental.pixtur.KeyNavigatorButtons"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="30" Width="120">
+
+    <UserControl.Resources>
+        
+        <ControlTemplate x:Key="buttonTemplate" TargetType="{x:Type Button}">
+            <!-- Question: Could 2 be bound to a "border width" property? -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                </Grid.RowDefinitions>
+                <Rectangle Grid.Row="0" Fill="#464544" />
+                <Rectangle Grid.Row="0" Fill="#353433" 
+                           Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                           HorizontalAlignment="Right" />
+
+                <Rectangle Grid.Row="1" Fill="#393939"  />
+                <Rectangle Grid.Row="1" Fill="#272727" 
+                           Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                           HorizontalAlignment="Right" />
+
+                <Rectangle Grid.Row="2" Fill="#2F2F2F" />
+                <Rectangle Grid.Row="2" Fill="#242424" 
+                           Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                           HorizontalAlignment="Right" />
+
+                <Rectangle Fill="Black" Grid.Row="3" />
+                <Viewbox Grid.Row="1">
+                    <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                </Viewbox>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+
+    <Grid Grid.Column="0" >
+    <Grid.RowDefinitions>
+        <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition MinWidth="25" Width="*"/>
+        <ColumnDefinition MinWidth="25" Width="*" />
+        <ColumnDefinition MinWidth="25" Width="*" />
+    </Grid.ColumnDefinitions>
+
+        <Button Template="{StaticResource buttonTemplate}"  Grid.Column="0" Padding="1">
+            <Image Source="./images/icon-previous-off2.png"/>
+        </Button>
+
+        <Button Grid.Column="1"  Template="{StaticResource buttonTemplate}" Padding="1">
+            <Image Source="./images/icon-key-off.png"/>
+        </Button>
+
+        <Button Grid.Column="2"  Template="{StaticResource buttonTemplate}" Padding="1">
+            <Image Source="./images/icon-next-on.png"/>
+        </Button>
+
+    </Grid>
+</UserControl>

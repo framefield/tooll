@@ -1,0 +1,47 @@
+<UserControl x:Class="Framefield.Tooll.Components.SelectionView.SelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d ="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="320" d:DesignHeight="200"
+             
+             xmlns:local="clr-namespace:Framefield.Tooll.Components.SelectionView"
+             xmlns:SelectionView="clr-namespace:Framefield.Tooll.Components.SelectionView"
+             x:Name="XRenderView"             
+             Background="#666666"
+             
+             SnapsToDevicePixels="True" 
+             UseLayoutRounding="True"
+             GotFocus="GotFocusHandler" 
+             LostFocus="LostFocusHandler" BorderThickness="1"
+             
+             >
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Text="Nothing Selected" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+        <SelectionView:ShowCurveControl x:Name="XShowCurveControl" Visibility="Hidden"/>
+        <SelectionView:ShowSceneControl x:Name="XShowSceneControl" Visibility="Hidden" Focusable="True"/>
+        <SelectionView:ShowAsTextControl x:Name="XShowAsTextControl" Visibility="Hidden" Focusable="True"/>
+
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Left" Background="#50000000" VerticalAlignment="Top">
+            
+            <CheckBox  x:Name="XStickyCheckbox"
+                       Margin="5" 
+                       Foreground="White" Content="Lock to..."
+                       Background="Transparent"
+                       Click="CheckBox_StickyClickedHandler"/>
+            <TextBlock x:Name="XSelectedOperatorName" 
+                       Text="nothing selected"
+                       Foreground="White"
+                       Margin="5"
+                       MouseUp="OnClickLockedOpLabel"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top">
+            <ToggleButton x:Name="XGridButton" Click="XGridButton_Click"  IsChecked="True">Gizmos</ToggleButton>
+        </StackPanel>
+
+
+    </Grid>
+</UserControl>

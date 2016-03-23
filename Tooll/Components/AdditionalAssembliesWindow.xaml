@@ -1,0 +1,19 @@
+﻿<Window x:Class="Framefield.Tooll.Components.AdditionalAssembliesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AdditionalAssembliesWindow" Height="370" Width="300">
+    <Grid>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
+            <TextBlock x:Name="XExternalAssembliesTitle" FontSize="15">Add/Remove external assemblies</TextBlock>
+            <StackPanel Name="XExternalAssembliesStackPanel" Height="120"/>
+            <Grid Height="5"/>
+            <TextBlock x:Name="XInternalAssembliesTitle" FontSize="15">Add/Remove internal assemblies</TextBlock>
+            <StackPanel Name="XInternalAssembliesStackPanel" Height="120"/>
+            <StackPanel  Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Right" Margin="0">
+                <Button x:Name="XOKButton" Padding="10 2" IsDefault="True" Click="XOKButton_Click">OK</Button>
+                <Grid Width="10"/>
+                <Button x:Name="XCancelButton" Padding="10 2" IsCancel="True">Cancel</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

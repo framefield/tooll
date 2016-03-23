@@ -1,0 +1,25 @@
+﻿<Window x:Class="Framefield.Tooll.LoadOperatorDefinitionsProgressDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Loading operator definitions" 
+        Height="74" 
+        Width="339"
+        ShowInTaskbar="False"
+        WindowStyle="None"
+        WindowStartupLocation="CenterOwner" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0">Loading operator definitions. This may take some seconds.</Label>
+        <ProgressBar Grid.Column="0" Grid.Row="1" Name="XProgressBar"/>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Name="XProgressText" />
+    </Grid >
+
+</Window>

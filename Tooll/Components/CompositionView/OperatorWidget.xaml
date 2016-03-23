@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="Framefield.Tooll.OperatorWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="100"
+             MinWidth="50"
+             MinHeight="25"
+             Canvas.Left="0"
+             Canvas.Top="0"
+             x:Name="XControl"
+             Loaded="OnLoaded"
+             Focusable="True"
+             FocusVisualStyle="{x:Null}"
+             Unloaded="UnloadedHandler">
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="PatternGradient" StartPoint="0,0" EndPoint="6,6" MappingMode="Absolute" SpreadMethod="Repeat">
+            <GradientStop Offset="0"   Color="#03000000" />
+            <GradientStop Offset="0.3" Color="#03000000" />
+            <GradientStop Offset="0.3" Color="#f0000000" />
+        </LinearGradientBrush>
+    </UserControl.Resources>
+
+    <UserControl.RenderTransform>
+        <TranslateTransform X="{Binding Position.X, ElementName=XControl}" Y="{Binding Position.Y, ElementName=XControl}"/>
+    </UserControl.RenderTransform>
+    
+    <UserControl.Style >
+        <Style  TargetType="local:OperatorWidget">
+            <Style.Triggers>
+                <!-- Note: 
+                The actual visual entity is the Border-element below. it's properties
+                are binded to the actual user-contol which is contolled by this style.
+                -->
+                <Trigger Property="IsSelected" Value="true">
+                    <Setter  Property="BorderBrush" Value="#fff"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="false">
+                    <Setter   Property="BorderBrush" Value="Black"/>
+                </Trigger>
+                <Trigger Property="IsDisabled" Value="true">
+                    <Setter Property="Opacity" Value="0.5"/>
+                    <Setter Property="Background" Value="{StaticResource PatternGradient}"/>
+                    <Setter Property="BorderThickness" Value="0,4,0,0"/>
+                </Trigger>
+            </Style.Triggers>            
+        </Style>
+    </UserControl.Style>
+
+    <Grid  TextBlock.Foreground="white"  Name="grid" FocusVisualStyle="{x:Null}">
+
+
+        <!-- Actual graphical representation -->
+        <Border  x:Name="XOperatorContent"                  
+                 Background="#CE0A5858" BorderBrush="{Binding BorderBrush, ElementName=XControl}"  ClipToBounds="True" BorderThickness="1">
+            
+            <TextBlock Name="XOperatorLabel" 
+                        HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="13"  Text="Operator"/>
+        </Border>
+
+
+        <!-- Input range seperation lines -->
+        <Grid Name="inputSeparators"/>
+
+        <Canvas Name="XInputZoneIndicators"/>
+
+        <!-- Thumb for creating new connections -->
+        <Grid  x:Name="XOutputThumbGrid" Margin="10,-12,10,21" Height="10"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Name="XStickyIndicator" Background="white" Visibility="Hidden" IsHitTestVisible="False"/>
+
+            <Canvas x:Name="XEvaluationIndicator">
+                <Rectangle x:Name="XEvaluationTick" Height="1" Width="3" Canvas.Left="1" Fill="#44ffffff" Canvas.Top="3"></Rectangle>
+            </Canvas>
+
+            <!-- Main thumb-->
+            <Thumb x:Name="XWidgetThumb"
+                   Grid.Column="0" Focusable="True"
+                   Grid.ColumnSpan="3"
+                   MouseMove="XWidgetThumb_MouseMove"                  
+                   
+                   DragDelta="XWidgetThumb_DragDeltaHandler" 
+                   DragStarted="XWidgetThumb_DragStartHandler" 
+                   DragCompleted="XWidgetThumb_DragCompletedHandler" 
+                   MouseDoubleClick="MouseDoubleClickHandler" 
+                   Opacity="0"  AllowDrop="True"
+                   Drop="XOperatorWidgetThumb_Drop"
+                   DragOver="XOperatorWidgetThumb_DragOver"
+                   DragEnter="XOperatorWidgetThumb_DragEnter"
+                   DragLeave="XOperatorWidgetThumb_DragLeave"
+                   FocusVisualStyle="{x:Null}"
+                   />
+
+            <!-- Thumb overlay for dragging and changing width -->
+            <!--<Border x:Name="XRightWidthBorder"
+                    Grid.Column="2"
+                    ClipToBounds="True"
+                    Background="#FFFFFFFF"
+                    Opacity="0.1" 
+                    BorderThickness="1">
+                <Thumb Name="XRightWidthThumb"
+                   Grid.Column="2" 
+                   Focusable="True"
+                   DragStarted="OnDragWidthStarted"
+                   DragDelta="OnDragWidthDelta"
+                   DragCompleted="OnDragWidthCompleted"
+                   Opacity="0"
+                   Cursor="SizeWE"/>
+            </Border>-->
+            <Border Grid.Column="2" Name="XAnimationIndicator" Background="#ffd47d29" Visibility="Hidden" IsHitTestVisible="False"/>
+        </Grid>
+    </Grid>
+</UserControl>

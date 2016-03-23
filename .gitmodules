@@ -1,0 +1,4 @@
+[submodule "Operators"]
+	path = Operators
+	url = git@github.com:framefield/tooll_operators.git
+

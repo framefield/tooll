@@ -1,0 +1,72 @@
+﻿<Window x:Class="Framefield.Tooll.UserNameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Framefield.Tooll"
+        Title="Your Name" 
+        Height="240" 
+        Width="350"
+        ShowInTaskbar="False"
+        Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+        WindowStartupLocation="CenterOwner"         
+        FocusManager.FocusedElement="{Binding ElementName=XUserTextBox}">
+    <Window.Resources>
+        <Style x:Key="InputField" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0 2 0 2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+        </Style>
+        <Style x:Key="ElementStyle" TargetType="{x:Type Control}">
+            <Setter Property="Margin" Value="0 10 0 0"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="-5 0 0 0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#555"/>
+        </Style>        
+    </Window.Resources>    
+    <Grid Margin="10" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="24" FontFamily="Segoe UI Light" Foreground="#FF686464" Margin="0 0 0 20" >
+            Welcome to Tooll
+            <LineBreak/>
+            <TextBlock FontSize="15">Please select a name, so we can save your work.</TextBlock>
+        </TextBlock>
+        <Label  Grid.Row="1" Grid.Column="0"  
+                HorizontalAlignment="Right" VerticalAlignment="Center">Your username</Label>
+        <TextBox Name="XUserName" 
+                  Grid.Row="1" Grid.Column="1"
+                 Style="{StaticResource InputField}"/>
+        <Label  Grid.Row="2" Grid.Column="0" 
+                HorizontalAlignment="Right"  VerticalAlignment="Center">Email</Label>
+        <TextBox Name="XUserEmail" 
+                 Grid.Row="2" Grid.Column="1"
+                 Style="{StaticResource InputField}"      
+                  />
+
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" 
+                    FlowDirection="RightToLeft" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <!--<Button Style="{StaticResource ElementStyle}" Name="XCancelButton" Click="CancelButtonHandler" IsCancel="True">Cancel</Button>-->
+            <Button Name="XOkButton" 
+                    Style="{StaticResource ElementStyle}" 
+                    Click="OkButtonHandler" 
+                    IsDefault="True">Continue</Button>
+        </StackPanel>
+
+    </Grid >
+
+</Window>

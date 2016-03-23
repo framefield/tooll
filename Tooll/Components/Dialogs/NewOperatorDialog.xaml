@@ -1,0 +1,82 @@
+﻿<Window x:Class="Framefield.Tooll.Components.Dialogs.NewOperatorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Framefield.Tooll"
+        Title="New Operator" 
+        Height="300" 
+        Width="450"
+        Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" 
+        BorderThickness="0"
+        Loaded="OnLoaded"
+        FocusManager.FocusedElement="{Binding ElementName=XUserTextBox}" ResizeMode="CanResizeWithGrip">
+    <Window.Resources>
+        <Style x:Key="InputField" TargetType="TextBox">            
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ElementStyle" TargetType="{x:Type Control}">
+            <Setter Property="Margin" Value="0 4 5 0"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="-5 5 0 0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Foreground" Value="#555"/>
+        </Style>
+    </Window.Resources>
+        <Grid Grid.Row="1"  Margin="12" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+
+            <TextBlock 
+            x:Name="XText"
+            Grid.Row="0" Grid.ColumnSpan="2"  
+            VerticalAlignment="Center"
+            FontSize="15"
+            TextWrapping="Wrap">
+            </TextBlock>
+
+            <Label   Grid.Column="0" Grid.Row="1" 
+                 Background="#00000000"                  
+                 VerticalAlignment="Center">
+                Namespace
+            </Label>
+            <Label Grid.Column="1" Grid.Row="1"  VerticalAlignment="Center">Operator Name</Label>
+            <TextBox Name="XNamespace" 
+                 Style="{StaticResource InputField}"                  
+                Margin="0 0 5 0"
+                 
+                 Grid.Column="0" Grid.Row="2"></TextBox>
+            <TextBox Name="XName" 
+                 Style="{StaticResource InputField}" 
+                 
+                 Grid.Column="1" Grid.Row="2"></TextBox>
+
+            <Label Grid.Row="3" Grid.Column="0"  VerticalAlignment="Center">Description</Label>
+            <TextBox Name="XDescription" Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
+
+            <StackPanel Grid.ColumnSpan="2" Grid.Row="5" FlowDirection="RightToLeft" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button Style="{StaticResource ElementStyle}" Name="XCancelButton" Click="CancelButtonHandler" IsCancel="True">Cancel</Button>
+                <Button Style="{StaticResource ElementStyle}" Name="XOkButton" Click="OkButtonHandler" IsDefault="True" FontWeight="Bold">Create</Button>
+            </StackPanel>
+
+        </Grid >
+
+
+</Window>

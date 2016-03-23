@@ -1,0 +1,140 @@
+﻿<UserControl x:Class="Framefield.Tooll.CurvePointControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             x:Name="curveEditPoint"
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="100"
+             MinWidth="50"
+             MinHeight="50"
+             Opacity="1"
+             >
+    <UserControl.Resources>
+        <local:UToXConverter x:Key="uToXConverter" />
+        <local:VToYConverter x:Key="vToYConverter" />
+        <local:SelectedToVisibilityConverter x:Key="selectedToVisibiltyConverter" />
+        <local:LeftInterpolationTypeToPathDataConverter x:Key="leftInterpolationTypeToPathDataConverter" />
+        <local:RightInterpolationTypeToPathDataConverter x:Key="rightInterpolationTypeToPathDataConverter" />        
+    </UserControl.Resources>
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="XTranslateTransform" />
+    </UserControl.RenderTransform>
+
+    <UserControl.Style>
+        <Style>
+            <Style.Triggers>
+                <Trigger Property="local:CurvePointControl.IsSelected" Value="true">
+                    <Setter Property="local:CurvePointControl.StrokeColor" Value="#fff"/>
+                </Trigger>
+                <Trigger Property="local:CurvePointControl.IsSelected" Value="false">
+                    <Setter Property="local:CurvePointControl.StrokeColor" Value="#000"/>
+                    <Setter Property="local:CurvePointControl.TangentVisibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+    <Canvas>
+        <!-- Additional elements when selected -->
+
+        <!-- Temporarily disable tangents until pirx fixes them in curve interpolation -->
+        <!-- Visibility="{Binding IsSelected,ElementName=curveEditPoint, Converter={StaticResource selectedToVisibiltyConverter}}" -->
+        <Canvas x:Name="XTangents">
+            <Line x:Name="XLeftTangentLine" 
+              StrokeThickness="0.5" 
+              Visibility="{Binding TangentVisibility,ElementName=curveEditPoint}"
+              
+              
+              X1="{Binding LeftTangentPosition.X,ElementName=curveEditPoint}" 
+              Y1="{Binding LeftTangentPosition.Y,ElementName=curveEditPoint}" 
+              X2="0" 
+              Y2="0"  
+              StrokeDashArray="3 4"
+              Stroke="{Binding StrokeColor,ElementName=curveEditPoint}"/>
+
+            <Line x:Name="XRightTangentLine" 
+              StrokeThickness="0.5" 
+              Visibility="{Binding TangentVisibility,ElementName=curveEditPoint}"
+              X1="{Binding RightTangentPosition.X,ElementName=curveEditPoint}" 
+              Y1="{Binding RightTangentPosition.Y,ElementName=curveEditPoint}" 
+              X2="0" 
+              Y2="0"  
+              StrokeDashArray="3 4"
+              Stroke="{Binding StrokeColor,ElementName=curveEditPoint}"/>
+
+            <Thumb x:Name="XLeftTangentThumb" 
+                Visibility="{Binding TangentVisibility,ElementName=curveEditPoint}"                   
+                
+                DragStarted="OnDragTangentDeltaStarted"
+                DragDelta="OnDragLeftTangentDelta"
+                DragCompleted="OnDragTangentDeltaCompleted"
+                Canvas.Left="{Binding LeftTangentPosition.X,ElementName=curveEditPoint}" 
+                Canvas.Top="{Binding LeftTangentPosition.Y,ElementName=curveEditPoint}" 
+               
+            >
+                <Thumb.Template>
+                    <ControlTemplate >
+                        <Ellipse Fill="{Binding StrokeColor,ElementName=curveEditPoint}" 
+                             Stroke="Transparent" StrokeThickness="4" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="-5" Y="-5"></TranslateTransform>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+
+            <Thumb x:Name="XRightTangentThumb" 
+                
+                DragStarted="OnDragTangentDeltaStarted"
+                DragDelta="OnDragRightTangentDelta"
+                DragCompleted="OnDragTangentDeltaCompleted"
+                Canvas.Left="{Binding RightTangentPosition.X,ElementName=curveEditPoint}" 
+                Canvas.Top="{Binding RightTangentPosition.Y,ElementName=curveEditPoint}" 
+                Visibility="{Binding TangentVisibility,ElementName=curveEditPoint}"
+            >
+                <Thumb.Template>
+                    <ControlTemplate>
+                        <Ellipse Fill="{Binding StrokeColor,ElementName=curveEditPoint}" 
+                             Stroke="Transparent" StrokeThickness="4" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="-5" Y="-5"></TranslateTransform>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </Canvas>
+
+        <!-- Main elements -->
+
+        <Thumb Name="XCenterThumb" 
+               
+                   DragStarted="OnDragStart" 
+                   DragDelta="OnDragDelta"
+                   DragCompleted="OnDragCompleted"
+                   
+               Width="0" Height="0">
+            <Thumb.Template>                
+                <ControlTemplate>
+                    <Canvas>
+                        <Path x:Name="XLeftFace" 
+                                StrokeThickness="1"  Fill="Orange"                                  
+                                Data="{Binding LeftInterpolationType,ElementName=curveEditPoint, Converter={StaticResource leftInterpolationTypeToPathDataConverter}}"
+                                Stroke="{Binding StrokeColor,ElementName=curveEditPoint}">
+                        </Path>
+                        <Path x:Name="XRightFace" 
+                              StrokeThickness="1"  Fill="Orange" 
+                              Data="{Binding RightInterpolationType,ElementName=curveEditPoint, Converter={StaticResource rightInterpolationTypeToPathDataConverter}}"
+                              Stroke="{Binding StrokeColor,ElementName=curveEditPoint}" />
+                    </Canvas>
+                </ControlTemplate>                
+            </Thumb.Template>            
+        </Thumb>
+        
+
+
+
+    </Canvas>
+</UserControl>

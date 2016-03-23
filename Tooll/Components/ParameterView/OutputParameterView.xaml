@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="Framefield.Tooll.OutputParameterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:Framefield.Core;assembly=Core"
+             xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             Background="#FF393939">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+    </UserControl.Resources>
+    <Grid Name="MainLayout">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Name="HeaderLayout">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition MinWidth="25" Width="Auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition MinWidth="25" Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Name="NameTextBox" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" FontSize="13"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="->" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+          <Grid Name="ParameterLayout">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Button Content="Type" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+            <ComboBox Grid.Row="0" Grid.Column="1" Name="TypeComboBox">
+              <ComboBoxItem>Generic</ComboBoxItem>
+              <ComboBoxItem>Float</ComboBoxItem>
+              <ComboBoxItem>Text</ComboBoxItem>
+              <ComboBoxItem>Scene</ComboBoxItem>
+              <ComboBoxItem>Image</ComboBoxItem>
+              <ComboBoxItem>Dynamic</ComboBoxItem>
+              <ComboBoxItem>Mesh</ComboBoxItem>
+            </ComboBox>
+          </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

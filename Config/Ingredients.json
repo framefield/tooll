@@ -1,0 +1,217 @@
+[
+  {
+    "Ingredients": [
+      {
+        "_metaOpId": "61560c16-3643-426a-ade5-f8e33ef51e78",
+        "Name": "GaussBlur",
+        "GridPositionX": 9,
+        "GridPositionY": 1
+      },
+      {
+        "_metaOpId": "d6760adf-5384-4eea-931f-b5c0714f7632",
+        "Name": "DetectEdges",
+        "GridPositionX": 5,
+        "GridPositionY": 2
+      },
+      {
+        "_metaOpId": "c6e1c4b9-28a8-41fb-a9fa-74591a1239f0",
+        "Name": "Layer2d",
+        "GridPositionX": 0,
+        "GridPositionY": 1
+      },
+      {
+        "_metaOpId": "605d497b-689b-4067-a86d-d3f212732484",
+        "Name": "RenderToImg MS",
+        "GridPositionX": 0,
+        "GridPositionY": 2
+      },
+      {
+        "_metaOpId": "43403a8d-9c87-414a-89e2-9393b87d9e47",
+        "Name": "Camera",
+        "GridPositionX": 0,
+        "GridPositionY": 3
+      },
+      {
+        "_metaOpId": "46e0d20b-9ecc-42bc-ad5a-faeaf23e62f1",
+        "Name": "Group",
+        "GridPositionX": 0,
+        "GridPositionY": 4
+      },
+      {
+        "_metaOpId": "5f9364f8-36b4-4c1c-9cc2-5eddfa6774aa",
+        "Name": "Transform",
+        "GridPositionX": 0,
+        "GridPositionY": 5
+      },
+      {
+        "_metaOpId": "944a5d15-2485-479a-b850-519141237dd2",
+        "Name": "PointLight",
+        "GridPositionX": 0,
+        "GridPositionY": 7
+      },
+      {
+        "_metaOpId": "274c7da9-c728-4a9d-b5a3-dadb06e2715b",
+        "Name": "PhongShader",
+        "GridPositionX": 0,
+        "GridPositionY": 8
+      },
+      {
+        "_metaOpId": "72c0d6f1-ef64-4df6-b535-000b4b085b1e",
+        "Name": "Material",
+        "GridPositionX": 0,
+        "GridPositionY": 9
+      },
+      {
+        "_metaOpId": "72c0d6f1-ef64-4df6-b535-000b4b085b1e",
+        "Name": "Material",
+        "GridPositionX": 4,
+        "GridPositionY": 14
+      },
+      {
+        "_metaOpId": "384b6557-a535-4766-bce2-6c8c1e6fcf14",
+        "Name": "LoadImage",
+        "GridPositionX": 4,
+        "GridPositionY": 11
+      },
+      {
+        "_metaOpId": "161f6915-5798-40e0-a99b-47e6205448f4",
+        "Name": "Rectangle",
+        "GridPositionX": 4,
+        "GridPositionY": 13
+      },
+      {
+        "_metaOpId": "45d21f0c-7341-4448-bc64-ac494916e4ce",
+        "Name": "Text",
+        "GridPositionX": 0,
+        "GridPositionY": 14
+      },
+      {
+        "_metaOpId": "dd0c2c23-c56b-44e9-bce4-1ce3ca979666",
+        "Name": "Cube",
+        "GridPositionX": 0,
+        "GridPositionY": 13
+      },
+      {
+        "_metaOpId": "dfebba7f-1160-4d74-bed5-fbf0fcfe5803",
+        "Name": "ColorGrade",
+        "GridPositionX": 9,
+        "GridPositionY": 2
+      },
+      {
+        "_metaOpId": "80beee15-70e3-423c-93f5-a88d818dc0af",
+        "Name": "RadialGlow",
+        "GridPositionX": 5,
+        "GridPositionY": 1
+      },
+      {
+        "_metaOpId": "ab3b7bf5-c2ba-4e38-92ab-4387f64f8c14",
+        "Name": "SetTexture",
+        "GridPositionX": 2,
+        "GridPositionY": 10
+      },
+      {
+        "_metaOpId": "60c2b839-0957-4331-9b53-c818f494f9d6",
+        "Name": "Torus",
+        "GridPositionX": 0,
+        "GridPositionY": 11
+      },
+      {
+        "_metaOpId": "152549ac-39dc-4db6-a12f-c54b63bd4fbb",
+        "Name": "BlendMode",
+        "GridPositionX": 5,
+        "GridPositionY": 4
+      },
+      {
+        "_metaOpId": "a6ad4fc4-172a-4e64-881c-c1782829c605",
+        "Name": "Replicate",
+        "GridPositionX": 5,
+        "GridPositionY": 5
+      },
+      {
+        "_metaOpId": "c3fa6cd7-a7aa-420b-96bc-624902a1cc90",
+        "Name": "ScatterGizmo",
+        "GridPositionX": 5,
+        "GridPositionY": 6
+      },
+      {
+        "_metaOpId": "ce62469e-1b16-4088-806c-cb3816d22cb8",
+        "Name": "LensFlareSetup3",
+        "GridPositionX": 5,
+        "GridPositionY": 7
+      },
+      {
+        "_metaOpId": "9173ca72-3c7c-4aa8-82e8-62a5fd659589",
+        "Name": "FlatShader",
+        "GridPositionX": 9,
+        "GridPositionY": 4
+      },
+      {
+        "_metaOpId": "1c5247fc-f9d8-451f-91cd-83294ff79974",
+        "Name": "Disable Z-Test",
+        "GridPositionX": 9,
+        "GridPositionY": 5
+      },
+      {
+        "_metaOpId": "fb339d7f-305a-4821-a9ed-cfa077d086c6",
+        "Name": "NoiseDistort",
+        "GridPositionX": 9,
+        "GridPositionY": 6
+      },
+      {
+        "_metaOpId": "c6d02108-2f1f-41ca-9a91-96f297ea55a1",
+        "Name": "SetResolution",
+        "GridPositionX": 9,
+        "GridPositionY": 7
+      },
+      {
+        "_metaOpId": "34bc4620-7f89-4a28-b3dd-46bdd0fcaddf",
+        "Name": "PerlinNoise",
+        "GridPositionX": 9,
+        "GridPositionY": 8
+      },
+      {
+        "_metaOpId": "bcddd13a-2f9d-4dd5-8622-5ba979502c08",
+        "Name": "Blob",
+        "GridPositionX": 9,
+        "GridPositionY": 9
+      },
+      {
+        "_metaOpId": "0224a539-b443-455e-b426-3106bb2879ef",
+        "Name": "Remap",
+        "GridPositionX": 9,
+        "GridPositionY": 11
+      },
+      {
+        "_metaOpId": "90e6a3b1-7a53-4799-b12e-35cd7c94fb67",
+        "Name": "Add",
+        "GridPositionX": 9,
+        "GridPositionY": 12
+      },
+      {
+        "_metaOpId": "f35f6533-1b97-4c8f-af4d-806456259dc3",
+        "Name": "Multiply",
+        "GridPositionX": 9,
+        "GridPositionY": 13
+      },
+      {
+        "_metaOpId": "7424a910-d647-4049-9fda-78189bcaa964",
+        "Name": "Value",
+        "GridPositionX": 9,
+        "GridPositionY": 14
+      },
+      {
+        "_metaOpId": "61560c16-3643-426a-ade5-f8e33ef51e78",
+        "Name": "GaussBlur",
+        "GridPositionX": 0,
+        "GridPositionY": 0
+      },
+      {
+        "_metaOpId": "61560c16-3643-426a-ade5-f8e33ef51e78",
+        "Name": "GaussBlur",
+        "GridPositionX": 0,
+        "GridPositionY": 6
+      }
+    ],
+    "Name": "Default"
+  }
+]

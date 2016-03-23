@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="Framefield.Tooll.InputParameterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:Framefield.Core;assembly=Core"
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             xmlns:avalonEditing="clr-namespace:ICSharpCode.AvalonEdit.Editing;assembly=ICSharpCode.AvalonEdit"
+             Background="#FF393939">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+    </UserControl.Resources>
+    <Grid Name="MainLayout">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Name="HeaderLayout">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition MinWidth="25" Width="Auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition MinWidth="25" Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Name="NameTextBox" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" FontSize="13"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="->" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <Grid Name="ParameterLayout">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition MaxHeight="25"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition MinHeight="25"/>
+                </Grid.RowDefinitions>
+                <Button Content="Type" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="TypeComboBox">
+                    <ComboBoxItem>Generic</ComboBoxItem>
+                    <ComboBoxItem>Float</ComboBoxItem>
+                    <ComboBoxItem>Text</ComboBoxItem>
+                    <ComboBoxItem>Scene</ComboBoxItem>
+                    <ComboBoxItem>Image</ComboBoxItem>
+                    <ComboBoxItem>Dynamic</ComboBoxItem>
+                    <ComboBoxItem>Mesh</ComboBoxItem>
+                </ComboBox>
+                <Button Content="MultiInput" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="IsMultiInputComboBox">
+                    <ComboBoxItem>SingleInput</ComboBoxItem>
+                    <ComboBoxItem>MultiInput</ComboBoxItem>
+                </ComboBox>
+                <Button Content="DefaultValue" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <Grid Grid.Row="2" Grid.Column="1" Name="DefaultValue"/>
+                <Button Content="Relevance" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Name="RelevanceComboBox">
+                    <ComboBoxItem>Required</ComboBoxItem>
+                    <ComboBoxItem>Relevant</ComboBoxItem>
+                    <ComboBoxItem>Optional</ComboBoxItem>
+                </ComboBox>
+                <Button Name="MinLabel" Content="Min" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <local:FloatEditButton Grid.Row="4" Grid.Column="1" x:Name="Min"/>
+                <Button Name="MaxLabel" Content="Max" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <local:FloatEditButton Grid.Row="5" Grid.Column="1" x:Name="Max"/>
+                <Button Name="ScaleLabel" Content="Scale" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <local:FloatEditButton Grid.Row="6" Grid.Column="1" x:Name="Scale"/>
+                <Button Name="ScaleTypeLabel" Content="ScaleType" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <ComboBox Grid.Row="7" Grid.Column="1" Name="ScaleTypeComboBox">
+                    <ComboBoxItem>Linear</ComboBoxItem>
+                    <ComboBoxItem>Logarithmic</ComboBoxItem>
+                    <ComboBoxItem>Qudratic</ComboBoxItem>
+                </ComboBox>
+                <Button Name="XIsEnumLabel" Content="UseAsEnum" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" />
+                <ComboBox Grid.Row="8" Grid.Column="1" Name="XIsEnumComboBox">
+                    <ComboBoxItem>No</ComboBoxItem>
+                    <ComboBoxItem>Yes</ComboBoxItem>
+                </ComboBox>
+
+                <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Name="XEnumValuesStackPanel"/>
+                <Rectangle Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Fill="#22000000"></Rectangle>
+                <avalonEditing:TextArea Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Name="DescriptionEdit" />
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="Tooll.experimental.pixtur.SingleButtonTest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="50" IsEnabled="True" ClipToBounds="False">
+    <!-- Question: Could 2 be bound to the border width property? -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="2" />
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="0" Fill="#464544" />
+        <Rectangle Grid.Row="0" Fill="#353433" Width="2" HorizontalAlignment="Right" />
+
+        <Rectangle Grid.Row="1" Fill="#393939"  />
+        <Rectangle Grid.Row="1" Fill="#272727" Width="2" HorizontalAlignment="Right" />
+
+        <Rectangle Grid.Row="2" Fill="#2F2F2F" />
+        <Rectangle Grid.Row="2" Fill="#242424" Width="2" HorizontalAlignment="Right" />
+
+        <Rectangle Fill="Black" Grid.Row="3" />
+    </Grid>
+</UserControl>

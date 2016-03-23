@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Framefield.Tooll.CompositionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             Background="#202020"
+             Name="compositionView"
+             d:DesignHeight="300" d:DesignWidth="300" SnapsToDevicePixels="True" ClipToBounds="True">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <local:CompositionGraphView Grid.Row="1" x:Name="XCompositionGraphView"/>
+        <local:CompositionToolBar Grid.Row="0" x:Name="XCompositionToolBar"/>
+
+        <Rectangle Grid.Row="1" Height="1" VerticalAlignment="bottom" HorizontalAlignment="Stretch" Fill="Black"></Rectangle>
+
+        <!--<GridSplitter Grid.Row="1" 
+                      ResizeBehavior="PreviousAndNext"
+                      ResizeDirection="Rows"
+                      Height="{Binding ActualHeight, ElementName=XCompositionToolBar}"  
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Bottom"  Width="20" Background="Transparent" />-->
+        <!--<GridSplitter Grid.Row="1" 
+                      ResizeBehavior="PreviousAndNext"
+                      ResizeDirection="Rows"
+                      Height="2"  
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Bottom" Background="Transparent" />-->
+        <GridSplitter Grid.Row="2" 
+                      ResizeBehavior="PreviousAndNext"
+                      ResizeDirection="Rows"
+                      Height="6"  
+                      Margin="0 -4 0 0 "
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Top" Background="Transparent" />
+
+        <local:TimeView Grid.Row="3" x:Name="XTimeView"/>
+    </Grid>
+</UserControl>

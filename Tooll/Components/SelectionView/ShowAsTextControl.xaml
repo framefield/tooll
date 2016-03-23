@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Framefield.Tooll.Components.SelectionView.ShowAsTextControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             x:Name="XShowAsTextControl"             
+             Background="#444" 
+             Focusable="True" 
+             UseLayoutRounding="True" SnapsToDevicePixels="True"   
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"              
+             >
+
+    <Grid x:Name="XGrid" Background="{StaticResource PatternGradient}">
+        <ScrollViewer  x:Name="XValueViewer" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Center">
+            <TextBox x:Name="XValueLabel" Text="Value" Foreground="White" FontSize="20"  VerticalContentAlignment="Center" FontWeight="Normal" ScrollViewer.CanContentScroll="True" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0" HorizontalAlignment="Left" Margin="30,0" />
+        </ScrollViewer>        
+    </Grid>
+</UserControl>

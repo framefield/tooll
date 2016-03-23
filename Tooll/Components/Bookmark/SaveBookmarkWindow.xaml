@@ -1,0 +1,93 @@
+﻿<Window x:Class="Framefield.Tooll.Components.Bookmark.SaveBookmarkWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+            Height="170"
+                Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+            Width="360"
+        Title="Save Bookmark"
+             >
+    <Window.Resources>
+        <Style x:Key="InputField" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0 2 0 2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+        </Style>
+        <Style x:Key="ElementStyle" TargetType="{x:Type Control}">
+            <Setter Property="Margin" Value="0 10 5 0"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="-5 0 0 0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#555"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10" VerticalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock 
+            x:Name="XText"
+            Grid.Row="0" Grid.ColumnSpan="2"  
+            VerticalAlignment="Center"
+            FontSize="15">
+            Create input group?
+        </TextBlock>
+        <Label  x:Name="XLabel" 
+                Grid.Row="1" Grid.Column="0"  
+                HorizontalAlignment="Right" VerticalAlignment="Center">Name</Label>
+        <TextBox Name="XTextBox" 
+                  Grid.Row="1" Grid.Column="1"
+                 Style="{StaticResource InputField}"/>
+
+        <Label  x:Name="XShortCutLabel"
+                Grid.Row="2" Grid.Column="0"
+                HorizontalAlignment="Right" VerticalAlignment="Center">Shortcut</Label>
+        <ComboBox x:Name="XComboBox"
+                  Grid.Row="2" Grid.Column="1"
+                  SelectedIndex="0"
+                  HorizontalContentAlignment="Center"
+                  >
+            <ComboBoxItem>CTRL + 1</ComboBoxItem>
+            <ComboBoxItem>CTRL + 2</ComboBoxItem>
+            <ComboBoxItem>CTRL + 3</ComboBoxItem>
+            <ComboBoxItem>CTRL + 4</ComboBoxItem>
+            <ComboBoxItem>CTRL + 5</ComboBoxItem>
+            <ComboBoxItem>CTRL + 6</ComboBoxItem>
+            <ComboBoxItem>CTRL + 7</ComboBoxItem>
+            <ComboBoxItem>CTRL + 8</ComboBoxItem>
+            <ComboBoxItem>CTRL + 9</ComboBoxItem>
+            <ComboBoxItem>CTRL + 0</ComboBoxItem>
+        </ComboBox>
+        
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" 
+                    FlowDirection="RightToLeft" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button x:Name="XCancelButton" 
+                    Style="{StaticResource ElementStyle}"                     
+                    IsCancel="True">Cancel</Button>
+            <Button Name="XOKButton" 
+                    Style="{StaticResource ElementStyle}" 
+                    Click="XOKButton_Click" 
+                    FontWeight="Bold"
+                    IsDefault="True" TabIndex="15">Continue</Button>
+        </StackPanel>
+
+    </Grid >
+</Window>

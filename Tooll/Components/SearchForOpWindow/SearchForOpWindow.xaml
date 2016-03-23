@@ -1,0 +1,135 @@
+﻿<Window x:Class="Framefield.Tooll.Components.SearchForOpWindow.SearchForOpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tooll="clr-namespace:Framefield.Tooll"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        Background="LightGray"
+        Foreground="#37FFFFFF"
+        Title="SearchForOpWindow" 
+        Height="300" Width="550"
+        Loaded="OnLoaded"
+        Keyboard.PreviewKeyUp="OnKeyUpHandler"
+        SizeChanged="SearchForOpWindow_OnSizeChanged"
+        >
+    <Window.Resources>
+        <Style TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444"/>
+                    <Setter Property="BorderBrush" Value="LightGray"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{Binding BGColor}"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontFamily" Value="Comic Sans"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="#aaa"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Border
+                         BorderBrush="Transparent"
+                         BorderThickness="0"
+                         Background="{TemplateBinding Background}">
+                            <GridViewRowPresenter HorizontalAlignment="Stretch" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Width="Auto" Margin="0" Content="{TemplateBinding Content}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#555"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Background" Value="#444"/>
+            <Setter Property="Foreground" Value="#aaa"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        
+        
+    </Window.Resources>
+
+    <Grid VerticalAlignment="Stretch" Margin="0,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Row="0" Name="XSearchTextBox" VerticalContentAlignment="Center" FontSize="15" TextAlignment="Left" 
+                 Background="white" 
+                 Foreground="black" 
+                 BorderThickness="0"
+                 ToolTip="Operator name to find" 
+                 TextChanged="OnSearchTextChanged" 
+                 VerticalAlignment="Center"
+                 Padding="0,3"
+                 KeyUp="XSearchTextBox_OnKeyUp"/>
+        <TextBlock Grid.Row="0" Name="XWatermark" FontSize="15"
+                 TextAlignment="Left"
+                 Text="Enter Search Text"
+                 Padding="0,3" 
+                 Foreground="Gray"
+                 TextTrimming="CharacterEllipsis"
+                 IsEnabled="False" IsHitTestVisible="False" Margin="4,0,0,0"
+                 />
+        <ListView Grid.Row="1" Name="XResultList"  SelectionMode="Single" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=GridViewRowPresenter, AncestorLevel=1}, Path=ActualHeight}" Background="#FF2b2b2b"
+                  SelectionChanged="XResultList_OnSelectionChanged"
+                  GridViewColumnHeader.Click="OnHeaderClicked"
+                  BorderThickness="0"
+                  Padding="-2,0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="XNamespaceHeader" HeaderStringFormat="Namespace">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="Namespace"></GridViewColumnHeader>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Foreground="{Binding OpTypeColor}"  Text="{Binding Namespace}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="XOpNameHeader" HeaderStringFormat="OpName" >
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader  Content="OpName"></GridViewColumnHeader>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Foreground="{Binding OpTypeColor}"  Text="{Binding OpName}" FontWeight="Bold" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="XPathHeader" HeaderStringFormat="Path">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="Path" HorizontalContentAlignment="Left"></GridViewColumnHeader>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Foreground="{Binding OpTypeColor}"  Text="{Binding Path}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Grid.Row="2" Padding="5,0" >Search:</Label>
+        <StackPanel Grid.Row="2">
+            <CheckBox HorizontalAlignment="Left" Name="XCheckSearchInSubtree" Click="XCheckNamespace_OnClick" Margin="54,0,0,0" Padding="4,0,0,0">Only in </CheckBox>
+            <CheckBox HorizontalAlignment="Left" Name="XCheckNamespace" Click="XCheckNamespace_OnClick" Margin="54,0,0,0" Padding="4,0,0,0">by Namespace</CheckBox>
+            <CheckBox HorizontalAlignment="Left" Name="XCheckRegex" Click="XCheckNamespace_OnClick" Margin="54,0,0,0" Padding="4,0,0,0">with Regex</CheckBox>
+        </StackPanel>
+    </Grid>
+</Window>

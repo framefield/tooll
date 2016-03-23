@@ -1,0 +1,8 @@
+﻿Next steps
+
+- move ParameterView into a dockable panel
+- make ParameterView visible by default
+- move operator creation from Main-Menu to ToolKit Pannel
+- create stub for WorkspaceView
+- show created Operators in WorkspaceView
+- create abstract compound parameters like Float3 or RGBA

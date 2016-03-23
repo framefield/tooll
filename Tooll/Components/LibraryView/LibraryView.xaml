@@ -1,0 +1,50 @@
+﻿<ad:DocumentContent x:Class="Framefield.Tooll.LibraryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+             mc:Ignorable="d" 
+             Background="#383838"
+             d:DesignHeight="250" d:DesignWidth="300">
+    <ad:DocumentContent.Resources>
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type local:OperatorTypeButton}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="3,1,0,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Foreground" Value="#ddd"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+            
+
+    </ad:DocumentContent.Resources>
+    <Grid Background="#2d2d2d">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TreeView x:Name="XTreeView" 
+                  Grid.Row="1" 
+                  Foreground="White" 
+                  BorderThickness="0" 
+                  Background="{x:Null}">
+            <TreeView.Resources>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="Foreground" Value="white"/>
+                    <Setter Property="Margin" Value="-3,0,0,0"/>
+                </Style>
+            </TreeView.Resources>
+            <TreeViewItem Header="lib" IsExpanded="true">
+                <TreeViewItem Header="basic">
+                    
+                    
+                </TreeViewItem>
+            </TreeViewItem>
+        </TreeView>
+    </Grid>
+</ad:DocumentContent>
+

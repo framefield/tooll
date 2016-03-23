@@ -1,0 +1,1047 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{64197182-8FFA-4041-91AD-142E046100DE}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Framefield.Tooll</RootNamespace>
+    <AssemblyName>Tooll</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>t2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AvalonDock, Version=1.3.3571.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\AvalonDock.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AvalonDock.Themes">
+      <HintPath>..\Libs\AvalonDock.Themes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bass.Net">
+      <HintPath>..\Libs\Bass.Net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Framefield.Autodesk.FBX, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Framefield.Autodesk.FBX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=4.1.0.7915, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\ICSharpCode.AvalonEdit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NGit, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\NGit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NSch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\NSch.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\Libs\SharpDX.D3DCompiler.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct2D1.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D10, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D10.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D11.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\Libs\SharpDX.Direct3D11.Effects.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D9.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.DirectInput.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.DXGI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.RawInput, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.RawInput.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sharpen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Sharpen.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="..\Shared\LibPathManager.cs">
+      <Link>LibPathManager.cs</Link>
+    </Compile>
+    <Compile Include="AutoBackup.cs" />
+    <Compile Include="Components\AdditionalAssembliesWindow.xaml.cs">
+      <DependentUpon>AdditionalAssembliesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\AdditionalAssemblyEntryRow.xaml.cs">
+      <DependentUpon>AdditionalAssemblyEntryRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Bookmark\Bookmark.cs" />
+    <Compile Include="Components\Bookmark\SaveBookmarkWindow.xaml.cs">
+      <DependentUpon>SaveBookmarkWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CodeEditor\CodeSectionManager.cs" />
+    <Compile Include="Components\CodeEditor\FindAndReplaceDialog.xaml.cs">
+      <DependentUpon>FindAndReplaceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CodeEditor\OpCodeEditor.cs" />
+    <Compile Include="Components\CodeEditor\CodeSectionTabControl.xaml.cs">
+      <DependentUpon>CodeSectionTabControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CodeEditor\CodeSectionViewModel.cs" />
+    <Compile Include="Components\ColorPicker\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ColorPicker\IColorPickingComponent.cs" />
+    <Compile Include="Components\CompositionView\BreadCrumbs.xaml.cs">
+      <DependentUpon>BreadCrumbs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\ConnectionDragAdorner.cs" />
+    <Compile Include="Components\CompositionView\AnnotationViewModel.cs" />
+    <Compile Include="Components\CompositionView\AnnotationControl.xaml.cs">
+      <DependentUpon>AnnotationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\OperatorWidgetInputZoneManager.cs" />
+    <Compile Include="Components\CompositionView\ViewMatrixSmoother.cs" />
+    <Compile Include="Components\Console\ConsoleView.xaml.cs">
+      <DependentUpon>ConsoleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Console\ConsoleViewWriter.cs" />
+    <Compile Include="Components\Console\LogEntryViewModel.cs" />
+    <Compile Include="Components\CrashReportWindow.xaml.cs">
+      <DependentUpon>CrashReportWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\HorizontalScaleLines.xaml.cs">
+      <DependentUpon>HorizontalScaleLines.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\StartAfterCrashDialog.xaml.cs">
+      <DependentUpon>StartAfterCrashDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\OpenLockedOperatorDialog.xaml.cs">
+      <DependentUpon>OpenLockedOperatorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\LoadOperatorDefinitionsProgressDialog.xaml.cs">
+      <DependentUpon>LoadOperatorDefinitionsProgressDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\NewOperatorDialog.xaml.cs">
+      <DependentUpon>NewOperatorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\FloatEditButton.cs" />
+    <Compile Include="Components\Helper\GenerateSoundImage.cs" />
+    <Compile Include="Components\Helper\SpaceMouseWPFHandler.cs" />
+    <Compile Include="Components\ParameterView\DynamicParameterValue.xaml.cs">
+      <DependentUpon>DynamicParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\MeshParameterValue.xaml.cs">
+      <DependentUpon>MeshParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\GenericParameterValue.xaml.cs">
+      <DependentUpon>GenericParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\ImageParameterValue.xaml.cs">
+      <DependentUpon>ImageParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\IParameterControl.cs" />
+    <Compile Include="Components\ParameterView\OperatorPresets\OperatorPreset.cs" />
+    <Compile Include="Components\ParameterView\OperatorPresets\OperatorPresetManager.cs" />
+    <Compile Include="Components\ParameterView\OperatorPresets\PresetGrid.xaml.cs">
+      <DependentUpon>PresetGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\OperatorPresets\PresetThumb.xaml.cs">
+      <DependentUpon>PresetThumb.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Helper\PropertyChangedBase.cs" />
+    <Compile Include="Components\ParameterView\EnumParameterValue.xaml.cs">
+      <DependentUpon>EnumParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\QuickCreate\IngredientControl.xaml.cs">
+      <DependentUpon>IngredientControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\QuickCreate\IngredientsFinder.xaml.cs">
+      <DependentUpon>IngredientsFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\QuickCreate\IngredientsManager.cs" />
+    <Compile Include="Components\QuickCreate\IngredientViewModel.cs" />
+    <Compile Include="Components\QuickCreate\QuickCreateWindow.xaml.cs">
+      <DependentUpon>QuickCreateWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\TextInputWindow.xaml.cs">
+      <DependentUpon>TextInputWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\CurveEditBox.xaml.cs">
+      <DependentUpon>CurveEditBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\ResizeThumb.cs" />
+    <Compile Include="Components\FenceSelection.xaml.cs">
+      <DependentUpon>FenceSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\EnumEntryDefinitionRow.xaml.cs">
+      <DependentUpon>EnumEntryDefinitionRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\FloatParameterControl.cs" />
+    <Compile Include="Components\ParameterView\GroupAnimationControls.xaml.cs">
+      <DependentUpon>GroupAnimationControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\GroupConnectionControls.xaml.cs">
+      <DependentUpon>GroupConnectionControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\GroupInputControl.xaml.cs">
+      <DependentUpon>GroupInputControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\GroupMixedAnimationConnectionControls.xaml.cs">
+      <DependentUpon>GroupMixedAnimationConnectionControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\ParameterGroup.xaml.cs">
+      <DependentUpon>ParameterGroup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\SceneParameterValue.xaml.cs">
+      <DependentUpon>SceneParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
+      <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SelectionView\ShowScene\CameraInteraction\SpaceMouse.cs" />
+    <Compile Include="Components\SelectionView\ShowCurveControl.xaml.cs">
+      <DependentUpon>ShowCurveControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SelectionView\SelectionView.xaml.cs">
+      <DependentUpon>SelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SelectionView\ShowScene\CameraInteraction\CameraInteraction.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\TransformGizmo\AxisGizmoPart.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\TransformGizmo\GizmoParameter.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\TransformGizmo\GizmoPart.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\TransformGizmo\PlaneGizmoPart.cs" />
+    <Compile Include="Components\SearchForOpWindow\AutoCompleteEntry.cs" />
+    <Compile Include="Components\SearchForOpWindow\DragManagers\DragManager.cs" />
+    <Compile Include="Components\SearchForOpWindow\DragManagers\InputDragManager.cs" />
+    <Compile Include="Components\SearchForOpWindow\DragManagers\OutputDragManager.cs" />
+    <Compile Include="Components\SearchForOpWindow\OpPartViewModel.cs" />
+    <Compile Include="Components\SearchForOpWindow\ReplaceOperatorViewModel.cs" />
+    <Compile Include="Components\SearchForOpWindow\ReplaceOperatorWindow.xaml.cs">
+      <DependentUpon>ReplaceOperatorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SearchForOpWindow\ResultFinders\CurrentFinder.cs" />
+    <Compile Include="Components\SearchForOpWindow\ResultFinders\HomeFinder.cs" />
+    <Compile Include="Components\SearchForOpWindow\ResultFinders\MetaFinder.cs" />
+    <Compile Include="Components\SearchForOpWindow\ResultFinders\PathFinder.cs" />
+    <Compile Include="Components\SearchForOpWindow\ResultFinders\ResultFinder.cs" />
+    <Compile Include="Components\SearchForOpWindow\SearchForOpWindow.xaml.cs">
+      <DependentUpon>SearchForOpWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SearchForOpWindow\Utils.cs" />
+    <Compile Include="Components\SupplyAssemblyEntryRow.xaml.cs">
+      <DependentUpon>SupplyAssemblyEntryRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeLogView.xaml.cs">
+      <DependentUpon>TimeLogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\BeatMarker.cs" />
+    <Compile Include="Components\TimeView\TimeClipHelpers.cs" />
+    <Compile Include="Components\TimeView\TimeMarkerControl.xaml.cs">
+      <DependentUpon>TimeMarkerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeMarkerEditor.xaml.cs">
+      <DependentUpon>TimeMarkerEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeMarkerViewModel.cs" />
+    <Compile Include="Components\TimeView\EndTimeMarker.xaml.cs">
+      <DependentUpon>EndTimeMarker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\IValueSnapAttractor.cs" />
+    <Compile Include="Components\TimeView\Playhead.xaml.cs">
+      <DependentUpon>Playhead.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\PlayheadMarker.xaml.cs">
+      <DependentUpon>PlayheadMarker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeClipViewModel.cs" />
+    <Compile Include="Components\TimeView\StartTimeMarker.xaml.cs">
+      <DependentUpon>StartTimeMarker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeClipControl.xaml.cs">
+      <DependentUpon>TimeClipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeClipEditor.xaml.cs">
+      <DependentUpon>TimeClipEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimeImage.xaml.cs">
+      <DependentUpon>TimeImage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\ValueSnapHandler.cs" />
+    <Compile Include="Components\UndoRedoView.xaml.cs">
+      <DependentUpon>UndoRedoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\CloneRepositoryProgressDialog.xaml.cs">
+      <DependentUpon>CloneRepositoryProgressDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomCommands.cs" />
+    <Compile Include="Components\SelectionView\FullScreenView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utils\ImportFbxScene.cs" />
+    <Compile Include="ISelectable.cs" />
+    <Compile Include="Components\CodeEditor\CodeEditor.xaml.cs">
+      <DependentUpon>CodeEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OperatorGitRepository.cs" />
+    <Compile Include="OperatorTypeButton.xaml.cs">
+      <DependentUpon>OperatorTypeButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OperatorTypeTree.cs" />
+    <Compile Include="RenderUpdateDebugViz.xaml.cs">
+      <DependentUpon>RenderUpdateDebugViz.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\ConnectionDragHelper.cs" />
+    <Compile Include="D3DImageSlimDX.cs" />
+    <Compile Include="GradientPath\GradientMode.cs" />
+    <Compile Include="GradientPath\GradientPath.cs" />
+    <Compile Include="IConnectableWidget.cs" />
+    <Compile Include="Components\CompositionView\InputView.xaml.cs">
+      <DependentUpon>InputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\InputWidget.xaml.cs">
+      <DependentUpon>InputWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\IConnectionLineSource.cs" />
+    <Compile Include="Components\CompositionView\IConnectionLineTarget.cs" />
+    <Compile Include="MoveHandler.cs" />
+    <Compile Include="Components\CompositionView\OutputView.xaml.cs">
+      <DependentUpon>OutputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\OutputWidget.xaml.cs">
+      <DependentUpon>OutputWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\AnimationCurveEditor.cs" />
+    <Compile Include="Components\TimeView\TimeView.xaml.cs">
+      <DependentUpon>TimeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\CurveEditor.xaml.cs">
+      <DependentUpon>CurveEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\CurvePointControl.xaml.cs">
+      <DependentUpon>CurvePointControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CurveEditor\VerticalScaleLines.xaml.cs">
+      <DependentUpon>VerticalScaleLines.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\LibraryView\LibraryView.xaml.cs">
+      <DependentUpon>LibraryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\InputParameterView.xaml.cs">
+      <DependentUpon>InputParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\OutputParameterView.xaml.cs">
+      <DependentUpon>OutputParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\ParameterView.xaml.cs">
+      <DependentUpon>ParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="D3DRenderSetup.cs" />
+    <Compile Include="SelectionHandler.cs" />
+    <Compile Include="Components\CompositionView\ShakeDetector.cs" />
+    <Compile Include="Components\CompositionView\OperatorSnappingHelper.cs" />
+    <Compile Include="Components\TextButtonEdit.xaml.cs">
+      <DependentUpon>TextButtonEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StandaloneExporter.cs" />
+    <Compile Include="StreamToLogEntryWriter.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\TransformGizmo\TransformGizmo.cs" />
+    <Compile Include="UIHelper.cs" />
+    <Compile Include="Colors.cs" />
+    <Compile Include="DisplayAsTimeStamp.cs" />
+    <Compile Include="Components\CompositionView\CompositionToolBar.xaml.cs">
+      <DependentUpon>CompositionToolBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\CompositionView.xaml.cs">
+      <DependentUpon>CompositionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\ConnectionLine.cs" />
+    <Compile Include="Components\CompositionView\OperatorWidget.xaml.cs">
+      <DependentUpon>OperatorWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CompositionView\CompositionGraphView.xaml.cs">
+      <DependentUpon>CompositionGraphView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Components\ParameterView\OperatorParameterViewRow.xaml.cs">
+      <DependentUpon>OperatorParameterViewRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\RgbaParameterValue.xaml.cs">
+      <DependentUpon>RgbaParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\TextParameterValue.xaml.cs">
+      <DependentUpon>TextParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeView\TimelineRuler.cs" />
+    <Compile Include="Components\ToolBox\ToolBoxView.xaml.cs">
+      <DependentUpon>ToolBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Dialogs\UserNameDialog.xaml.cs">
+      <DependentUpon>UserNameDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SelectionView\ShowSceneControl.xaml.cs">
+      <DependentUpon>ShowSceneControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ParameterView\VectorNParameterValue.xaml.cs">
+      <DependentUpon>VectorNParameterValue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\SetWaitCursor.cs" />
+    <Page Include="Components\AdditionalAssembliesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\AdditionalAssemblyEntryRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Bookmark\SaveBookmarkWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\CodeEditor\CodeEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CodeEditor\CodeSectionTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CodeEditor\FindAndReplaceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ColorPicker\ColorPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\BreadCrumbs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\AnnotationControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Console\ConsoleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CrashReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CurveEditor\HorizontalScaleLines.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Dialogs\StartAfterCrashDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Dialogs\OpenLockedOperatorDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Dialogs\LoadOperatorDefinitionsProgressDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Dialogs\NewOperatorDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\DynamicParameterValue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\MeshParameterValue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\GenericParameterValue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\ImageParameterValue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\OperatorPresets\PresetGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\OperatorPresets\PresetThumb.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\EnumParameterValue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\QuickCreate\IngredientControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\QuickCreate\IngredientsFinder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\QuickCreate\QuickCreateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Dialogs\TextInputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CurveEditor\CurveEditBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\FenceSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\EnumEntryDefinitionRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\GroupAnimationControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\GroupConnectionControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\GroupInputControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\GroupMixedAnimationConnectionControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\ParameterGroup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\SceneParameterValue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\SelectionView\ShowCurveControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\SelectionView\SelectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\SearchForOpWindow\ReplaceOperatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\SearchForOpWindow\SearchForOpWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\SelectionView\ShowAsTextControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\SupplyAssemblyEntryRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeLogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\EndTimeMarker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\Playhead.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\TimeView\PlayheadMarker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\StartTimeMarker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\TimeClipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\TimeClipEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\TimeImage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\TimeView\TimeMarkerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\TimeView\TimeMarkerEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\UndoRedoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Dialogs\CloneRepositoryProgressDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="OperatorTypeButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RenderUpdateDebugViz.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\InputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\InputWidget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\CompositionView\OperatorWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\CompositionGraphView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\CompositionToolBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CompositionView\CompositionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TimeView\TimeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CurveEditor\CurveEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CurveEditor\CurvePointControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\CurveEditor\VerticalScaleLines.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Components\CompositionView\OutputView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\CompositionView\OutputWidget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\LibraryView\LibraryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\InputParameterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\OperatorParameterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\OperatorParameterViewRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\OutputParameterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\ParameterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ParameterView\RgbaParameterValue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\TextParameterValue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TextButtonEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ScrollbarStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\MenuStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\ToolBox\ToolBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Dialogs\UserNameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\SelectionView\ShowSceneControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ParameterView\VectorNParameterValue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\ParameterView\OperatorParameterView.xaml.cs">
+      <DependentUpon>OperatorParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-key-off.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-key-on.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-next-off.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-next-on.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-previous-off.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-previous-on.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cursors\CursorSlideNormal.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{AF7349E3-1047-4995-85FB-895BD9B9FF2B}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="t2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\startTimeMarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\endTimeLoopMarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Documentation\todo-pixtur.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\components\color-circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\components\horizontal-slider-handler.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\components\vertial-slider-handle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-animation-menu.png" />
+    <Resource Include="Images\icon-input-connected.png" />
+    <Resource Include="Images\icon-input-mixed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\components\black-circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-maximize-window.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-minimize-window.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-close-window.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon-t2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cursors\CursorRemove.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cursors\CursorSave.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cursors\CursorStartConnection.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\components\color-circle-quad.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

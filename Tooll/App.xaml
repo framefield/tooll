@@ -1,0 +1,324 @@
+﻿<Application x:Class="Framefield.Tooll.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <LinearGradientBrush x:Key="PatternGradient" StartPoint="0,0" EndPoint="8,8" MappingMode="Absolute" SpreadMethod="Repeat">
+            <GradientStop Offset="0" Color="#01aaaaaa" />
+            <GradientStop Offset="0.4" Color="#01aaaaaa" />
+            <GradientStop Offset="0.4" Color="#15000000" />
+        </LinearGradientBrush>
+
+
+        <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        
+        
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
+                    <RowDefinition Height="Auto" MinHeight="22" MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                    <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                </Grid.RowDefinitions>
+
+                <Rectangle Name="top" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" Fill="#464544" />
+                <Rectangle Name="topRight" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" Fill="#353433" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                <Rectangle Name="innerRect" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Fill="{TemplateBinding Background}"  />
+                <Rectangle Name="Left" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Fill="#272727" 
+                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                                        HorizontalAlignment="Right" />
+                <Rectangle Name="bottom" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Fill="#2F2F2F" />
+                <Rectangle Name="bottomRight" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Fill="#242424" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+                <Rectangle Fill="Black" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
+
+                <!--<Border
+                      x:Name="Border" 
+                      Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                      CornerRadius="0"
+                      Background="#393939"
+                      BorderBrush="#000000"
+                      BorderThickness="0" />-->
+                <!--<Border 
+                      Grid.Column="0"
+                    Grid.Row="1"
+                      CornerRadius="0" 
+                      Margin="1" 
+                      Background="#393939" 
+                      BorderBrush="#0000ff"
+                      BorderThickness="0,0,1,0" />-->
+                <Path 
+                      x:Name="Arrow"
+                      Grid.Column="1"     
+                    Grid.Row="1"
+                      Fill="Black"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
+                />
+            </Grid>
+            <!--<ControlTemplate.Triggers>
+                <Trigger Property="ToggleButton.IsChecked" Value="true">
+                    <Setter TargetName="innerRect" Property="Fill" Value="#ff0000"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
+                    <Setter Property="Foreground" Value="#888888"/>
+                    <Setter TargetName="Arrow" Property="Fill" Value="#888888" />
+                </Trigger>
+            </ControlTemplate.Triggers>-->
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
+            <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
+        </ControlTemplate>
+
+        <Style x:Key="ComboBoxStyle" TargetType="{x:Type ComboBox}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton 
+                                Name="ToggleButton" 
+                                Template="{StaticResource ComboBoxToggleButton}" 
+                                Grid.Column="2" 
+                                Focusable="false"
+                                Background="#393939"
+                                IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                                ClickMode="Press">
+                            </ToggleButton>
+                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="3,3,23,3"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" />
+                            <TextBox x:Name="PART_EditableTextBox"
+                                Style="{x:Null}" 
+                                Template="{StaticResource ComboBoxTextBox}" 
+                                HorizontalAlignment="Left" 
+                                VerticalAlignment="Center" 
+                                Margin="3,3,23,3"
+                                Focusable="True" 
+                                Background="#393939"
+                                Foreground="Green"
+                                Visibility="Hidden"
+                                IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup Name="Popup"
+                                    Placement="Bottom"
+                                    IsOpen="{TemplateBinding IsDropDownOpen}"
+                                    AllowsTransparency="True" 
+                                    Focusable="False"
+                                    >
+
+                                <Grid Name="DropDown"
+                                      SnapsToDevicePixels="True"                
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border 
+                                        x:Name="DropDownBorder"
+                                        Background="#ffffff"
+
+                                        BorderThickness="1"
+                                        BorderBrush="#000000"/>
+                                    <ScrollViewer Margin="1,1,1,1" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#888888"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="ToggleButton" Property="Background" Value="#202020"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
+                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,0,0,0"/>                                
+                            </Trigger>
+                            <Trigger Property="IsEditable"  Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+            </Style.Triggers>
+        </Style>
+
+        <!-- SimpleStyles: ComboBoxItem -->
+        <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border Name="Border"
+                              Padding="2,5,2,5"
+                              SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="#cccccc"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+       
+
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStyle">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Margin" Value="0"/>
+            <!--<Setter Property="MaxHeight" Value="25"/>-->
+            <Setter Property="Background" Value="#393939"/>
+            <Setter Property="Focusable" Value="False"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
+                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                            </Grid.RowDefinitions>
+                            <Rectangle Name="top" Grid.Row="0" Fill="#464544" />
+                            <Rectangle Name="topRight" Grid.Row="0" Fill="#353433" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                            <Rectangle Name="innerRect" Grid.Row="1" Fill="{TemplateBinding Background}"  />
+                            <Rectangle Name="Left" Grid.Row="1" Fill="#272727" 
+                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                                        HorizontalAlignment="Right" />
+                            <ContentPresenter Grid.Row="1"  Name="content" Margin="2"  VerticalAlignment="Center"/>
+
+
+                            <Rectangle Name="bottom" Grid.Row="2" Fill="#2F2F2F" />
+                            <Rectangle Name="bottomRight" Grid.Row="2" Fill="#242424" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                            <Rectangle Fill="Black" Grid.Row="3" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="innerRect" Property="Fill" Value="#3E3E3E"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="innerRect" Property="Fill" Value="#343434"/>
+                                <Setter TargetName="top" Property="Fill" Value="#202020"/>
+                                <Setter TargetName="bottom" Property="Fill" Value="#393939"/>
+                                <Setter TargetName="content" Property="Margin" Value="3,3,1,1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ToggleButton}" x:Key="ToggleButtonStyle">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Focusable" Value="False"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
+                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                            </Grid.RowDefinitions>
+                            <Rectangle Name="top" Grid.Row="0" Fill="#464544" />
+                            <Rectangle Name="topRight" Grid.Row="0" Fill="#353433" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                            <Rectangle Name="innerRect" Grid.Row="1" Fill="#393939"  />
+                            <Rectangle Name="Left" Grid.Row="1" Fill="#272727" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                            <Rectangle Name="bottom" Grid.Row="2" Fill="#2F2F2F" />
+                            <Rectangle Name="bottomRight" Grid.Row="2" Fill="#242424" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            HorizontalAlignment="Right" />
+
+                            <Rectangle Fill="Black" Grid.Row="3" />
+                            <ContentPresenter Name="content" 
+                                                  Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="{Binding RelativeSource={RelativeSource TemplatedParent},Path=HorizontalContentAlignment}"
+                                                  Margin="2"  />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="innerRect" Property="Fill" Value="#3E3E3E"/>
+                            </Trigger>
+
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="innerRect" Property="Fill" Value="Orange"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                                
+                                <Setter TargetName="top" Property="Fill" Value="#202020"/>
+                                <Setter TargetName="bottom" Property="Fill" Value="#393939"/>
+                                <Setter TargetName="content" Property="Margin" Value="4,4,2,2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Application.Resources>
+</Application>

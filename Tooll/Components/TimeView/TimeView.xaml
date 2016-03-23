@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="Framefield.Tooll.TimeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             Background="#202020"
+             Name="timeView"
+             d:DesignHeight="300" d:DesignWidth="300" 
+             SnapsToDevicePixels="True" 
+             ClipToBounds="True" 
+             GotFocus="GotFocusHandler" 
+             LostFocus="LostFocusHandler"
+             >
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+
+        <LinearGradientBrush x:Key="PatternGradient" StartPoint="0,0" EndPoint="8,8" MappingMode="Absolute" SpreadMethod="Repeat">
+            <GradientStop Offset="0" Color="#02ffffff" />
+            <GradientStop Offset="0.4" Color="#02ffffff" />
+            <GradientStop Offset="0.4" Color="#06000000" />
+        </LinearGradientBrush>  
+    </UserControl.Resources>
+
+    <Grid Grid.Row="2"
+          MouseWheel="OnMouseWheel" 
+          >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- TIMELINE RULER  RULER/THUMB/CANVAS  -->
+        <local:TimelineRuler Grid.Row="2" x:Name="timelineRuler" 
+                             TimeOffset="{Binding ElementName=timeView, Path=TimeOffset}"
+                             TimeScale="{Binding ElementName=timeView, Path=TimeScale}"
+                             ToolTip="Time ruler. Drag to set playhead"
+                             ClipToBounds="True" 
+                             />
+
+        <Thumb x:Name="XTimelineThumb"
+               Grid.Row="2" 
+               Opacity="0"
+               />
+
+
+        <local:TimeMarkerEditor x:Name="XTimeMarkerEditor" Grid.Row="2"
+                                MouseLeftButtonDown="OnMouseLeftButtonDown" 
+                                MouseLeftButtonUp="OnMouseLeftButtonUp" 
+                                MouseRightButtonDown="OnMouseRightButtonDown" 
+                                MouseRightButtonUp="OnMouseRightButtonUp" 
+                                MouseMove="OnMouseMove"/>
+
+
+        <local:TimeImage x:Name="XTimeImage" Grid.Row="1"/>
+        <local:BeatMarker x:Name="XBeatMarker" Grid.Row="0" Grid.RowSpan="3"
+                          TimeOffset="{Binding ElementName=timeView, Path=TimeOffset}"
+                          TimeScale="{Binding ElementName=timeView, Path=TimeScale}"/>
+
+        <!-- Binding is done in TimeView constructur -->
+        <local:StartTimeMarker x:Name="XStartTimeMarker"
+                               Grid.Row="0" Grid.RowSpan="3"
+                               ToolTip="Start time of composition. CTRL+Drag to change."/>
+
+
+        <local:EndTimeMarker x:Name="XEndTimeMarker"
+                             Grid.Row="0" Grid.RowSpan="3" 
+                             ToolTip="End time of composition. CTRL+Drag to change."/>
+
+
+        <local:Playhead x:Name="XPlayhead"  Grid.RowSpan="3" 
+                        Height="{Binding ElementName=timeCanvas, Path=ActualWidth}" HorizontalAlignment="Left" />
+
+        <local:AnimationCurveEditor x:Name="XAnimationCurveEditor" Grid.Row="1"
+                            UOffset="{Binding ElementName=timeView, Path=TimeOffset, Mode=TwoWay,UpdateSourceTrigger=Explicit}"
+                            UScale="{Binding ElementName=timeView, Path=TimeScale, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                            
+                            AllowDrop="True"
+                            Drop="XTimelineThumb_OnDrop"
+                                    
+                                    />
+
+
+        <local:TimeClipEditor x:Name="XTimeClipEditor" 
+                              Grid.Row="0"
+                              ToolTip="Editing area for TimeClip operators"/>
+
+        <local:PlayheadMarker x:Name="XPlayheadMarker"  Grid.RowSpan="3" 
+                            Height="{Binding ElementName=timeCanvas, Path=ActualWidth}" HorizontalAlignment="Left" />
+        <Rectangle x:Name="XTimeSnapMarker"  Grid.RowSpan="3" 
+                            Height="{Binding ElementName=timeCanvas, Path=ActualWidth}" HorizontalAlignment="Left" Width="1" Fill="Orange" Visibility="Hidden"/>
+        <Rectangle x:Name="XValueSnapMarker"  Grid.RowSpan="3" 
+                            Height="{Binding ElementName=timeCanvas, Path=ActualWidth}" HorizontalAlignment="Left" Width="1" Fill="Orange" Visibility="Hidden"/>
+
+
+    </Grid>
+</UserControl>

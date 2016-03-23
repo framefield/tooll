@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Framefield.Tooll.PlayheadMarker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Width="10"
+             IsHitTestVisible="False"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="TimeMarkerBrush" StartPoint="1,0" EndPoint="0,0" MappingMode="RelativeToBoundingBox">
+            <GradientStop Offset="0.2" Color="#00000000" />
+            <GradientStop Offset="0.40" Color="#66000000" />
+            <GradientStop Offset="0.40" Color="Orange" />
+            <GradientStop Offset="0.5" Color="Orange" />
+            <GradientStop Offset="0.5" Color="#66000000" />
+            <GradientStop Offset="1.0" Color="#00000000" />
+        </LinearGradientBrush>
+
+    </UserControl.Resources>
+    <UserControl.RenderTransform>
+        <TranslateTransform x:Name="XPlayheadTranslateTransform"/>
+    </UserControl.RenderTransform>
+    <Grid>
+        <Rectangle Canvas.ZIndex="20"  Fill="{StaticResource TimeMarkerBrush}">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="-5"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+    </Grid>
+</UserControl>

@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="Framefield.Tooll.CurveEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="XCurveEditor" 
+             KeyDown="OnKeyDown"
+             Loaded="XCurveEditor_Loaded"
+             Unloaded="XCurveEditor_Unloaded"
+             IsVisibleChanged="IsVisibleChangedHandler"
+             Focusable="True" SizeChanged="SizeChangedEventHandler">
+
+    <UserControl.Resources>
+        <ContextMenu  x:Key ="XCurveEditContextMenu">
+            <MenuItem Header="Smooth" Click="OnSmooth" IsCheckable="True" />
+            <MenuItem Header="Cubic" Click="OnCubic" IsCheckable="True" />
+            <MenuItem Header="Horizontal"  Click="OnHorizontal" IsCheckable="True" />
+            <MenuItem Header="Constant"  Click="OnConstant" IsCheckable="True" />
+            <MenuItem Header="Linear"  Click="OnLinear" IsCheckable="True" />
+            <!--<MenuItem Header="Joined Tangents" />-->
+            <!--<MenuItem Header="Sample"  Click="OnSample" />-->
+            <!--<MenuItem Header="Left">
+                <MenuItem Header="Smooth"/>
+                <MenuItem Header="Horizontal"/>
+                <MenuItem Header="Linear"/>
+            </MenuItem>
+            <MenuItem Header="Right">
+                <MenuItem Header="Smooth"/>
+                <MenuItem Header="Horizontal"/>
+                <MenuItem Header="Linear"/>
+            </MenuItem>-->
+            <MenuItem Header="Before Curve">
+                <MenuItem Header="Constant" Click="OnBeforeConstant"/>
+                <MenuItem Header="PingPong" Click="OnBeforePingPong"/>
+                <MenuItem Header="Repeat" Click="OnBeforeRepeat"/>
+                <MenuItem Header="Repeat continously" Click="OnBeforeRepeatContinously"/>
+            </MenuItem>
+            <MenuItem Header="After Curve">
+                <MenuItem Header="Constant" Click="OnAfterConstant"/>
+                <MenuItem Header="PingPong" Click="OnAfterPingPong"/>
+                <MenuItem Header="Repeat" Click="OnAfterRepeat"/>
+                <MenuItem Header="Repeat continously" Click="OnAfterRepeatContinously"/>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Show All" Click="OnFocusSelected"/>
+            <MenuItem Header="Add Keyframe" Click="OnAddKeyframe"/>
+            <MenuItem Header="Duplicate Keyframes" Click="OnDuplicateKeyframes"/>
+            <MenuItem Header="Copy Keyframes" Click="OnCopyKeyframes"/>
+            <MenuItem Header="Insert Keyframes" Click="OnPasteKeyframes"/>
+            <MenuItem Header="Optimize" Click="OnOptimizeKeyframes"/>
+        </ContextMenu>
+
+    </UserControl.Resources>
+
+    <Grid x:Name="XGrid"
+        MouseRightButtonDown="OnMouseRightButtonDown" 
+        MouseRightButtonUp="OnMouseRightButtonUp" 
+        MouseMove="OnMouseMove"           
+        MouseWheel="OnMouseWheel" 
+    >
+        
+        <local:VerticalScaleLines
+            x:Name="XVerticalScaleLines"
+            MinValue="{Binding MinV,ElementName=XCurveEditor}" 
+            MaxValue="{Binding MaxV,ElementName=XCurveEditor}"  />
+        <local:HorizontalScaleLines
+            x:Name="XHorizontalScaleLines"
+            UOffset="{Binding UOffset,ElementName=XCurveEditor}" 
+            UScale="{Binding UScale,ElementName=XCurveEditor}"  />
+        <Thumb  Name="XEditAreaThumb" 
+                Grid.Row="0" Opacity="0"
+                DragStarted="OnDragStarted" 
+                
+                DragDelta="OnDragDelta" 
+                DragCompleted="OnDragCompleted" MouseDoubleClick="DoubleClick">
+
+        </Thumb>
+
+        <Rectangle x:Name="XValueSnapMarker"  Width="{Binding ElementName=XCurveLineCanvas, Path=ActualWidth}"
+                         VerticalAlignment="Top" Height="1" Fill="Orange" Visibility="Hidden"/>
+
+        <Canvas x:Name="XCurveLineCanvas"/>
+        <Canvas x:Name="XCurvePointCanvas"/>
+        <Canvas x:Name="XFenceCanvas"/>
+
+
+
+        <!--<local:RenderUpdateDebugViz x:Name="xRenderUpdateViz"  IsHitTestVisible="False" />-->
+    </Grid>
+</UserControl>

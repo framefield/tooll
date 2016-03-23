@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="Framefield.Tooll.OperatorParameterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:Framefield.Core;assembly=Core"
+             xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="300"
+             Loaded="OnLoaded"
+             Unloaded="OnUnloaded"
+             KeyboardNavigation.TabNavigation="None"
+             Background="#FF393939">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+        <Style BasedOn="{StaticResource ComboBoxStyle}" TargetType="{x:Type ComboBox}"/>
+    </UserControl.Resources>
+    <Grid Name="MainLayout">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.3*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Name="HeaderLayout">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />                
+                <ColumnDefinition Width="0.45*"/>
+                <ColumnDefinition MinWidth="25" Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Row="0" Grid.Column="0" Name="NamespaceTextBox" Grid.ColumnSpan="1" VerticalContentAlignment="Center" FontSize="13" TextAlignment="Right" Background="#2D2D2D" Foreground="#37FFFFFF" BorderThickness="0" 
+                     ToolTip="Operator namespace. Click to edit" Text="test.subtest"
+                     LostFocus="NamespaceTextBox_LostFocus"                     
+                     />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="TypeTextBox" 
+                     Grid.ColumnSpan="2" VerticalContentAlignment="Center" FontSize="13" Background="#2D2D2D" Foreground="White"  FontWeight="Bold" BorderThickness="0"
+                     ToolTip="Operator type. Click to edit" Text="SomeType"
+                     LostFocus="TypeTextBox_LostFocus"
+                     />
+
+            <local:TextButtonEdit x:Name="XNameTextBox"
+                                  Watermark="Click to set name"
+                                  Grid.Row="1" Grid.Column="0" Text=""
+                                  ToolTip="Operator name"/>
+            <Button Grid.Row="1" Grid.Column="1"  Foreground="Gray" FontStretch="Normal" 
+                    ToolTip="Operator Preset. Ctrl-Click to save"
+                    >Custom</Button>
+            <Button Grid.Row="1" Foreground="#61000000" Grid.Column="2" Content="->" 
+                    ToolTip="Connected outputs"/>
+        </Grid>
+        
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" x:Name="XParameterScrollViewer">
+
+            <!-- container for ParameterViewRows that are in constructor. Description textArea will be added last -->
+            <!--<StackPanel Name="XParameterStackPanel"/>-->
+
+        </ScrollViewer>
+        <GridSplitter Height="3" Grid.Row="1"
+                      ResizeBehavior="CurrentAndNext"
+                      ResizeDirection="Rows"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Bottom" Background="Transparent"></GridSplitter>
+        <local:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local:PresetGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="Framefield.Tooll.CompositionGraphView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             ClipToBounds="True"
+             d:DesignHeight="300" d:DesignWidth="300" Focusable="True" 
+             MouseWheel="OnMouseWheel" 
+             KeyUp="KeyUpHandler"
+             >
+
+    <UserControl.Resources>
+        <ContextMenu x:Key="GraphContextMenu">
+            <MenuItem Command="ApplicationCommands.Cut"></MenuItem>
+            <MenuItem Command="ApplicationCommands.Copy"></MenuItem>
+            <MenuItem Command="ApplicationCommands.Paste"></MenuItem>
+            <MenuItem Header="Add Annotation" Click="AddAnnotationEventHandler"/>
+            <MenuItem Header="Combine" Click="CombineSelectionEventHandler"/>
+            <MenuItem Header="Ungroup" Click="UngroupHandler"/>
+            <MenuItem Header="Duplicate as new type" Click="DuplicateAsNewTypeHandler"/>
+            <MenuItem Header="Toggle Disable" Click="DisableHandler"/>
+            <MenuItem Header="Save as Ingredient" Click="SaveAsIngredientHandler"/>
+            <Separator />
+            <MenuItem Header="Run tests" Click="RunTestsHandler"/>
+        </ContextMenu>
+    </UserControl.Resources>
+
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <!-- Output area. Below Operator Canvas, so input connections are not below the op -->
+        <local:OutputView Grid.Row="0" x:Name="OutputView"/>
+        <!--<GridSplitter Grid.Row="0" Height="1"  VerticalAlignment="bottom" HorizontalAlignment="Stretch" Background="black" />-->
+
+        <!-- Selection indicator and background for actual workspace -->
+        <Border x:Name="IsSelectedIndicator" BorderBrush="#80FFFFFF" BorderThickness="1" Grid.Row="1" Background="#393939" />
+        
+        
+        <!-- Background for dragging the workspace -->
+        <Grid x:Name="XBackgroundGrid" Grid.Row="1"
+               MouseRightButtonDown="OnMouseRightDown" 
+               MouseRightButtonUp="OnMouseRightUp" 
+               MouseMove="OnMouseMove"
+            >
+
+            <Thumb Name="XBackgroundThumb" Focusable="True"  Opacity="0" Background="{x:Null}" 
+               DragStarted="OnDragStarted" 
+               DragDelta="OnDragDelta" 
+               DragCompleted="OnDragCompleted" 
+               DragEnter="WorkspaceCanvas_DragEnter" 
+               PreviewDragOver="WorkspaceCanvas_DragOver"
+               Drop="WorkspaceCanvas_Drop" 
+               MouseDoubleClick="OnMouseDoubleClick"
+               AllowDrop="True" />
+
+            <ItemsControl x:Name="XAnnotationsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Height="0" Background="Transparent" IsItemsHost="True" VerticalAlignment="Top">
+                            <Canvas.RenderTransform >
+                                <MatrixTransform Matrix="{Binding RenderTransform.Matrix, ElementName=XOperatorCanvas}" />
+                            </Canvas.RenderTransform>                            
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="local:AnnotationViewModel">
+                        <local:AnnotationControl VerticalAlignment="Top" BorderThickness="1" Height="{Binding Height}" x:Name="XAnnotationText" IsHitTestVisible="True"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+            <!-- contains CompositionOperators and ConnectionsLines -->
+            <Canvas Name="XOperatorCanvas">
+                <Canvas.RenderTransform >
+                    <MatrixTransform x:Name="XViewTransform" />
+                </Canvas.RenderTransform>
+            </Canvas>
+        </Grid>
+        <Canvas Grid.Row="1" x:Name="XFenceCanvas"/>
+
+
+        <!-- Input area. Above Operator Canvas, so nose reaches input to canvas -->
+        <local:InputView Grid.Row="2" x:Name="InputView"/>
+        <local:CodeEditor x:Name="XCodeEditor" Grid.Row="1" Visibility="Collapsed"/>
+        <!--<GridSplitter Grid.Row="2" Height="1"  VerticalAlignment="top" HorizontalAlignment="Stretch" Background="black" DragDelta="OnButtomSplitterDelta" />-->
+
+        <!-- 
+        <Canvas Grid.Row="0" HorizontalAlignment="Stretch" IsHitTestVisible="False"/>
+        <Canvas Grid.Row="2" HorizontalAlignment="Stretch" IsHitTestVisible="False"/>
+        -->
+
+    </Grid>
+</UserControl>
+

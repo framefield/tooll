@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Framefield.Tooll.InputView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"  Focusable="True" >
+    <UserControl.Resources>
+        <ContextMenu x:Key="ContextMenu">
+            <MenuItem Header="Add Value input" Click="OnAddFloatInput"/>
+            <MenuItem Header="Add Text input" Click="OnAddTextInput"/>
+            <MenuItem Header="Add Scene input" Click="OnAddSceneInput"/>
+            <MenuItem Header="Add Image input" Click="OnAddImageInput"/>
+            <MenuItem Header="Add Generic input" Click="OnAddGenericInput"/>
+            <MenuItem Header="Add Dynamic input" Click="OnAddDynamicInput"/>
+            <MenuItem Header="Add Mesh input" Click="OnAddMeshInput"/>
+            <MenuItem Header="Add Color input group" Click="OnAddColorInput"/>
+            <MenuItem Header="Add Vec2 input group" Click="OnAddVec2Input"/>
+            <MenuItem Header="Add Vec3 input group" Click="OnAddVec3Input"/>
+            <MenuItem Header="Add Size2 input group" Click="OnAddSize2Input"/>
+            <MenuItem Header="Add Size3 input group" Click="OnAddSize3Input"/>
+            <MenuItem Header="Add Trigger input" Click="OnAddTriggerInput"/>
+        </ContextMenu>
+    </UserControl.Resources>
+
+        <Grid>
+      <Thumb Name="XThumb" Grid.Row="1" Focusable="True"  Opacity="0" Background="{x:Null}" 
+                  MouseRightButtonDown="OnMouseRightDown" 
+                  MouseRightButtonUp="OnMouseRightUp" 
+                  MouseMove="OnMouseMove" 
+                   DragCompleted="XThumb_DragCompleted"
+                  />
+
+      <Canvas Name="XPanel" MouseDown="OnMouseDownOnCanvas" >
+        <Canvas.RenderTransform >
+          <MatrixTransform x:Name="XViewTransform" />
+        </Canvas.RenderTransform>
+      </Canvas>
+
+  </Grid>
+</UserControl>

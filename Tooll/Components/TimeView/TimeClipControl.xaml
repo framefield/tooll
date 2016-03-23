@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="Framefield.Tooll.TimeClipControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             x:Name="XTimeClipControl"
+             d:DesignHeight="100" d:DesignWidth="120"
+             Unloaded="OnUnloaded" Loaded="OnLoaded" >
+    
+    <UserControl.Resources>
+        <local:TimeScaleOffsetToXConverter x:Key="timeToXConverter"/>
+        <local:DurationTimescaleToWidthConverter x:Key="durationToWidthConverter"/>
+        <local:LayerToYConverter x:Key="layerToYConverter"/>
+
+        <ControlTemplate x:Key="DefaultTemplate">
+            <Grid>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock  Text="{Binding ElementName=XTimeClipControl, Path=ClipName}"
+                                    Grid.ColumnSpan="3"  
+                                    Background="#9800FFFF" TextAlignment="Center"  />
+                        <Thumb Grid.Column="0" DragDelta="XStartThumb_DragDelta" DragStarted="XTimeClip_Thumb_DragStarted"  Cursor="SizeWE">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Rectangle Fill="White" Opacity="0.2"
+                                               ToolTip="Ctrl-Drag to stretch clip. Ctrl+Alt-Drag to stretch source"
+                                               />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                        <Thumb Grid.Column="2" DragDelta="XEndThumb_DragDelta" DragStarted="XTimeClip_Thumb_DragStarted" Cursor="SizeWE">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Rectangle Fill="White" Opacity="0.2"
+                                               ToolTip="Ctrl-Drag to stretch clip. Ctrl+Alt-Drag to stretch source"
+                                               />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ControlTemplate>
+        
+        <ControlTemplate x:Key="SelectedTemplate">
+            <Grid>
+                <Border BorderBrush="white" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock  Text="{Binding ElementName=XTimeClipControl, Path=ClipName}"
+                                    Grid.ColumnSpan="3"  
+                                    Foreground="White"
+                                    Background="#9800FFFF" TextAlignment="Center"  />
+                        <Thumb Grid.Column="0" DragDelta="XStartThumb_DragDelta" DragStarted="XTimeClip_Thumb_DragStarted" Cursor="SizeWE">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Rectangle Fill="White" Opacity="0.2"
+                                               ToolTip="Ctrl-Drag to stretch clip. Ctrl+Alt-Drag to stretch source"
+                                               />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                        <Thumb Grid.Column="2" DragDelta="XEndThumb_DragDelta"  DragStarted="XTimeClip_Thumb_DragStarted" Cursor="SizeWE">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Rectangle Fill="White" Opacity="0.2"
+                                               ToolTip="Ctrl-Drag to stretch clip. Ctrl+Alt-Drag to stretch source"
+                                               />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ControlTemplate>
+
+
+        <Style x:Key="SelectedClipStyle" TargetType="Thumb">
+            <Setter Property="Template" Value="{StaticResource DefaultTemplate}"/>
+            <Style.Triggers>
+                <DataTrigger>
+                    <DataTrigger.Binding>
+                        <Binding Path="IsSelected"/>
+                    </DataTrigger.Binding>
+                    <DataTrigger.Value>true</DataTrigger.Value>
+                    <Setter Property="Template" Value="{StaticResource SelectedTemplate}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- Binding layout to properties -->
+    <UserControl.Width>
+        <MultiBinding Converter="{StaticResource durationToWidthConverter}">
+            <Binding Path="Duration"/>
+            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:TimeView}}" Path="TimeScale"/>
+        </MultiBinding>
+    </UserControl.Width>
+    
+    <UserControl.RenderTransform>
+        <TranslateTransform>
+            <TranslateTransform.X>
+                <MultiBinding Converter="{StaticResource timeToXConverter}">
+                    <Binding Path="StartTime"/>
+                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:TimeView}}" Path="TimeScale"/>
+                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:TimeView}}" Path="TimeOffset"/>
+                </MultiBinding>
+            </TranslateTransform.X>
+            <TranslateTransform.Y>
+                <MultiBinding Converter="{StaticResource layerToYConverter}">
+                    <Binding Path="Layer"/>
+                </MultiBinding>
+            </TranslateTransform.Y>
+        </TranslateTransform>
+    </UserControl.RenderTransform>
+
+    <!-- Actual component -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="1"/>
+        </Grid.RowDefinitions>
+
+        <!-- time widget -->
+        <Thumb x:Name="XTimeClip_Thumb" Style="{StaticResource SelectedClipStyle}" Grid.Row="0" 
+               DragDelta="XTimeClip_DragDelta"
+               DragStarted="XTimeClip_Thumb_DragStarted"
+               DragCompleted="XTimeClip_Thumb_DragCompleted"
+               MouseDoubleClick="XTimeClip_Thumb_DoubleClicked"
+               ToolTip="Drag to move. Ctrl+Drag to pan source"
+               />
+
+        <!-- Canvas for rendering the rescale shape -->
+        <Canvas x:Name="XCanvas" Grid.Row="1"/>
+    </Grid>
+</UserControl>

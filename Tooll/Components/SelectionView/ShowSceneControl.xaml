@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Framefield.Tooll.Components.SelectionView.ShowSceneControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             x:Name="ValueViewControl"             
+             Background="#444" 
+             Focusable="True" 
+             MouseWheel="MouseWheel_Handler" 
+             MouseDown="MouseDown_Handler" 
+             MouseUp="MouseUp_Handler" UseLayoutRounding="True" SnapsToDevicePixels="True"             
+             >
+
+    <Grid x:Name="XGrid" SizeChanged="SizeChanged_Handler" Background="{StaticResource PatternGradient}">
+        <Image x:Name="XSceneImage" Margin="0" Stretch="Fill" SnapsToDevicePixels="True" UseLayoutRounding="True" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+    </Grid>
+</UserControl>

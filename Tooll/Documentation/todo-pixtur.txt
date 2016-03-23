@@ -1,0 +1,78 @@
+﻿Particles
+-------
+- Emitter-Shapers (Sphere and Ring)
+- Angles
+- ScatterAngles 
+- 
+
+
+
+_________________________
+crash after clicking something into into parameter  group input
+
+Version: 0.1.9.5.-1 (unknown, 0000000)
+Date:          04/03/2015 13:41:37
+Version:       0.1.9.5
+
+
+System.ArgumentOutOfRangeException
+----------------------------------
+Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index
+
+          ValueView.xaml.cs  205  Framefield.Tooll.Components.RenderView.ValueView.SelectShownOutput(Int32 outputIndex)
+          ValueView.xaml.cs  158  Framefield.Tooll.Components.RenderView.ValueView.KeyUp_Handler(Object sender, KeyEventArgs e)
+                                  System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+
+____________
+
+
+
+Tooll-UI
+---------
+- Drag inputs with ALT (This is super important if you try working without mouse)
+
+
+
+- fix crash on selection
+- fix crash on deleting connected floats
+
+- add smart positioning / find free position on the screen
+
+
+- add selected state to TimeClipControl
+
+Notes XAML
+
+            <!--<Thumb.Triggers>
+                <DataTrigger Binding="{local:TimeClipViewModelStartTime}" Value="0.0">
+                    <Setter Property="Template" 
+                            Value="{StaticResource UnselectedStyle2}"
+                            TargetName="XThumb"/>
+                </DataTrigger>
+            </Thumb.Triggers>--
+
+
+SelectionInteractor
+
+ISelectable
+	.Rect
+	.Position
+	.Height
+	.Width
+	.IsSelected
+
+
+MouseInteractorBase
+	SelectionInteractor
+	AddSelectionInteractor
+	RemoveSelectionInteractor
+
+
+Notes: 
+- Get rid of MouseInteractorBase
+- Add new FenceSelectionMouseInteractor
+- 
+
+Potentially write base class that
+combines RMB-Drag, Fence Selection,

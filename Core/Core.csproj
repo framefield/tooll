@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AF7349E3-1047-4995-85FB-895BD9B9FF2B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Framefield.Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FBXLibPath>..\Libs\x64</FBXLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FBXLibPath>..\Libs\x64</FBXLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FBXLibPath>..\Libs\x64</FBXLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FBXLibPath>..\Libs\x64</FBXLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <FBXLibPath>..\Libs\x86</FBXLibPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <FBXLibPath>..\Libs\x86</FBXLibPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Bass.Net">
+      <HintPath>..\Libs\Bass.Net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Framefield.Autodesk.FBX, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Framefield.Autodesk.FBX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\Microsoft.Kinect.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Libs\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="SharpDX, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\Libs\SharpDX.D3DCompiler.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=2.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct2D1.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D10, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D10.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D11.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\Libs\SharpDX.Direct3D11.Effects.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.Direct3D9.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.DirectInput.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.DXGI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.RawInput, Version=2.3.1.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\SharpDX.RawInput.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animation.cs" />
+    <Compile Include="Commands\AddInputCommand.cs" />
+    <Compile Include="Commands\MoveKeyframeCommand.cs" />
+    <Compile Include="Commands\PublishAsInputCommand.cs" />
+    <Compile Include="Commands\RemoveInputCommand.cs" />
+    <Compile Include="Commands\UpdateInputParameterCommand.cs" />
+    <Compile Include="Commands\ReplaceOperatorCommand.cs" />
+    <Compile Include="Curve\CurveOptimizer.cs" />
+    <Compile Include="EventExt.cs" />
+    <Compile Include="EventIdentifier.cs" />
+    <Compile Include="External\BMFontSerializer.cs" />
+    <Compile Include="BuildProperties.cs" />
+    <Compile Include="Commands\AddOperatorAndConnectToInputsCommand.cs" />
+    <Compile Include="Commands\AddOrUpdateKeyframeCommand.cs" />
+    <Compile Include="Commands\CombineToNewOperatorCommand.cs" />
+    <Compile Include="Commands\ResetInputToDefaultGroupCommand.cs" />
+    <Compile Include="Commands\CopyOperatorsCommand.cs" />
+    <Compile Include="Commands\DuplicateOperatorsCommand.cs" />
+    <Compile Include="Commands\InsertConnectionCommand.cs" />
+    <Compile Include="Commands\InsertOperatorCommand.cs" />
+    <Compile Include="Commands\RemoveAnimationCommand.cs" />
+    <Compile Include="Commands\RemoveConnectionCommand.cs" />
+    <Compile Include="Commands\RemoveKeyframeCommand.cs" />
+    <Compile Include="Commands\ReplaceConnectionCommand.cs" />
+    <Compile Include="Commands\SetFloatValueCommand.cs" />
+    <Compile Include="Commands\SetupAnimationCommand.cs" />
+    <Compile Include="Commands\SetValueGroupCommand.cs" />
+    <Compile Include="Commands\UngroupOperatorCommand.cs" />
+    <Compile Include="Commands\UpdateOperatorPartFunctionCommand.cs" />
+    <Compile Include="Commands\UpdateOperatorPropertiesCommand.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Curve\ConstantCurveMapper.cs" />
+    <Compile Include="Curve\ConstInterpolator.cs" />
+    <Compile Include="Curve\Curve.cs" />
+    <Compile Include="Curve\CurveState.cs" />
+    <Compile Include="Curve\Utils.cs" />
+    <Compile Include="Curve\CycleCurveMapper.cs" />
+    <Compile Include="Curve\CycleWithOffsetCurveMapper.cs" />
+    <Compile Include="Curve\ICurve.cs" />
+    <Compile Include="Curve\IOutsideCurveMapperl.cs" />
+    <Compile Include="Curve\LinearInterpolator.cs" />
+    <Compile Include="Curve\OscillateCurveMapper.cs" />
+    <Compile Include="Curve\SplineInterpolator.cs" />
+    <Compile Include="Curve\VDefinition.cs" />
+    <Compile Include="Inputs\HidInput.cs" />
+    <Compile Include="Inputs\SpaceMouse.cs" />
+    <Compile Include="Inputs\Input.cs" />
+    <Compile Include="IOperatorPartState.cs" />
+    <Compile Include="Inputs\MouseInput.cs" />
+    <Compile Include="OperatorPartTraits\IAnnotation.cs" />
+    <Compile Include="OperatorPartTraits\IMeshSupplier.cs" />
+    <Compile Include="OperatorPartTraits\ISceneTransform.cs" />
+    <Compile Include="OperatorPartTraits\ITraverseModifier.cs" />
+    <Compile Include="OperatorPartTraits\ICameraProvider.cs" />
+    <Compile Include="OperatorPartTraits\ITimeMarker.cs" />
+    <Compile Include="OperatorPartTraits\IInvalidatable.cs" />
+    <Compile Include="OperatorPartTraits\ITimeAccessor.cs" />
+    <Compile Include="OperatorPartTraits\IAsyncDependend.cs" />
+    <Compile Include="OperatorPartTraits\ITimeClip.cs" />
+    <Compile Include="Rendering\BaseRenderer.cs" />
+    <Compile Include="BasicMetaTypes.cs" />
+    <Compile Include="BasicTypes.cs" />
+    <Compile Include="Commands\AddOperatorCommand.cs" />
+    <Compile Include="Commands\AddTimeMarkerCommand.cs" />
+    <Compile Include="Commands\DeleteOperatorsCommand.cs" />
+    <Compile Include="Commands\ResetInputToDefaultCommand.cs" />
+    <Compile Include="Commands\SetInputAsAndResetToDefaultCommand.cs" />
+    <Compile Include="Commands\SetInputAsDefaultCommand.cs" />
+    <Compile Include="CouchDB.cs" />
+    <Compile Include="D3DDevice.cs" />
+    <Compile Include="Rendering\BlockingGpuSyncer.cs" />
+    <Compile Include="Rendering\FXImageFunction2.cs" />
+    <Compile Include="Rendering\DefaultRenderer.cs" />
+    <Compile Include="Rendering\FogSettings.cs" />
+    <Compile Include="Rendering\FXSceneFunction.cs" />
+    <Compile Include="Json.cs" />
+    <Compile Include="Inputs\KeyboardInput.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="CodeDefinition.cs" />
+    <Compile Include="Rendering\FXImageFunction.cs" />
+    <Compile Include="Operators\Suggestion.cs" />
+    <Compile Include="Rendering\FXSourceCodeFunction.cs" />
+    <Compile Include="Rendering\IFXSourceCode.cs" />
+    <Compile Include="Rendering\IRenderer.cs" />
+    <Compile Include="Rendering\Material.cs" />
+    <Compile Include="Rendering\MeshCollector.cs" />
+    <Compile Include="Rendering\MeshUtilities.cs" />
+    <Compile Include="Rendering\OffscreenRenderer.cs" />
+    <Compile Include="Rendering\PointLight.cs" />
+    <Compile Include="ResourceManager.cs" />
+    <Compile Include="Rendering\SequenceCreator.cs" />
+    <Compile Include="ContextSettings.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SupplierAssembly.cs" />
+    <Compile Include="Testing\TesterFunction.cs" />
+    <Compile Include="Testing\ITestEvaluator.cs" />
+    <Compile Include="Testing\TestUtilities.cs" />
+    <Compile Include="Profiling\GPUQuery.cs" />
+    <Compile Include="UndoRedoStack.cs" />
+    <Compile Include="Rendering\Mesh.cs" />
+    <Compile Include="MetaConnection.cs" />
+    <Compile Include="MetaInput.cs" />
+    <Compile Include="MetaManager.cs" />
+    <Compile Include="MetaOperator.cs" />
+    <Compile Include="MetaOperatorPart.cs" />
+    <Compile Include="MetaOutput.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="Operator.cs" />
+    <Compile Include="OperatorPart.cs" />
+    <Compile Include="OperatorPartTraits\IVariableAccessor.cs" />
+    <Compile Include="OperatorPartContext.cs" />
+    <Compile Include="OperatorPartUtilities.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptCompiler.cs" />
+    <Compile Include="Profiling\TimeLogger.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="Rendering\VertexAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OpFuncs\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cscript.exe //nologo "$(SolutionDir)helper/generateBuildProperties.vbs" "$(ProjectDir)"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

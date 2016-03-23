@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestSettings name="Local" id="60272d58-6ece-463c-9382-b391ff363930" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Description>These are default test settings for a local test run.</Description>
+  <Deployment>
+    <DeploymentItem filename="Libs\Newtonsoft.Json.dll" />
+    <DeploymentItem filename="Libs\Newtonsoft.Json.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\Stateless.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.Direct2D1.dll" />
+    <DeploymentItem filename="Libs\SharpDX.Direct2D1.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\libTUIO.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\GestureWorksCoreNET64.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.DXGI.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\Bass.Net.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D9.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.dll" />
+    <DeploymentItem filename="Libs\SharpDX.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D11.Effects.dll" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D11.Effects.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.RawInput.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.DirectInput.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.D3DCompiler.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D10.dll"  />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D10.dll" outputDirectory="Libs\" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D11.dll" />
+    <DeploymentItem filename="Libs\SharpDX.Direct3D11.dll" outputDirectory="Libs\" />
+  </Deployment>
+  <Execution hostProcessPlatform="MSIL">
+    <TestTypeSpecific>
+      <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
+        <AssemblyResolution>
+          <TestDirectory useLoadContext="true" />
+        </AssemblyResolution>
+      </UnitTestRunConfig>
+    </TestTypeSpecific>
+    <AgentRule name="Execution Agents">
+    </AgentRule>
+  </Execution>
+</TestSettings>

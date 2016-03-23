@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Framefield.Tooll.InputWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="100"
+             MinWidth="50"
+             MinHeight="25"
+             Canvas.Left="0"
+             Canvas.Top="0"
+             Opacity="1"
+             Loaded="OnLoaded">
+    <UserControl.Style>
+        <Style>
+            <Style.Triggers>
+                <Trigger Property="local:InputWidget.IsSelected" Value="true">
+                    <Setter Property="Border.BorderBrush" Value="#fff"/>
+                    <Setter Property="Border.BorderThickness" Value="2"/>
+                </Trigger>
+                <Trigger Property="local:InputWidget.IsSelected" Value="false">
+                    <Setter Property="Border.BorderBrush" Value="Black"/>
+                    <Setter Property="Border.BorderThickness" Value="1"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>        
+    </UserControl.Style>
+
+    <Grid  TextBlock.Foreground="white"  Name="grid">
+        
+        <!-- Actual graphical representation -->
+        <Border  Name="operatorContent" Background="#CE0A5858">
+            <TextBlock HorizontalAlignment="Center"  VerticalAlignment="Center" Name="NameLabel">Input</TextBlock>
+        </Border>
+
+        <!-- Thumb for creating new connections -->
+        <Grid  x:Name="OutputThumbGrid" Margin="10,-12,10,21" Width="16" Height="10" MouseEnter="OnMouseEnterOutputNose" MouseLeave="OnMouseLeaveOutputNose">
+            <Path Name="MyOutputNose" StrokeThickness="0.5" Stroke="Black"  Data="M 3, 10 L 8,5 13,10" />
+            <Thumb Name="FirstOutputThumb" Focusable="True" Opacity="0" 
+                   DragStarted="OnDragConnectionStart" 
+                   PreviewMouseLeftButtonDown="NoseThumb_PreviewMouseLeftButtonDown" 
+                   PreviewMouseMove="NoseThumb_MouseMove"
+                   PreviewMouseLeftButtonUp="NoseThumb_PreviewMouseLeftButtonUp"  
+                    />
+
+        </Grid>
+        <!-- Thumb overlay for dragging and changing width -->
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+            <Thumb Grid.Column="0" Focusable="True" DragDelta="OnDragDelta" DragStarted="OnDragStart" DragCompleted="OnDragCompleted" Opacity="0" Name="MyThumb" AllowDrop="True"></Thumb>
+            
+        </Grid>
+
+  </Grid>
+</UserControl>

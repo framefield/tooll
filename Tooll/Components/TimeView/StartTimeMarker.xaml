@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="Framefield.Tooll.StartTimeMarker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             Unloaded="OnUnloaded" Loaded="OnLoaded">
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="LeftShadowBrush" StartPoint="1,0" EndPoint="0,0" MappingMode="RelativeToBoundingBox">
+            <GradientStop Offset="0" Color="#99000000" />
+            <GradientStop Offset="0.5" Color="#44000000" />
+            <GradientStop Offset="1.0" Color="#00000000" />
+        </LinearGradientBrush>
+    </UserControl.Resources>
+    <Canvas x:Name="XStartPointMarker" 
+                ClipToBounds="True"
+                Margin="0,0,0,0"
+                 VerticalAlignment="Stretch" Grid.RowSpan="2">
+        <Rectangle  IsHitTestVisible="False" 
+                    Fill="{StaticResource PatternGradient}" 
+                    Height="{Binding ElementName=XStartPointMarker, Path=ActualHeight}"    
+                    Width="{Binding ElementName=XStartPointMarker, Path=ActualWidth}"    
+        />
+        <Rectangle IsHitTestVisible="False"  
+                   Fill="{StaticResource LeftShadowBrush}"  
+                   Width="10" 
+                   Canvas.Right="0" 
+                   Height="{Binding ElementName=XStartPointMarker, Path=ActualHeight}"
+        />
+        <Thumb Height="15" Width="29" Canvas.Bottom="0" Canvas.Right="0" DragDelta="OnDragDelta">
+            <Thumb.Template>
+                <ControlTemplate>
+                    <Image Source="/Tooll;component/Themes/startTimeMarker.png"  Stretch="None" VerticalAlignment="Center"></Image>
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
+    </Canvas>
+</UserControl>
