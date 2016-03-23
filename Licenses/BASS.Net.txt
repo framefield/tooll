@@ -1,0 +1,45 @@
+LICENSE AGREEMENT:
+------------------------------------------------------------
+BASS.NET API - Shareware License
+--------------------------------
+
+Date: 2014/09/12
+
+This license agreement is a legal agreement between -Thomas Mann, Paul-Robeson-Stra√üe 46, 10439 Berlin, Germany- (the 'LICENSEE') and -radio42, Gryphiusstrasse 9, 22299 Hamburg, Germany- (the 'LICENSOR'), for use of the BASS.NET API software ('BASS.NET') in all the LICENSEE's shareware software ('SHAREWARE').
+
+Shareware software is herewith defined as computer software developed for the public domain by an individual person (not a corporation), which can be used on a try-before-you-buy basis and copied without infringing copyright. The LICENSEE gets paid only a small one time fee from users who find the software useful. The cost is minimal (and must not exceed Ä40 respectively $50) and should definitely never have any further commercial aspect for the LICENSEE.
+The shareware licence allows the usage of BASS.NET in an unlimited number of your shareware products, which must sell for no more than 40 Euros each. If you're an individual (not a corporation) making and selling your own software (and its price is within the limit), this is the licence for you.
+
+BASS.NET is the property of radio42 and is protected by copyright laws and international copyright treaties. BASS.NET is not sold, it is licensed. The LICENSOR represents that it has all of the rights necessary to grant to the LICENSEE the rights set forth in this license agreement, subject to the terms set forth below regarding BASS and MP3 technology.
+
+Permitted use and restrictions:
+- - - - - - - - - - - - - - - 
+This license agreement allows the LICENSEE to use BASS.NET in an unlimited number of his SHAREWARE products.
+The LICENSEE may only distribute the DLL part of BASS.NET (Bass.Net.dll) with the SHAREWARE, no other part of BASS.NET may be distributed. The number of copies of the SHAREWARE distributed is unrestricted.
+No royalty payments are required for the use of BASS.NET in the SHAREWARE, and the LICENSEE may freely use future updates of BASS.NET in updates of the SHAREWARE.
+The LICENSEE may not resell or sublicense BASS.NET. For example, if the SHAREWARE is a development system, the users of said product are not licensed to use BASS.NET in their productions ñ they will need their own licenses.
+This license agreement is between only the LICENSEE and the LICENSOR. The LICENSEE may not transfer the license to anyone else.
+The LICENSOR reserves all rights not expressly granted.
+
+Term and termination:
+- - - - - - - - - - 
+This license agreement will continue in perpetuity unless terminated as set forth herein. This license agreement may be terminated in the event that the LICENSEE breaches any term or condition of the agreement, including failure to pay any applicable license fee, which breach is not cured within thirty (30) days after written notice thereof. The LICENSEE may voluntarily terminate this license agreement in writing.
+Upon termination of this agreement, the LICENSEE must cease to use BASS.NET in the SHAREWARE.
+
+Third party intellectual property rights:
+- - - - - - - - - - - - - - - - - - - - 
+BASS.NET is a .Net wrapper of the product BASS (www.un4seen.com). In order to use BASS.NET an additional BASS license needs to be obtained separately.
+MP3 technology is patented, and so the use of the BASS MP3 decoder in the PRODUCTS requires the LICENSEE to have a patent license from Thomson (www.mp3licensing.com). Alternatively, the LICENSEE does not need a patent license if BASS is set to use the already licensed Windows MP3 decoder.
+
+Disclaimer:
+- - - - - 
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, BASS.NET IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. THE LICENSOR AND ITS SUPPLIERS SHALL NOT BE HELD LIABLE FOR ANY DAMAGE THAT MAY RESULT FROM THE USE OF BASS.NET. THE LICENSEE USES BASS.NET ENTIRELY AT ITS OWN RISK.
+Mutually agreed place of jurisdiction is Hamburg, Germany.
+
+
+Issued: 2014/09/12
+radio42, Gryphiusstrasse 9
+22299 Hamburg, Germany
+Bernd Niedergesaess - www.bass.radio42.com
+----------------------------------
+This license agreement is created automatically and is valid without a signature.
