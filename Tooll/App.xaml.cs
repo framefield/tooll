@@ -183,7 +183,16 @@ namespace Framefield.Tooll
             var lastFile = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
             if (lastFile == null)
                 return;
-            var completeText = File.ReadAllText(lastFile.FullName);
+
+            string completeText;
+            try
+            {
+                completeText = File.ReadAllText(lastFile.FullName);
+            }
+            catch(Exception e) {
+                throw new ShutDownException("Couldn't open last log-file. Is tooll.exe still running? Please check Task-Manager:" + e);
+            }
+            
             if (!completeText.Contains(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP) || completeText.Contains(SHUT_DOWN_IDENTIFIER))                 
                 return;
 
