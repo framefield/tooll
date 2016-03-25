@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              x:Name="XTimeClipEditor"
              d:DesignHeight="300" d:DesignWidth="300" 
+             Height="1"
              Loaded="OnLoaded">
     <UserControl.Resources>
 
@@ -18,15 +19,15 @@
         <local:TimeScaleOffsetToXConverter x:Key="timeToXConverter"/>
         <local:DurationTimescaleToWidthConverter x:Key="durationToWidthConverter"/>
 
-        <LinearGradientBrush x:Key="HorizontalShadowBrush" StartPoint="0,0" EndPoint="0,1" MappingMode="RelativeToBoundingBox">
+        <!--<LinearGradientBrush x:Key="HorizontalShadowBrush" StartPoint="0,0" EndPoint="0,1" MappingMode="RelativeToBoundingBox">
             <GradientStop Offset="0" Color="#99000000" />
             <GradientStop Offset="0.14" Color="#44000000" />
             <GradientStop Offset="0.89" Color="#44000000" />
             <GradientStop Offset="1.0" Color="#99000000" />
-        </LinearGradientBrush>
+        </LinearGradientBrush>-->
 
     </UserControl.Resources>
-    <Grid Background="{StaticResource HorizontalShadowBrush}">
+    <Grid>
         <ItemsControl x:Name="XItemsControl">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
