@@ -27,7 +27,7 @@
           MouseWheel="OnMouseWheel" 
           >
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="1"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
@@ -42,7 +42,7 @@
                              />
 
         <Thumb x:Name="XTimelineThumb"
-               Grid.Row="2" 
+               Grid.Row="1" 
                Opacity="0"
                />
 
@@ -83,8 +83,7 @@
                                     />
 
 
-        <local:TimeClipEditor x:Name="XTimeClipEditor" 
-                              Grid.Row="0"
+        <local:TimeClipEditor x:Name="XTimeClipEditor"                               
                               ToolTip="Editing area for TimeClip operators"/>
 
         <local:PlayheadMarker x:Name="XPlayheadMarker"  Grid.RowSpan="3" 
