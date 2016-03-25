@@ -195,7 +195,6 @@ namespace Framefield.Tooll
         #endregion
 
 
-
         #region update children
 
         private void RebuildCurve(Core.Curve.ICurve curve)
@@ -487,7 +486,6 @@ namespace Framefield.Tooll
             return (t - UOffset) * UScale;
         }
         #endregion
-
 
 
         #region XAML-events handlers

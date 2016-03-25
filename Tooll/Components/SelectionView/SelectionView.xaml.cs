@@ -25,7 +25,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         void ContextMenuOpening_Handler(object sender, ContextMenuEventArgs e)
         {
-            if (Operator == null || Operator.Outputs.Count < 1)
+            if (Operator == null || Operator.Outputs.Count < 1 || _displayMode == DisplayAs.Curve)
                 return;
 
             if (ContextMenu == null)
