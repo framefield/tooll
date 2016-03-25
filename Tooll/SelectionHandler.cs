@@ -66,6 +66,7 @@ namespace Framefield.Tooll
                 return;
 
             e.IsSelected = true;
+
             SelectedElements.Add(e);
             TriggerSelectionChangedEvent();
 

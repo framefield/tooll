@@ -395,20 +395,21 @@ namespace Framefield.Tooll
         protected void UpdateCurveLinesAndEditBox()
         {
             UpdateLines();
-            _curveEditBox.Update();
+            //_curveEditBox.UpdateShapeAndLines();
+            _curveEditBox.UpdateEditBoxShape();
         }
 
         public void UpdateLines()
         {
             foreach (var pair in _curvesWithPointControls) {
                 UpdateLine(pair.Key);
-                //RebuildCurve()
             }
         }
 
         public void UpdateEditBox()
         {
-            _curveEditBox.Update();
+            //_curveEditBox.UpdateShapeAndLines();
+            _curveEditBox.UpdateEditBoxShape();
         }
 
 
