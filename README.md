@@ -1,6 +1,6 @@
 # tooll
 
-Tooll2 is a new multi-purpose application for creating interactive 3d content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable or rendered to movies.
+Tooll is a new multi-purpose application for creating interactive 3d content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable or rendered to movies.
 
 Documentation
 --------------
