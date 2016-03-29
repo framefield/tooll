@@ -2,6 +2,12 @@
 
 Tooll2 is a new multi-purpose application for creating interactive 3d content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable or rendered to movies.
 
+Documentation
+--------------
+We're in the process of setting and expanding a wiki: https://github.com/framefield/tooll/wiki
+And a good way to start is watching the Tutorials: https://www.youtube.com/playlist?list=PLj-rnPROvbn1_73IwBAqdPg-L2AaOyOAn
+
+
 Installation
 -------------
 Either download the latest binary: http://framefield.com/media/download/t2/tooll-v0.2.4.0.zip
