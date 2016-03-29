@@ -16,15 +16,15 @@ Or from source-code and git-Operator usage...
 
 1. git clone git@github.com:framefield/tooll.git
 2. Download and copy the required assets into the directory: http://framefield.com/media/download/t2/tooll-assets-common.zip
-3. open Framefield.sln with VisualStudio
-4. build solution
-5. start Tooll 
+3. Open Framefield.sln with VisualStudio
+4. Build solution
+5. Start Tooll -> will automatically fetch operators from git@github.com/framefield/tooll_operators.git
 
 For the 2nd approach you need to add your ssh-keys to github. 
 
 Requirements
 ------------
-- Windows 7 or 8 - 64bit
+- Windows 7-10 (64bit, 32bit possible when building yourself)
 - [[http://www.microsoft.com/en-us/download/details.aspx?id=30653|.net4.5 framework]]
 - [[http://www.microsoft.com/en-us/download/details.aspx?id=35|DirectX]]
 - Modern graphics card compatible to Direct-X 11 and updated drivers
