@@ -20,6 +20,8 @@ Or from source-code and git-Operator usage...
 4. build solution
 5. start Tooll 
 
+For the 2nd approach you need to add your ssh-keys to github. 
+
 Requirements
 ------------
 - Windows 7 or 8 - 64bit
