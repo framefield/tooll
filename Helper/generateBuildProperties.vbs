@@ -41,4 +41,4 @@ genereatedFile.WriteLine "        public static string CommitShort { get { retur
 genereatedFile.WriteLine "    }"
 genereatedFile.WriteLine "}"
 
-WScript.Echo filename & " generated"
+rem WScript.Echo filename & " generated"
