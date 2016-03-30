@@ -7,7 +7,7 @@ Did you find a bug?
 
 * If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/framefield/tooll/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 
-* For more detailed information on submitting a bug report and creating an issue, visit our [reporting guidelines](https://github.com/framefield/tooll/wiki/How-to-Submit-Bugs).
+* For more detailed information on submitting a bug report and creating an issue read more on [How to submit bugs](https://github.com/framefield/tooll/wiki/How-to-Submit-Bugs).
 
 #### **Did you write a patch that fixes a bug?**
 
@@ -15,11 +15,10 @@ Did you find a bug?
 
 * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
-* Before submitting, please read the [Contributing to Ruby on Rails](https://github.com/framefield/tooll/wiki/Contribute) guide to know more about coding conventions and benchmarks.
-
+* Before submitting, please read the [Conventions](https://github.com/framefield/tooll/wiki/Conventions) guide to know more about coding conventions and benchmarks.
 
 </br>
-Tooll is a volunteer effort. We encourage you to join the team!
+Tooll is a volunteer effort. We encourage you to [join the team](https://github.com/framefield/tooll/wiki/Contribute)!
 
 Thanks! :heart: :heart: :heart:
 
