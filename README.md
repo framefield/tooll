@@ -1,31 +1,25 @@
-# tooll
+# TOOLL.io
 
-Tooll is a new multi-purpose application for creating interactive 3d content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable or rendered to movies.
+[![Watch Overview](http://i.imgur.com/XrazgLt.png)](https://www.youtube.com/watch?v=B-GU4I5Xv_g)
 
-Documentation
---------------
-We're in the process of setting and expanding a wiki: https://github.com/framefield/tooll/wiki
-And a good way to start is watching the Tutorials: https://www.youtube.com/playlist?list=PLj-rnPROvbn1_73IwBAqdPg-L2AaOyOAn
+TOOLL.io is a new multi-purpose application for creating interactive 3D content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable, rendered to movies or as live visuals driven by sound, midi-controllers, or sensors.
 
+Extensive Documentation and Examples
+-----------------------------------
+We're using the [github-Wiki](https://github.com/framefield/tooll/wiki) for documentation discussion and extensive [Video-Tutoruals](https://www.youtube.com/playlist?list=PLj-rnPROvbn1_73IwBAqdPg-L2AaOyOAn). TOOLL.io also ships with many stunning real world examples likes [these](https://www.youtube.com/playlist?list=PLj-rnPROvbn3LNU34daaRk5EiaXlwo2E0).
 
 Installation
--------------
-Either download the latest binary: http://framefield.com/media/download/t2/tooll-v0.2.4.0.zip
-
-Or from source-code and git-Operator usage...
-
-1. git clone git@github.com:framefield/tooll.git
-2. Download and copy the required assets into the directory: http://framefield.com/media/download/t2/tooll-assets-common.zip
-3. Open Framefield.sln with VisualStudio
-4. Build solution
-5. Start Tooll -> will automatically fetch operators from git@github.com/framefield/tooll_operators.git
-
-For the 2nd approach you need to add your ssh-keys to github. 
-
-Requirements
 ------------
-- Windows 7-10 (64bit, 32bit possible when building yourself)
-- [[http://www.microsoft.com/en-us/download/details.aspx?id=30653|.net4.5 framework]]
-- [[http://www.microsoft.com/en-us/download/details.aspx?id=35|DirectX]]
-- Modern graphics card compatible to Direct-X 11 and updated drivers
-- Admin rights
+Either download the latest [released binary](https://github.com/framefield/tooll/releases).
+
+Or from setup with source-code and git-Operator usage please read [Requirements and Setup](https://github.com/framefield/tooll/wiki/Requirements-and-Setup).
+
+License
+--------
+TOOLL.io is released under MIT license, which basically allows you to use it for everything, including commercial projects.
+
+Contribution
+------------
+TOOLL.io is a volunteer effort. We encourage you to [join the team](https://github.com/framefield/tooll/wiki/Contribute)!
+
+Thanks! :heart: :heart: :heart:
