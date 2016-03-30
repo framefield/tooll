@@ -284,7 +284,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cscript.exe //nologo "$(SolutionDir)helper/generateBuildProperties.vbs" "$(ProjectDir)"</PreBuildEvent>
+    <PreBuildEvent>cmd /c $(SolutionDir)helper/getGitStatus.bat $(SolutionDir)/Helper "$(ProjectDir)"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
