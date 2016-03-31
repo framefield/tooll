@@ -53,14 +53,14 @@ namespace Framefield.Tooll
             m_SelectionHandler= se;
             CurveEditor= ce;
             createBindingsForPositioning();
-            Update();
+            UpdateShapeAndLines();
             m_SelectionHandler.SelectionChanged += m_SelectionHandler_SelectionChanged;
 
         }
 
         void m_SelectionHandler_SelectionChanged(object sender, SelectionHandler.SelectionChangedEventArgs e)
         {
-            Update();
+            UpdateShapeAndLines();
         }
         #endregion
 
@@ -72,35 +72,13 @@ namespace Framefield.Tooll
         /**
          * This method needs to be called everytime the curve editor gets scrolled, or otherwise modified
          */
-        public void Update()
+        public void UpdateShapeAndLines()
         {
             if (m_SelectionHandler.SelectedElements.Count <= 0) {
                 this.Visibility = System.Windows.Visibility.Collapsed;
             }
             else {
-                this.Visibility = System.Windows.Visibility.Visible;
-                var rect= GetBoundingBox();
-                MinU= rect.Left;
-                MaxU= rect.Right;
-                MinV= rect.Bottom;
-                MaxV= rect.Top; 
-                this.Height= Math.Abs( CurveEditor.vToY(MaxV) - CurveEditor.vToY(MinV) );
-                this.Width= Math.Abs( CurveEditor.UToX(MaxU)  - CurveEditor.UToX(MinU));
-                App.Current.UpdateRequiredAfterUserInteraction = true;
-                XMinULabel.Text= String.Format("{0:F3}", MinU);
-                XMaxULabel.Text= String.Format("{0:F3}", MaxU);
-                XMinVLabel.Text= String.Format("{0:F3}", MaxV);
-                XMaxVLabel.Text= String.Format("{0:F3}", MinV);
-
-                XDragHandle.Visibility= m_SelectionHandler.SelectedElements.Count == 1 
-                                      ?  System.Windows.Visibility.Collapsed
-                                      :  System.Windows.Visibility.Visible;
-
-                XMinULabel.Visibility = (MinU == MaxU) ?  System.Windows.Visibility.Collapsed
-                                                       :  System.Windows.Visibility.Visible;
-
-                XMaxVLabel.Visibility = (MinV == MaxV) ?  System.Windows.Visibility.Collapsed
-                                                       :  System.Windows.Visibility.Visible;
+                UpdateEditBoxShape();
 
                 // Refresh vdef after AddOrUpdateValue cloned the definition
                 foreach (var e in CurveEditor._SelectionHandler.SelectedElements)
@@ -112,6 +90,35 @@ namespace Framefield.Tooll
                 }
                 CurveEditor.UpdateLines();
             }
+        }
+
+        public void UpdateEditBoxShape()
+        {
+            this.Visibility = System.Windows.Visibility.Visible;
+            var rect = GetBoundingBox();
+            MinU = rect.Left;
+            MaxU = rect.Right;
+            MinV = rect.Bottom;
+            MaxV = rect.Top;
+            this.Height = Math.Abs(CurveEditor.vToY(MaxV) - CurveEditor.vToY(MinV));
+            this.Width = Math.Abs(CurveEditor.UToX(MaxU) - CurveEditor.UToX(MinU));
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+            XMinULabel.Text = String.Format("{0:F3}", MinU);
+            XMaxULabel.Text = String.Format("{0:F3}", MaxU);
+            XMinVLabel.Text = String.Format("{0:F3}", MaxV);
+            XMaxVLabel.Text = String.Format("{0:F3}", MinV);
+
+            XDragHandle.Visibility = m_SelectionHandler.SelectedElements.Count == 1
+                ? System.Windows.Visibility.Collapsed
+                : System.Windows.Visibility.Visible;
+
+            XMinULabel.Visibility = (MinU == MaxU)
+                ? System.Windows.Visibility.Collapsed
+                : System.Windows.Visibility.Visible;
+
+            XMaxVLabel.Visibility = (MinV == MaxV)
+                ? System.Windows.Visibility.Collapsed
+                : System.Windows.Visibility.Visible;
         }
 
         public void ScaleAtBottom(double deltaInPixel)
@@ -141,7 +148,7 @@ namespace Framefield.Tooll
                 _moveKeyframesCommand.Do();                
             }
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
 
@@ -174,7 +181,7 @@ namespace Framefield.Tooll
                 _moveKeyframesCommand.Do();                
             }
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
 
@@ -211,7 +218,7 @@ namespace Framefield.Tooll
                 }
             }
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
 
@@ -247,7 +254,7 @@ namespace Framefield.Tooll
                 }
             }
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
 
@@ -274,7 +281,7 @@ namespace Framefield.Tooll
             _moveKeyframesCommand.Do();
 
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
         private void XMoveVerticalThumb_DragDelta(object sender, DragDeltaEventArgs e)
@@ -300,7 +307,7 @@ namespace Framefield.Tooll
             }
             _moveKeyframesCommand.Do();
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
         private void XMoveHorizonalThumb_DragDelta(object sender, DragDeltaEventArgs e)
@@ -326,7 +333,7 @@ namespace Framefield.Tooll
             }
             _moveKeyframesCommand.Do();
             CurveEditor.EnableRebuildOnCurveChangeEvents();
-            Update();
+            UpdateShapeAndLines();
         }
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)

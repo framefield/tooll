@@ -195,7 +195,6 @@ namespace Framefield.Tooll
         #endregion
 
 
-
         #region update children
 
         private void RebuildCurve(Core.Curve.ICurve curve)
@@ -396,20 +395,21 @@ namespace Framefield.Tooll
         protected void UpdateCurveLinesAndEditBox()
         {
             UpdateLines();
-            _curveEditBox.Update();
+            //_curveEditBox.UpdateShapeAndLines();
+            _curveEditBox.UpdateEditBoxShape();
         }
 
         public void UpdateLines()
         {
             foreach (var pair in _curvesWithPointControls) {
                 UpdateLine(pair.Key);
-                //RebuildCurve()
             }
         }
 
         public void UpdateEditBox()
         {
-            _curveEditBox.Update();
+            //_curveEditBox.UpdateShapeAndLines();
+            _curveEditBox.UpdateEditBoxShape();
         }
 
 
@@ -487,7 +487,6 @@ namespace Framefield.Tooll
             return (t - UOffset) * UScale;
         }
         #endregion
-
 
 
         #region XAML-events handlers

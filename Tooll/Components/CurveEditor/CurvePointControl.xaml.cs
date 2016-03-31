@@ -148,7 +148,11 @@ namespace Framefield.Tooll
             m_MoveDirection = MoveDirection.Undecided;
             if (Keyboard.Modifiers != ModifierKeys.Shift)
             {
-                CurveEditor._SelectionHandler.Clear();
+                var alreadySelected = CurveEditor._SelectionHandler.SelectedElements.Count == 1 &&
+                                      Equals(CurveEditor._SelectionHandler.SelectedElements.First(), this);
+
+                if(!alreadySelected)
+                    CurveEditor._SelectionHandler.Clear();
             }
             CurveEditor._SelectionHandler.AddElement(this);
             _addOrUpdateKeyframeCommand = new AddOrUpdateKeyframeCommand(U, m_vdef, Curve);
@@ -230,7 +234,7 @@ namespace Framefield.Tooll
                 CurveEditor.EnableRebuildOnCurveChangeEvents();
                 App.Current.UpdateRequiredAfterUserInteraction = true;
                 CurveEditor.UpdateLine(Curve);               
-                CurveEditor.UpdateEditBox();
+                //CurveEditor.UpdateEditBox();
             }
         }
 

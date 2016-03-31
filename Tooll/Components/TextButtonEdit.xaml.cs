@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+
 namespace Framefield.Tooll
 {
     /// <summary>
@@ -100,6 +101,12 @@ namespace Framefield.Tooll
             Button.AddHandler(MouseLeftButtonDownEvent, new MouseButtonEventHandler(Button_MouseLeftButtonDown), true);
             Button.AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(Button_MouseLeftButtonUp), true);
             Button.AddHandler(MouseMoveEvent, new MouseEventHandler(Button_MouseMove), true);
+            /* 
+             * PreviewMouseDownEvent required, because the 
+             * System.Windows.Controls.TextBox MouseLeftButtonUpEvent is buggy
+             * -> e.ClickCount always stays at "1"
+             */
+            TextEdit.AddHandler(PreviewMouseDownEvent, new MouseButtonEventHandler(TextEdit_PreviewMouseDown), true);
         }
 
         protected void TextEdit_LostFocus(object sender, RoutedEventArgs e)
@@ -124,6 +131,14 @@ namespace Framefield.Tooll
 
             }
             TextEdit.Visibility = Visibility.Collapsed;
+        }
+        
+        protected void TextEdit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 3)
+            {
+                XTextEdit.SelectAll();
+            }
         }
 
         private void Button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
