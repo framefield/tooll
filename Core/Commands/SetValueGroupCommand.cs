@@ -12,6 +12,11 @@ namespace Framefield.Core.Commands
     {
         public SetValueGroupCommand() { }
 
+        public UpdateOperatorPartValueFunctionCommand this[int idx]
+        {
+            get { return (UpdateOperatorPartValueFunctionCommand)_commands[idx]; }
+        }
+
         public void UpdateFloatValueAtIndex(int index, float newValue)
         {
             var cmd = _commands[index];
@@ -39,9 +44,9 @@ namespace Framefield.Core.Commands
             public Float Value;
         }
 
-        public SetValueGroupCommand(IEnumerable<Entry> entries, double globalTime)
+        public SetValueGroupCommand(IEnumerable<Entry> entries, double globalTime, string name = "Set Value Group")
         {
-            _name = "Set Value Group";
+            _name = name;
 
             foreach (var entry in entries)
             {

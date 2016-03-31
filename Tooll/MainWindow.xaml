@@ -75,6 +75,7 @@
         <CommandBinding Command="{x:Static local:CustomCommands.GenerateKeyFramesFromLogfileCommand}" CanExecute="GenerateKeyFramesFromLogfileCommand_CanExecute"  Executed="GenerateKeyFramesFromLogfileCommand_Executed" />
 
         <CommandBinding Command="{x:Static local:CustomCommands.ShowConsoleViewCommand}" CanExecute="ShowConsoleViewCommand_CanExecute"  Executed="ShowConsoleViewCommand_Executed" />
+        <CommandBinding Command="{x:Static local:CustomCommands.ShowGeneticVariationsViewCommand}" CanExecute="ShowGeneticVariationsViewCommand_CanExecute"  Executed="ShowGeneticVariationsViewCommand_Executed" />
 
     </Window.CommandBindings>
 
@@ -150,6 +151,7 @@
                     <MenuItem Header="Show Library" Click="ShowLibraryHandler" />
                     <MenuItem Header="Measure View" Click="ShowMeasureViewHandler"/>
                     <MenuItem Header="Console View" Command="{x:Static local:CustomCommands.ShowConsoleViewCommand}"/>
+                    <MenuItem Header="Genetic Variations" Command="{x:Static local:CustomCommands.ShowGeneticVariationsViewCommand}"/>
                     <MenuItem Header="_Layout" Name="XLayoutMenuItem">
                         <MenuItem Header="Save Layout" Click="SaveLayoutHandler"/>
                         <MenuItem Header="Delete Layout" Click="DeleteLayoutHandler"/>

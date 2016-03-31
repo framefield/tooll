@@ -288,6 +288,14 @@
       <DependentUpon>NewOperatorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\FloatEditButton.cs" />
+    <Compile Include="Components\GeneticVariations\GeneticVariationsPanel.xaml.cs">
+      <DependentUpon>GeneticVariationsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\GeneticVariations\Variation.cs" />
+    <Compile Include="Components\GeneticVariations\VariationManager.cs" />
+    <Compile Include="Components\GeneticVariations\VariationThumb.xaml.cs">
+      <DependentUpon>VariationThumb.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Helper\GenerateSoundImage.cs" />
     <Compile Include="Components\Helper\SpaceMouseWPFHandler.cs" />
     <Compile Include="Components\ParameterView\DynamicParameterValue.xaml.cs">
@@ -609,6 +617,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Dialogs\NewOperatorDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\GeneticVariations\GeneticVariationsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\GeneticVariations\VariationThumb.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

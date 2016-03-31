@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Framefield.Tooll.VariationThumb"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                          xmlns:local="clr-namespace:Framefield.Tooll"
+             mc:Ignorable="d" 
+             Width="30" Height="30" 
+             BorderThickness="1"
+             Background="#222"
+             Margin="0 0 0 0"
+             d:DesignHeight="40" d:DesignWidth="40"
+
+             >
+    <Thumb        
+       MouseEnter="UserControl_MouseEnter"
+       MouseLeave="UserControl_MouseLeave"
+       PreviewMouseUp="UserControl_MouseUp"
+        PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
+        PreviewMouseRightButtonUp="UIElement_OnPreviewMouseRightButtonUp"
+       Margin="-1 -1 -1 -1"
+    >
+    <Thumb.Template>
+        <ControlTemplate>
+            <Border Background="Transparent" BorderThickness="1">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=IsActive}" Value="true">
+                        <Setter Property="BorderBrush" Value="White" />
+                    </DataTrigger>
+                 </Style.Triggers>                        
+                </Style>
+            </Border.Style>
+                <Path Data="M 8 12 C 18 5   18 -5  8 0    
+                                        C  -2 -5  -2 5  8 12" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="#33000000" StrokeThickness="0.5">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="true">
+                                        <Setter Property="Fill" Value="DodgerBlue" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Fill" Value="#4C000000" />
+                            </Style>
+                        </Path.Style>
+
+                    </Path>
+                </Border>
+        </ControlTemplate>
+    </Thumb.Template>
+    </Thumb>
+</UserControl>

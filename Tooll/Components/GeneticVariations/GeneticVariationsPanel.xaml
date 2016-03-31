@@ -1,0 +1,95 @@
+﻿<ad:DocumentContent x:Class="Framefield.Tooll.Components.GeneticVariations.GeneticVariationsPanel"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+            xmlns:local="clr-namespace:Framefield.Tooll"                    
+            mc:Ignorable="d" 
+            Background="#383838"
+            Foreground="White"
+            d:DesignHeight="300" d:DesignWidth="300"
+                    KeyUp="GeneticVariationsPanel_OnKeyUp"
+                    Focusable="True"
+                    MouseWheel="GeneticVariationsPanel_OnMouseWheel">
+
+        <DockPanel Background="#2d2d2d">
+        <DockPanel.Resources>
+            <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+            <Style BasedOn="{StaticResource ToggleButtonStyle}" TargetType="{x:Type ToggleButton}"/>
+        </DockPanel.Resources>
+
+        <Grid x:Name="XPanel" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+                <!--<Button x:Name="XSaveButton" Click="SaveClicked_Handler" Grid.Row="0">Save Preset</Button>-->
+            <Button Grid.Row="0" Click="EvolveButton_ClickHandler">Evolve</Button>
+            <ListView x:Name="XVariationGrid" 
+                    Background="Transparent" BorderThickness="0" Margin="0"
+                Grid.Row="1"
+                Height="auto">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel  MouseWheel="UIElement_OnMouseWheel"
+                            MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=ActualWidth}"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                    <local:VariationThumb Margin="0"></local:VariationThumb>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Margin" Value="0,0,-2,0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+            <Grid  Grid.Row="2" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Click="UseButton_ClickHandler"
+                        Grid.Column="0"
+                        >Use</Button>
+                <Slider Grid.Column="1" x:Name="XRandomSlider" Minimum="0" Maximum="100" Value="10"></Slider>
+
+            </Grid>
+            <StackPanel Grid.Row="2"  Orientation="Horizontal">
+            </StackPanel>
+
+        </Grid>
+
+
+            <!--<local:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local:PresetGrid>-->
+
+            <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top" DockPanel.Dock="Top">
+                <TextBlock Text="{Binding Count, StringFormat='{}{0} Items'}" />
+                <CheckBox  x:Name="XDBG" Margin="5" Foreground="White" Content="DBG" Background="Transparent" Click="ClickHandler" IsChecked="False"/>
+                <CheckBox  x:Name="XINF" Margin="5" Foreground="White" Content="INF" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
+                <CheckBox  x:Name="XWRN" Margin="5" Foreground="White" Content="WRN" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
+                <CheckBox  x:Name="XERR" Margin="5" Foreground="White" Content="ERR" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
+
+                <CheckBox  x:Name="XScrolling" Margin="5,5,20,5" Foreground="White" Content="Scroll" Background="Transparent" IsChecked="True"/>
+            </StackPanel>-->
+
+            <!--<ItemsControl x:Name="XItems" ItemsSource="{Binding}" Style="{StaticResource LogViewerStyle}">
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ScrollViewer CanContentScroll="True">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                    <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>-->
+        </DockPanel>
+</ad:DocumentContent>
