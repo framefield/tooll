@@ -56,6 +56,12 @@ namespace Framefield.Tooll
             if (variation != null)
             {
                 variation.Select();
+
+                var item = UIHelper.FindVisualParent<ListViewItem>(this);
+                if (item == null)
+                    throw new Exception("Can't handle click on VariationThumbnail outside of ListItem");
+
+                item.IsSelected = variation.IsSelected;
             }
         }
 

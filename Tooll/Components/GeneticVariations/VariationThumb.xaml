@@ -9,16 +9,16 @@
              BorderThickness="0"
              Background="#222"
              Margin="0 0 0 0"
+             Padding="0"
              d:DesignHeight="40" d:DesignWidth="40"
-
-             >
+         >
     <Thumb        
        MouseEnter="UserControl_MouseEnter"
        MouseLeave="UserControl_MouseLeave"
        PreviewMouseUp="UserControl_MouseUp"
         PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
         PreviewMouseRightButtonUp="UIElement_OnPreviewMouseRightButtonUp"
-       Margin="-1 -1 -1 -1"
+        Margin="0"
     >
     <Thumb.Template>
         <ControlTemplate>

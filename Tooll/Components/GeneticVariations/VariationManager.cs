@@ -47,20 +47,9 @@ namespace Framefield.Tooll.Components.GeneticVariations
         {
             _randomStrength = randomStrength;
 
-            if (LastUsedVariations.Any())
-            {
-                EvolveNextGeneration(_randomStrength);
-            }
-            else
-            {
-                SetupFirstGeneration(_randomStrength);
-            }
+            EvolveOrInitialize(_randomStrength);
         }
 
-        //void Variation_PreviewHandler(object sender, RoutedEventArgs e)
-        //{
-        //    ActiveVariation=sender as Variation;
-        //}
 
         private Variation _activeVariation;
         public Variation ActiveVariation {
@@ -217,32 +206,39 @@ namespace Framefield.Tooll.Components.GeneticVariations
             return new SetValueGroupCommand(entries, App.Current.Model.GlobalTime, "Set Variation");
         }
 
-        public void EvolveNextGeneration(float randomStrength)
+        public void EvolveOrInitialize(float randomStrength)
         {
             _randomStrength = randomStrength;
 
-            var usedVariations = (from v in Variations
+            var useAsAncestors = (from v in Variations
                                   where v.IsSelected
                                   select v).ToList();
 
-            if (!usedVariations.Any() && !LastUsedVariations.Any())
-            {                
-                Logger.Warn("Can't evolve variations from empty selection. Starting from scratch.");
-                SetupFirstGeneration(randomStrength);
-                return;
-            }                
+            if (!useAsAncestors.Any())
+                useAsAncestors = LastUsedVariations;
 
+            if (!useAsAncestors.Any())
+            {
+                SetupFirstGeneration(randomStrength);
+                return;                
+            }
+
+            GenerateVariations(useAsAncestors);
+        }
+
+        private void GenerateVariations(List<Variation> useAsAncestors)
+        {
             Variations.Clear();
             for (var i = 0; i < NUMBER_OF_THUMBS; i++)
             {
-                var newVariation = 
+                var newVariation =
                     new Variation(this)
                     {
-                        SetValueCommand = GenerateNextGenerationCommand(usedVariations)
+                        SetValueCommand = GenerateNextGenerationCommand(useAsAncestors)
                     };
                 Variations.Add(newVariation);
             }
-            LastUsedVariations = usedVariations;
+            LastUsedVariations = useAsAncestors;
         }
 
         const int NUMBER_OF_THUMBS = 60;

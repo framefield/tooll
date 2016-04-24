@@ -44,7 +44,8 @@
                 </ListView.ItemTemplate>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Setter Property="Margin" Value="0,0,-2,0" />
+                        <Setter Property="Margin" Value="0,0,0,0" />
+                        <Setter Property="Padding" Value="0,0,0,0" />
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
@@ -62,17 +63,8 @@
                         >&#160;Get more&#160;</Button>
                 <Button Click="EvolveButton_ClickHandler"
                         Grid.Column="1"
+                        IsEnabled="{Binding ElementName=XVariationGrid, Path=SelectedItems.Count}"
                     >
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedItem, ElementName=XVariationGrid}"
-                             Value="{x:Null}">
-                                    <Setter Property="IsEnabled" Value="False" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
                     &#160;...from selection&#160;
                 </Button>
 

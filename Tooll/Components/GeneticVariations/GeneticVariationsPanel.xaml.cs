@@ -56,13 +56,13 @@ namespace Framefield.Tooll.Components.GeneticVariations
                     case 0:
                         return 5f;
                     case 1:
-                        return 10f;
+                        return 15f;
                     case 2:
-                        return 50f;
+                        return 30f;
                     case 3:
-                        return 75f;
+                        return 50f;
                     case 4:
-                        return 200f;
+                        return 75f;
                     default:
                         throw new Exception("Unexpected variation random strength.");
                 }
@@ -77,7 +77,7 @@ namespace Framefield.Tooll.Components.GeneticVariations
 
         private void MoreButton_ClickHandler(object sender, RoutedEventArgs e)
         {
-            _variationManager.SetupFirstGeneration(randomStrength: RandomStrength);            
+            _variationManager.SetupFirstGeneration(randomStrength: RandomStrength);
         }
 
 
@@ -89,7 +89,7 @@ namespace Framefield.Tooll.Components.GeneticVariations
 
         private void EvolveButton_ClickHandler(object sender, RoutedEventArgs e)
         {
-            _variationManager.EvolveNextGeneration(RandomStrength);
+            _variationManager.EvolveOrInitialize(RandomStrength/3);
         }
 
 
@@ -131,14 +131,6 @@ namespace Framefield.Tooll.Components.GeneticVariations
             e.Handled = true;
         }
 
-
-        //private void GeneticVariationsPanel_OnKeyUp(object sender, KeyEventArgs e)
-        //{
-        //    Logger.Info("Keyup!");
-        //    e.Handled = true;
-        //}
-
         readonly VariationManager _variationManager = new VariationManager();
-
     }
 }
