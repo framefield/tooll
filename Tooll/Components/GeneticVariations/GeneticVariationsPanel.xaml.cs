@@ -33,10 +33,6 @@ namespace Framefield.Tooll.Components.GeneticVariations
             App.Current.MainWindow.CompositionView.XCompositionGraphView.SelectionHandler.SelectionChanged -= Selection_SelectionChangedHandler;
         }
 
-        void Selection_SelectionChangedHandler(object sender, SelectionHandler.SelectionChangedEventArgs e)
-        {
-            _variationManager.SetupFirstGeneration();
-        }
 
         void GeneticVariationsPanel_Initialized(object sender, EventArgs e)
         {
@@ -47,13 +43,56 @@ namespace Framefield.Tooll.Components.GeneticVariations
                 Path = new PropertyPath("Variations")
             };
             BindingOperations.SetBinding(XVariationGrid, ItemsControl.ItemsSourceProperty, binding);
-            _variationManager.SetupFirstGeneration(randomStrength: (float)XRandomSlider.Value);
+            _variationManager.SetupFirstGeneration(randomStrength: RandomStrength);
         }
+
+        float RandomStrength
+        {
+            get
+            {
+                var index = XRandomDropbox.SelectedIndex;
+                switch (index)
+                {
+                    case 0:
+                        return 5f;
+                    case 1:
+                        return 10f;
+                    case 2:
+                        return 50f;
+                    case 3:
+                        return 75f;
+                    case 4:
+                        return 200f;
+                    default:
+                        throw new Exception("Unexpected variation random strength.");
+                }
+            }
+        }
+
+        void Selection_SelectionChangedHandler(object sender, SelectionHandler.SelectionChangedEventArgs e)
+        {
+            _variationManager.SetupFirstGeneration(RandomStrength);
+        }
+
+
+        private void MoreButton_ClickHandler(object sender, RoutedEventArgs e)
+        {
+            _variationManager.SetupFirstGeneration(randomStrength: RandomStrength);            
+        }
+
+
+        private void XRandomDropbox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _variationManager.AdjustRandomStrength(RandomStrength);
+        }
+
 
         private void EvolveButton_ClickHandler(object sender, RoutedEventArgs e)
         {
-            _variationManager.EvolveNextGeneration(randomStrength: (float)XRandomSlider.Value );
+            _variationManager.EvolveNextGeneration(RandomStrength);
         }
+
+
 
         private void UseButton_ClickHandler(object sender, RoutedEventArgs e)
         {
@@ -63,20 +102,19 @@ namespace Framefield.Tooll.Components.GeneticVariations
                     continue;
 
                 App.Current.UndoRedoStack.AddAndExecute(v.SetValueCommand);
-                _variationManager.SetupFirstGeneration();
+                _variationManager.SetupFirstGeneration(RandomStrength);
                 App.Current.UpdateRequiredAfterUserInteraction = true;
                 return;
             }
         }
 
 
-        readonly VariationManager _variationManager= new VariationManager();
-
         private void GeneticVariationsPanel_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             _variationManager.ActivateNextVariation();
             e.Handled = true;
         }
+
 
         private void UIElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -93,10 +131,14 @@ namespace Framefield.Tooll.Components.GeneticVariations
             e.Handled = true;
         }
 
-        private void GeneticVariationsPanel_OnKeyUp(object sender, KeyEventArgs e)
-        {
-            Logger.Info("Keyup!");
-            e.Handled = true;
-        }
+
+        //private void GeneticVariationsPanel_OnKeyUp(object sender, KeyEventArgs e)
+        //{
+        //    Logger.Info("Keyup!");
+        //    e.Handled = true;
+        //}
+
+        readonly VariationManager _variationManager = new VariationManager();
+
     }
 }

@@ -22,14 +22,19 @@ namespace Framefield.Tooll.Components.GeneticVariations
         }
         public ObservableCollection<Variation> Variations { get; private set; }
 
+        // We have to keep this list be evolve more this this, if RandomStrength changes.
+        public List<Variation> LastUsedVariations = new List<Variation>();
 
         #region iniatial generation
 
-        public void SetupFirstGeneration(float randomStrength = 50f)
+
+        public void SetupFirstGeneration(float randomStrength)
         {
             _randomStrength = randomStrength;
 
             Variations.Clear();
+            LastUsedVariations.Clear();
+
             for (var i = 0; i < NUMBER_OF_THUMBS; i++)
             {
                 var newVariation = new Variation(this) { SetValueCommand = GenerateFirstGenerationCommand(_random.Next()) };
@@ -38,10 +43,24 @@ namespace Framefield.Tooll.Components.GeneticVariations
             ActiveVariation = null;
         }
 
-        void Variation_PreviewHandler(object sender, RoutedEventArgs e)
+        public void AdjustRandomStrength(float randomStrength)
         {
-            ActiveVariation=sender as Variation;
+            _randomStrength = randomStrength;
+
+            if (LastUsedVariations.Any())
+            {
+                EvolveNextGeneration(_randomStrength);
+            }
+            else
+            {
+                SetupFirstGeneration(_randomStrength);
+            }
         }
+
+        //void Variation_PreviewHandler(object sender, RoutedEventArgs e)
+        //{
+        //    ActiveVariation=sender as Variation;
+        //}
 
         private Variation _activeVariation;
         public Variation ActiveVariation {
@@ -205,8 +224,13 @@ namespace Framefield.Tooll.Components.GeneticVariations
             var usedVariations = (from v in Variations
                                   where v.IsSelected
                                   select v).ToList();
-            if (usedVariations.Count == 0)
+
+            if (!usedVariations.Any() && !LastUsedVariations.Any())
+            {                
+                Logger.Warn("Can't evolve variations from empty selection. Starting from scratch.");
+                SetupFirstGeneration(randomStrength);
                 return;
+            }                
 
             Variations.Clear();
             for (var i = 0; i < NUMBER_OF_THUMBS; i++)
@@ -218,13 +242,16 @@ namespace Framefield.Tooll.Components.GeneticVariations
                     };
                 Variations.Add(newVariation);
             }
+            LastUsedVariations = usedVariations;
         }
 
         const int NUMBER_OF_THUMBS = 60;
         const float MUTATION_STRENGTH = 3;
         const float CROSSOVER_RATE = 0.9f;
-        public float _randomStrength;
+        float _randomStrength;
+
         readonly Random _random = new Random();
+        
 
 
 

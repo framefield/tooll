@@ -6,7 +6,7 @@
                           xmlns:local="clr-namespace:Framefield.Tooll"
              mc:Ignorable="d" 
              Width="30" Height="30" 
-             BorderThickness="1"
+             BorderThickness="0"
              Background="#222"
              Margin="0 0 0 0"
              d:DesignHeight="40" d:DesignWidth="40"

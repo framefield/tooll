@@ -7,5 +7,6 @@
              Background="#FF393939">
     <UserControl.Resources>
         <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+        <Style BasedOn="{StaticResource ComboBoxStyle}" TargetType="{x:Type ComboBox}"/>
     </UserControl.Resources>
 </UserControl>

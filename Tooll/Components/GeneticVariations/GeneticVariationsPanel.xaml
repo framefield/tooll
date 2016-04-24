@@ -8,29 +8,29 @@
             mc:Ignorable="d" 
             Background="#383838"
             Foreground="White"
-            d:DesignHeight="300" d:DesignWidth="300"
-                    KeyUp="GeneticVariationsPanel_OnKeyUp"
+            d:DesignHeight="300" d:DesignWidth="300"                    
                     Focusable="True"
                     MouseWheel="GeneticVariationsPanel_OnMouseWheel">
 
-        <DockPanel Background="#2d2d2d">
+    <DockPanel Background="#2d2d2d">
         <DockPanel.Resources>
             <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
             <Style BasedOn="{StaticResource ToggleButtonStyle}" TargetType="{x:Type ToggleButton}"/>
+            <Style BasedOn="{StaticResource ComboBoxStyle}" TargetType="{x:Type ComboBox}"/>
         </DockPanel.Resources>
 
         <Grid x:Name="XPanel" Background="Transparent">
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="20"/>
+                <RowDefinition Height="24"/>
             </Grid.RowDefinitions>
-                <!--<Button x:Name="XSaveButton" Click="SaveClicked_Handler" Grid.Row="0">Save Preset</Button>-->
-            <Button Grid.Row="0" Click="EvolveButton_ClickHandler">Evolve</Button>
-            <ListView x:Name="XVariationGrid" 
-                    Background="Transparent" BorderThickness="0" Margin="0"
-                Grid.Row="1"
-                Height="auto">
+            <!--<Button x:Name="XSaveButton" Click="SaveClicked_Handler" Grid.Row="0">Save Preset</Button>-->
+            <ListView 
+                x:Name="XVariationGrid"                     
+                Background="Transparent" BorderThickness="0" Margin="0,5,0,0"
+                Grid.Row="0"
+                
+                Height="auto" Grid.RowSpan="2">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel  MouseWheel="UIElement_OnMouseWheel"
@@ -39,7 +39,7 @@
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                    <local:VariationThumb Margin="0"></local:VariationThumb>
+                        <local:VariationThumb Margin="0"></local:VariationThumb>
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <ListView.ItemContainerStyle>
@@ -48,48 +48,50 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
+
+
             <Grid  Grid.Row="2" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Click="UseButton_ClickHandler"
-                        Grid.Column="0"
-                        >Use</Button>
-                <Slider Grid.Column="1" x:Name="XRandomSlider" Minimum="0" Maximum="100" Value="10"></Slider>
+                <Button Click="MoreButton_ClickHandler"
+                        Grid.Column="0"                                     
+                        >&#160;Get more&#160;</Button>
+                <Button Click="EvolveButton_ClickHandler"
+                        Grid.Column="1"
+                    >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=XVariationGrid}"
+                             Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    &#160;...from selection&#160;
+                </Button>
+
+                <!--<TextBlock Grid.Column="2" Opacity="0.5" FontSize="12" TextAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" >as</TextBlock>-->
+                <ComboBox 
+                        Grid.Column="3"
+                        x:Name="XRandomDropbox"
+                    SelectionChanged="XRandomDropbox_OnSelectionChanged"
+                    >
+                    <ComboBoxItem>Nearly Identical</ComboBoxItem>
+                    <ComboBoxItem>Very Similar</ComboBoxItem>
+                    <ComboBoxItem IsSelected="true">Similar</ComboBoxItem>
+                    <ComboBoxItem>Different</ComboBoxItem>
+                    <ComboBoxItem>Very Different</ComboBoxItem>
+                </ComboBox>
+                <!--<Slider Grid.Column="1" x:Name="XRandomSlider" Minimum="0" Maximum="100" Value="10"></Slider>-->
 
             </Grid>
-            <StackPanel Grid.Row="2"  Orientation="Horizontal">
-            </StackPanel>
 
         </Grid>
-
-
-            <!--<local:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local:PresetGrid>-->
-
-            <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top" DockPanel.Dock="Top">
-                <TextBlock Text="{Binding Count, StringFormat='{}{0} Items'}" />
-                <CheckBox  x:Name="XDBG" Margin="5" Foreground="White" Content="DBG" Background="Transparent" Click="ClickHandler" IsChecked="False"/>
-                <CheckBox  x:Name="XINF" Margin="5" Foreground="White" Content="INF" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
-                <CheckBox  x:Name="XWRN" Margin="5" Foreground="White" Content="WRN" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
-                <CheckBox  x:Name="XERR" Margin="5" Foreground="White" Content="ERR" Background="Transparent" Click="ClickHandler" IsChecked="True"/>
-
-                <CheckBox  x:Name="XScrolling" Margin="5,5,20,5" Foreground="White" Content="Scroll" Background="Transparent" IsChecked="True"/>
-            </StackPanel>-->
-
-            <!--<ItemsControl x:Name="XItems" ItemsSource="{Binding}" Style="{StaticResource LogViewerStyle}">
-                <ItemsControl.Template>
-                    <ControlTemplate>
-                        <ScrollViewer CanContentScroll="True">
-                            <ItemsPresenter/>
-                        </ScrollViewer>
-                    </ControlTemplate>
-                </ItemsControl.Template>
-                    <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>-->
-        </DockPanel>
+    </DockPanel>
 </ad:DocumentContent>
