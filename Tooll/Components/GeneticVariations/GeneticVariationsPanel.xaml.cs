@@ -36,13 +36,22 @@ namespace Framefield.Tooll.Components.GeneticVariations
 
         void GeneticVariationsPanel_Initialized(object sender, EventArgs e)
         {
-            var binding = new Binding()
+            var variationsBinding = new Binding()
             {
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 Source = this._variationManager,
                 Path = new PropertyPath("Variations")
             };
-            BindingOperations.SetBinding(XVariationGrid, ItemsControl.ItemsSourceProperty, binding);
+            BindingOperations.SetBinding(XVariationGrid, ItemsControl.ItemsSourceProperty, variationsBinding);
+
+            var favoritesBinding = new Binding()
+            {
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Source = this._variationManager,
+                Path = new PropertyPath("Favorites")
+            };
+            BindingOperations.SetBinding(XFavoritesGrid, ItemsControl.ItemsSourceProperty, favoritesBinding);
+
             _variationManager.SetupFirstGeneration(randomStrength: RandomStrength);
         }
 
@@ -71,6 +80,7 @@ namespace Framefield.Tooll.Components.GeneticVariations
 
         void Selection_SelectionChangedHandler(object sender, SelectionHandler.SelectionChangedEventArgs e)
         {
+            _variationManager.Favorites.Clear();
             _variationManager.SetupFirstGeneration(RandomStrength);
         }
 

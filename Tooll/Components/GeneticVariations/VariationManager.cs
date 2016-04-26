@@ -18,9 +18,10 @@ namespace Framefield.Tooll.Components.GeneticVariations
         {
             _randomStrength = 50f;
             Variations = new ObservableCollection<Variation>();
-            
+            Favorites = new ObservableCollection<Variation>();            
         }
         public ObservableCollection<Variation> Variations { get; private set; }
+        public ObservableCollection<Variation> Favorites { get; private set; }
 
         // We have to keep this list be evolve more this this, if RandomStrength changes.
         public List<Variation> LastUsedVariations = new List<Variation>();
@@ -46,10 +47,26 @@ namespace Framefield.Tooll.Components.GeneticVariations
         public void AdjustRandomStrength(float randomStrength)
         {
             _randomStrength = randomStrength;
-
             EvolveOrInitialize(_randomStrength);
         }
 
+
+        public void ToggleVariationAsFavorite(Variation variation)
+        {
+            if (Favorites.Contains(variation))
+            {
+                Favorites.Remove(variation);
+            }
+            else
+            {
+                Favorites.Add(variation);
+            }
+        }
+
+        public bool IsFavoriteButNotVariation(Variation variation)
+        {
+            return Favorites.Contains(variation) && !Variations.Contains(variation);
+        }
 
         private Variation _activeVariation;
         public Variation ActiveVariation {
@@ -58,7 +75,7 @@ namespace Framefield.Tooll.Components.GeneticVariations
                 return _activeVariation;
             }
             set
-            {                
+            {       
                 if (value == null)
                 {
                     if (_activeVariation != null)
@@ -72,8 +89,13 @@ namespace Framefield.Tooll.Components.GeneticVariations
                     return;
                 }
 
-                if (!Variations.Contains(value))
-                    throw new Exception("Try to set undefined variation as active");
+                if (!Variations.Contains(value) && !Favorites.Contains(value))
+                {
+                    _activeVariation = null;
+                    return;
+                }
+                    //return;
+                    //throw new Exception("Try to set undefined variation as active");
 
                 if (_activeVariation == value)
                     return;

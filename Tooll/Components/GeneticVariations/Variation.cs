@@ -7,6 +7,7 @@ using System.Windows.Forms.VisualStyles;
 using Framefield.Tooll.Components.GeneticVariations;
 using Newtonsoft.Json;
 using System.Windows;
+using System.Windows.Controls;
 using Framefield.Core;
 using Framefield.Core.Commands;
 
@@ -41,25 +42,32 @@ namespace Framefield.Tooll
         public void Preview()
         {
             _variationManager.ActiveVariation = this;
-            //_variationManager.Preview(this);
         }
 
         public void EndPreview()
         {
             if(_variationManager.ActiveVariation == this)
                 _variationManager.ActiveVariation = null;
-            //_variationManager.EndPreview(this);
         }
 
-        public void Select()
+        public void SelectFavorite()
         {
-            _variationManager.ActiveVariation= this;
+            EndPreview();
+
+            App.Current.UndoRedoStack.AddAndExecute(SetValueCommand);
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+        public void SelectVariation()
+        {
             IsSelected = !IsSelected;
+            _variationManager.ActiveVariation = this;
+            
+            _variationManager.ToggleVariationAsFavorite(this);
         }
 
         public void MarkSomething()
         {
-            //_variationManager.MarkActiveVariaion();
             _variationManager.ActiveVariation.IsSelected = !_variationManager.ActiveVariation.IsSelected;
         }
 

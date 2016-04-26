@@ -17,9 +17,6 @@ using Framefield.Core.Commands;
 
 namespace Framefield.Tooll
 {
-    /// <summary>
-    /// Interaction logic for PresetThumb.xaml
-    /// </summary>
     public partial class VariationThumb : UserControl
     {
         public VariationThumb() {
@@ -53,16 +50,27 @@ namespace Framefield.Tooll
         {
             var o = sender as FrameworkElement;
             var variation = o.DataContext as Variation;
-            if (variation != null)
+            if (variation == null)
+                return;
+            
+            var parentItem = UIHelper.FindVisualParent<ListViewItem>(this);
+            if (parentItem == null)
+                throw new Exception("Can't handle click on VariationThumbnail outside of ListItem");
+
+            var parentList = UIHelper.FindVisualParent<ListView>(this);
+
+            bool isSelectedFromFavoritesList = parentList.Name == "XFavoritesGrid";
+
+            if (isSelectedFromFavoritesList)
             {
-                variation.Select();
-
-                var item = UIHelper.FindVisualParent<ListViewItem>(this);
-                if (item == null)
-                    throw new Exception("Can't handle click on VariationThumbnail outside of ListItem");
-
-                item.IsSelected = variation.IsSelected;
+                variation.SelectFavorite();
             }
+            else
+            {
+                variation.SelectVariation();
+            }                              
+            parentItem.IsSelected = variation.IsSelected;
+            
         }
 
         private void UIElement_OnPreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
