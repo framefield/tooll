@@ -8,7 +8,7 @@
   "Tooll.FullScreen.Resolution.Width": "1920",
   "Tooll.FullScreen.Resolution.Height": "1080",
   "Git.OperatorRepositoryURL": "git@github.com:framefield/tooll_private_operators.git",
-  "Git.OperatorRepositoryBranch": "topic/geneticVariations",
+  "Git.OperatorRepositoryBranch": "develop",
   "Tooll.RenderView.Camera.MaxVelocity": 2.0,
   "Tooll.RenderView.Camera.Acceleration": 1.0,
   "Tooll.RenderView.Camera.Friction": 0.30000001192092896,
