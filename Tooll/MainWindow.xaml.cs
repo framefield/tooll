@@ -1542,6 +1542,16 @@ namespace Framefield.Tooll
             consoleView.Show(dockManager, true);
         }
 
+        private void ShowGeneticVariationsViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+        private void ShowGeneticVariationsViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var variationsView = new Components.GeneticVariations.GeneticVariationsPanel();
+            variationsView.Show(dockManager, true);
+        }
+
         #endregion
 
         #region playback control

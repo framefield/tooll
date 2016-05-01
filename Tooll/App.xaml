@@ -258,6 +258,9 @@
                                 <Setter TargetName="bottom" Property="Fill" Value="#393939"/>
                                 <Setter TargetName="content" Property="Margin" Value="3,3,1,1"/>
                             </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="content" Property="Opacity" Value="0.5"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>

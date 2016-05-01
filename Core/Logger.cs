@@ -250,6 +250,9 @@ namespace Framefield.Core
         public FileWriter(String filename)
         {
             _fileWriter = new StreamWriter(filename);
+#if DEBUG
+            _fileWriter.AutoFlush = true;
+#endif
         }
 
         public void Dispose()

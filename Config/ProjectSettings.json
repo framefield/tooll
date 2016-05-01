@@ -16,5 +16,5 @@
   "Soundtrack.ImagePath": "assets-feedback/music/lucid-feedback-v01-120bpm.mp3.waveform.png",
   "Tooll.SelectionView.Camera.MaxVelocity": 2.0,
   "Tooll.SelectionView.Camera.Acceleration": 1.0,
-  "Tooll.SelectionView.Camera.Friction": 0.30000001192092896,
+  "Tooll.SelectionView.Camera.Friction": 0.30000001192092896
 }
