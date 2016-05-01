@@ -8,7 +8,7 @@
   "Tooll.FullScreen.Resolution.Width": "1920",
   "Tooll.FullScreen.Resolution.Height": "1080",
   "Git.OperatorRepositoryURL": "git@github.com:framefield/tooll_private_operators.git",
-  "Git.OperatorRepositoryBranch": "develop",
+  "Git.OperatorRepositoryBranch": "topic/geneticVariations",
   "Tooll.RenderView.Camera.MaxVelocity": 2.0,
   "Tooll.RenderView.Camera.Acceleration": 1.0,
   "Tooll.RenderView.Camera.Friction": 0.30000001192092896,
@@ -16,5 +16,5 @@
   "Soundtrack.ImagePath": "assets-feedback/music/lucid-feedback-v01-120bpm.mp3.waveform.png",
   "Tooll.SelectionView.Camera.MaxVelocity": 2.0,
   "Tooll.SelectionView.Camera.Acceleration": 1.0,
-  "Tooll.SelectionView.Camera.Friction": 0.30000001192092896,
+  "Tooll.SelectionView.Camera.Friction": 0.30000001192092896
 }

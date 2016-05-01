@@ -72,6 +72,7 @@ namespace Framefield.Tooll
 
         // panels and views
         public static readonly RoutedCommand ShowConsoleViewCommand = new RoutedCommand("ShowConsoleViewCommand", typeof(CustomCommands));
+        public static readonly RoutedCommand ShowGeneticVariationsViewCommand = new RoutedCommand("ShowGeneticVariationsViewCommand", typeof(CustomCommands));
 
         #endregion
     }
