@@ -156,7 +156,7 @@ namespace Framefield.Core
                     }
                     catch (ReflectionTypeLoadException)
                     {
-                        Logger.Debug("Could not load assembly {0} in order to get its types.", asm.FullName);
+                        //Logger.Debug("Could not load assembly {0} in order to get its types.", asm.FullName);
                     }
                 }
             }
