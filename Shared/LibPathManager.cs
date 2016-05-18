@@ -47,7 +47,7 @@ namespace Framefield.Shared
                 var asm = Assembly.LoadFile(assemblyPath);
                 return asm;
             }
-            Console.WriteLine("LibPathManager - Could not load assembly: {0}", assemblyFileName);
+            //Console.WriteLine("LibPathManager - Could not load assembly: {0}", assemblyFileName);
 
             return null;
         }
