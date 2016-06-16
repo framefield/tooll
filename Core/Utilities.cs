@@ -288,7 +288,11 @@ namespace Framefield.Core
                 }
             }
 
-            operatorPart.Connections.ForEach(opPart => opPart.CollectAllOperators(collectedOperators));
+            foreach (var opPart in operatorPart.Connections)
+            {
+                if (!collectedOperators.Contains(opPart.Parent))
+                    opPart.CollectAllOperators(collectedOperators);
+            }
         }
 
         public static void CopyDirectory(string sourcePath, string destPath, string searchPattern)

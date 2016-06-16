@@ -178,10 +178,10 @@ namespace Framefield.Core
             if (Parent != null)
             {
                 // extract dependency ops (supplier assemblies)
+                var asmAndTypes = Utilities.GetAssembliesAndTypesOfCurrentDomain();
                 foreach (var opEntry in Parent.Operators)
                 {
                     var supplierOpPartDefinition = opEntry.Value.Item1.OperatorParts[0].Item2;
-                    var asmAndTypes = Utilities.GetAssembliesAndTypesOfCurrentDomain();
                     var supplierAssembly = (from asmTypeTuple in asmAndTypes
                                             let asm = asmTypeTuple.Item1
                                             from type in asmTypeTuple.Item2
