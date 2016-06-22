@@ -82,6 +82,7 @@ namespace Framefield.Core.Rendering
                     _timeAccessorOpPartFunctions.Add(opPartFunction as OperatorPart.Function);
                 }
                 _currentTime = _startTime;
+                _currentFrame = 0;
             }
             catch (Exception e)
             {
@@ -152,6 +153,7 @@ namespace Framefield.Core.Rendering
                     Texture2D.ToFile(D3DDevice.Device.ImmediateContext, _renderTargetResource.Texture, format, buildFileName(_currentTime));
                 }
                 _currentTime += _frameTime;
+                ++_currentFrame;
                 double progress = (_currentTime - _startTime)/(_endTime - _startTime);
                 return (float) progress;
             }
@@ -181,7 +183,7 @@ namespace Framefield.Core.Rendering
             if (matchF.Success)
             {
                 formattedFilename = matchF.Groups[1].Value
-                                  + String.Format("{0:" + new String('0', matchF.Groups[2].Value.Length) + "}", Math.Floor(time * _frameRate))
+                                  + String.Format("{0:" + new String('0', matchF.Groups[2].Value.Length) + "}", _currentFrame)
                                   + matchF.Groups[3].Value;
             }
 
@@ -219,6 +221,7 @@ namespace Framefield.Core.Rendering
         private OperatorPartContext _defaultContext;
         private double _frameTime;
         private double _currentTime;
+        private int _currentFrame;
         private string _fileExtension = "png";
         private string _fileNameFormat = "[T]";
         private bool _skipExistingFiles;

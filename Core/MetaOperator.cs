@@ -212,6 +212,18 @@ namespace Framefield.Core
             }
         }
 
+        public IEnumerable<MetaOperator> SupplierDefinitions
+        {
+            get
+            {
+                return from opEntry in Operators
+                       where IsBasic // additional check
+                       let dependencyOpDefinition = opEntry.Value.Item1
+                       where dependencyOpDefinition.IsBasic
+                       select dependencyOpDefinition;
+            }
+        }
+
         // todo: move to cmd
         public void SetSupplierAssemblies(IEnumerable<Assembly> supplierAssemblies)
         {

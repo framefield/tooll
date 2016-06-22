@@ -34,7 +34,26 @@ namespace Framefield.Tooll
 
                 // traverse and collect
                 var collectedMetaOperators = new HashSet<MetaOperator>();
-                firstOutputOfOperatorToExport.CollectAllMetaOperators(collectedMetaOperators);
+                var collectedOperators = new HashSet<Operator>();
+                firstOutputOfOperatorToExport.CollectAllOperators(collectedOperators);
+                foreach (var op in collectedOperators)
+                {
+                    collectedMetaOperators.Add(op.Definition);
+                }
+
+                //look for supplier assembly dependencies in metaoperators
+                var supplierMetaOperators = new HashSet<MetaOperator>();
+                foreach (var definition in collectedMetaOperators)
+                {
+                    if (definition.IsBasic)
+                    {
+                        foreach (var metaOp in definition.SupplierDefinitions)
+                            supplierMetaOperators.Add(metaOp);
+                    }
+                }
+                foreach (var metaOp in supplierMetaOperators)
+                    collectedMetaOperators.Add(metaOp);
+
                 Logger.Info("  Exporting {0} operators...", collectedMetaOperators.Count);
 
                 var operatorExportPath = baseExportPath + "Operators" + @"\";
@@ -52,8 +71,6 @@ namespace Framefield.Tooll
 
                 var filePathsToCopy = new List<String>();
 
-                var collectedOperators = new HashSet<Operator>();
-                firstOutputOfOperatorToExport.CollectAllOperators(collectedOperators);
                 foreach (var foundOp in collectedOperators)
                 {
                     foreach (var input in foundOp.Inputs)

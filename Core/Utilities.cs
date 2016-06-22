@@ -156,7 +156,7 @@ namespace Framefield.Core
                     }
                     catch (ReflectionTypeLoadException)
                     {
-                        Logger.Debug("Could not load assembly {0} in order to get its types.", asm.FullName);
+                        //Logger.Debug("Could not load assembly {0} in order to get its types.", asm.FullName);
                     }
                 }
             }
@@ -288,7 +288,11 @@ namespace Framefield.Core
                 }
             }
 
-            operatorPart.Connections.ForEach(opPart => opPart.CollectAllOperators(collectedOperators));
+            foreach (var opPart in operatorPart.Connections)
+            {
+                if (!collectedOperators.Contains(opPart.Parent))
+                    opPart.CollectAllOperators(collectedOperators);
+            }
         }
 
         public static void CopyDirectory(string sourcePath, string destPath, string searchPattern)
