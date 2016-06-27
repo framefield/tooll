@@ -437,18 +437,17 @@ namespace Framefield.Tooll
             }
             else if (ValueHolder.Connections.Count > 0)
             {
-                Foreground = Brushes.Green;
+                Foreground = Brushes.DodgerBlue;
             }
-            else {
-                Foreground = Brushes.White;
-            }
-                
-
-            if (ValueHolder.IsDefaultFuncSet)
+            else if (ValueHolder.IsDefaultFuncSet)
             {
                 var b = Foreground.Clone();
                 b.Opacity = 0.3;
                 Foreground = b;
+            }
+            else
+            {
+                Foreground = Brushes.White;
             }
         }
         #endregion

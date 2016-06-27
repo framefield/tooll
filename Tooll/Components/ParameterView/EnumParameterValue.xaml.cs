@@ -114,7 +114,7 @@ namespace Framefield.Tooll
             }
             else if (ValueHolder.Connections.Count > 0)
             {
-                color = Brushes.Green;
+                color = Brushes.DodgerBlue;
             }
             else if (ValueHolder.IsDefaultFuncSet)
             {

@@ -162,7 +162,8 @@ namespace Framefield.Tooll
                 }
                 else
                 {
-                    EnableTextEdit();
+                    if(IsEnabled)   // editting can be disabled if connected
+                        EnableTextEdit();
                 }
             }
             m_ValueModified = false;
