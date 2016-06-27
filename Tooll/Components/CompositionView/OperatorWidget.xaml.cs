@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -45,7 +46,8 @@ namespace Framefield.Tooll
             Height = CompositionGraphView.GRID_SIZE;
             Width = Operator.Width;
 
-            UpdateInputRanges(op);
+            var inputZones = OperatorWidgetInputZoneManager.ComputeInputZonesForOp(this);
+            UpdateInputRanges(inputZones);
             UpdateColors();
 
             UpdateOutputNoses();
@@ -113,7 +115,6 @@ namespace Framefield.Tooll
 
         #region Event handlers
 
-
         void Operator_ModifiedHandler(object sender, EventArgs e)
         {
             UpdateStyleAndIndicators();
@@ -127,9 +128,7 @@ namespace Framefield.Tooll
 
         void Operator_InputsChangedHandler(object obj, OperatorPartChangedEventArgs args)
         {
-            
             GetAndDrawInputZones();
-
         }
 
         void OperatorOutputFunction_EvaluatedHandler(object sender, EventArgs e)
@@ -832,7 +831,7 @@ namespace Framefield.Tooll
                 multiIndexForAppending));
         }
 
-        private void UpdateColors()
+        internal void UpdateColors()
         {
             XOperatorContent.Background = new SolidColorBrush(UIHelper.ColorFromType(Type)) {Opacity = 0.6};
             XOperatorContent.Background.Freeze();
@@ -856,47 +855,27 @@ namespace Framefield.Tooll
             }
        } 
 
-        private int GetVisibleIndexOfInput(OperatorPart input)
+        private void UpdateInputRanges(List<OperatorWidgetInputZone> inputZones2)
         {
-            var visualInputCounter = 0;
-            for (var i = 0; i < Operator.Inputs.Count && i < Operator.Definition.Inputs.Count; i++)
-            {
-                if (input == Operator.Inputs[i])
-                {
-                    break;
-                }
-                var idef = Operator.Definition.Inputs[i];
-                if (idef.Relevance == MetaInput.RelevanceType.Required || idef.Relevance == MetaInput.RelevanceType.Relevant
-                    || (Operator.Inputs[i].Connections.Any() && Animation.GetRegardingAnimationOpPart(Operator.Inputs[i]) == null))
-                {
-                    visualInputCounter++;
-                }
-            }
-            return visualInputCounter;
-        }
+            XInputSeparators.Children.Clear();
 
-        private void UpdateInputRanges(Operator op)
-        {
-            inputSeparators.Children.Clear();
-            inputSeparators.ColumnDefinitions.Clear();
-            for (var i = 0; i < VisibleInputs.Count() - 1; ++i)
+            OperatorPart lastInput = null;
+            foreach (var zone in inputZones2)
             {
-                var cd = new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)};
-                inputSeparators.ColumnDefinitions.Add(cd);
-
-                var r = new Rectangle
+                if (lastInput != null && zone.Input != lastInput)
                 {
-                    VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
-                    HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
-                    Height = 4,
-                    Width = 1,
-                    Fill = Brushes.Black
-                };
-                Grid.SetColumn(r, i);
-                inputSeparators.Children.Add(r);
+                    var r = new Rectangle
+                    {
+                        Height = 4,
+                        Width = 1,
+                        Fill = Brushes.Black
+                    };
+                    XInputSeparators.Children.Add(r);
+                    Canvas.SetLeft(r, zone.LeftPosition-2);
+                    Canvas.SetBottom(r, 0);
+                }
+                lastInput = zone.Input;
             }
-            var cdEnd = new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)};
-            inputSeparators.ColumnDefinitions.Add(cdEnd);
         }
 
         private int FindIndexOfNoseThumb(Thumb nose)
@@ -1008,7 +987,7 @@ namespace Framefield.Tooll
         {
             var inputZonesForDrag = OperatorWidgetInputZoneManager.ComputeInputZonesForOp(this);
             UpdateInputZonesUIFromDescription(inputZonesForDrag);
-            UpdateInputRanges(Operator);
+            UpdateInputRanges(inputZonesForDrag);
         }
         #endregion
 
