@@ -429,6 +429,7 @@ namespace Framefield.Tooll
                     newValue = floatValue.Val;
             }
 
+            // Check to prevent update events on reassigment
             if (newValue != Value)
                 Value = newValue;
 
@@ -439,16 +440,17 @@ namespace Framefield.Tooll
             {
                 Foreground = Brushes.DodgerBlue;
             }
+
             else if (ValueHolder.IsDefaultFuncSet)
             {
-                var b = Foreground.Clone();
+                var b = Brushes.White.Clone();
                 b.Opacity = 0.3;
                 Foreground = b;
             }
             else
             {
                 Foreground = Brushes.White;
-            }
+           }
         }
         #endregion
 
