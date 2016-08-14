@@ -16,7 +16,7 @@ using Framefield.Core;
 using ICommand = Framefield.Core.ICommand;
 using Key = System.Windows.Input.Key;
 using System.Windows.Media.Animation;
-
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Path = System.Windows.Shapes.Path;
 
@@ -90,7 +90,7 @@ namespace Framefield.Tooll
                 }
 
                 var path = _curvesWithPaths[curve];
-                path.StrokeThickness= doHighlight ? 3 : 0.5;
+                path.StrokeThickness= doHighlight ? 2 : 0.8;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Framefield.Tooll
             _curvesWithPointControls.Clear();
             XCurveLineCanvas.Children.Clear();
 
-            // ask to optimize...
+            // Show optimization dialog for curves with too many keys...
             if (curves.Any())
             {
                 var overallKeyCount = 0;
@@ -150,16 +150,18 @@ namespace Framefield.Tooll
         }
 
 
-        public void RebuildCurrentCurves() {
-            //xRenderUpdateViz.InvalidateVisual();
-
-            //Copy list first, because RebuildCurve modifies the collection
+        public void RebuildCurrentCurves() 
+        {
+            // Copy list first, because RebuildCurve modifies the collection
             var curvesToRebuild = new List<Core.Curve.ICurve>();
             foreach (var curve in _curvesWithPaths.Keys)
-                curvesToRebuild.Add(curve);
-
+            {
+                curvesToRebuild.Add(curve);                
+            }
             foreach (var curve in curvesToRebuild)
-                RebuildCurve(curve);
+            {
+                RebuildCurve(curve);                
+            }
         }
 
 
@@ -305,7 +307,22 @@ namespace Framefield.Tooll
                 XCurveLineCanvas.Children.Remove(_curvesWithPaths[curve]);
             }
             var newPath = new Path();
-            newPath.Stroke = Brushes.DarkGray;
+            switch (curve.ComponentIndex)
+            {
+                case 1:
+                    newPath.Stroke = Brushes.Firebrick;
+                    break;
+                case 2:
+                    newPath.Stroke = Brushes.OliveDrab;
+                    break;
+                case 3:
+                    newPath.Stroke = Brushes.DodgerBlue;
+                    break;
+                default:
+                    newPath.Stroke = Brushes.DarkGray;
+                    break;
+            }
+
             newPath.StrokeThickness = 1;
             _curvesWithPaths[curve] = newPath;
             XCurveLineCanvas.Children.Add(newPath);

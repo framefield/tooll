@@ -1252,6 +1252,7 @@ namespace Framefield.Tooll
             if (targetWidget != null)
             {
                 targetWidget.GetAndDrawInputZones();
+                targetWidget.UpdateColors();            
             }
             cl.SelectedEvent += ConnectionLine_SelectedHandler;
 

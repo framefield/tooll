@@ -136,6 +136,8 @@ namespace Framefield.Tooll
                         if (input.Name.EndsWith("Text"))
                         {
                             singleParameterRow.XAdditionalContent.Child = paramEdit;
+                            singleParameterRow.ResetToDefaultEvent += paramEdit.ResetToDefaultHandler;
+
                         }
                         else
                         {
@@ -270,6 +272,7 @@ namespace Framefield.Tooll
             }
             CustomCommands.FitCurveValueRangeCommand.Execute(null, this);
         }
+
 
         private TextDocument DescriptionDoc { get; set; }
         private Operator Operator { get; set; }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Framefield.Core.Commands;
 using Framefield.Core.Inputs;
 
 namespace Framefield.Core.Curve
@@ -30,6 +31,8 @@ namespace Framefield.Core.Curve
         }
 
         public bool ChangedEventEnabled { get; set; }
+
+        public int ComponentIndex { get; set; }
 
         public bool HasVAt(double u)
         {

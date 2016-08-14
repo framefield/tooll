@@ -73,11 +73,10 @@ namespace Framefield.Tooll
                 XTextEdit.EnableLineBreaks();
             }
 
-
-
             var parent = valueHolder.Parent;
             var parentMeta = parent.Definition;
             int index = parent.Inputs.IndexOf(valueHolder);
+
             if (index >= 0) {
                 var metaInput = parentMeta.Inputs[index];
                 var valueType = metaInput.DefaultValue as Value<string>;
@@ -86,10 +85,40 @@ namespace Framefield.Tooll
                     XTextEdit.Default = defaultValue;
                 }
             }
+            UpdateGUI();
         }
 
-        void PickFileButton_Click(object sender, RoutedEventArgs e) 
+        public void ResetToDefaultHandler(object sender, EventArgs e)
         {
+            TryExecutatingResetSingleParameter();
+        }
+
+
+        private void TryExecutatingResetSingleParameter()
+        {
+            if (IsConnected)
+            {
+                MessageBox.Show("To reset a connected paramter, you first have to disconnect it.");
+                return;
+            }
+
+            var removeAnimationCommand = new RemoveAnimationCommand(ValueHolder, 0);
+            var setValueToDefaultCmd = new ResetInputToDefault(ValueHolder);
+            Framefield.Core.ICommand[] commands = { removeAnimationCommand, setValueToDefaultCmd };
+
+            App.Current.UndoRedoStack.AddAndExecute(new MacroCommand("Reset Paramter", commands));
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+            XTextEdit.Text = XTextEdit.Default; // we also need to reset the text-edit trigger default-color
+            UpdateGUI();
+        }
+
+
+
+        void PickFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsConnected)
+                return; 
+
             var defaultPath = ".\\assets";
             var tmpContext = new OperatorPartContext(); 
             var startPath = ValueHolder.Eval(tmpContext).Text;
@@ -108,7 +137,8 @@ namespace Framefield.Tooll
 
 
 
-        private void HandleMouseUp(object sender, MouseButtonEventArgs e) {
+        private void HandleMouseUp(object sender, MouseButtonEventArgs e) 
+        {
             var userControl = sender as Control;
             if (userControl == null)
                 return;
@@ -130,9 +160,13 @@ namespace Framefield.Tooll
 
         private void TextChangedHandler(Object sender, TextChangedEventArgs e)
         {
+            if (_updateValueCommand == null)
+                return;
+
             _updateValueCommand.Value = new Text(XTextEdit.XTextEdit.Text);
             _updateValueCommand.Do();
             App.Current.UpdateRequiredAfterUserInteraction = true;
+            UpdateGUI();
         }
 
         private void XTextEdit_EditingStarted()
@@ -153,13 +187,53 @@ namespace Framefield.Tooll
         {
             if (_updateValueCommand == null)
             {
-                // we're not editing, so update value visualization accordingly to change
-                var textValue = (ValueHolder.Func as Utilities.ValueFunction).Value as Text;
-                if (textValue != null)
+                // We're not editing, so update value visualization accordingly to change
+
+                string textString = "";
+                if (IsConnected)
                 {
-                    XTextEdit.XButton.Content = textValue.Val;
+                    textString =  ValueHolder.Eval(new Core.OperatorPartContext()).Text;
                 }
+                else
+                {
+                    var textValue = (ValueHolder.Func as Utilities.ValueFunction).Value as Text;
+                    if (textValue != null)
+                    {
+                        textString = textValue.Val;
+                    }                    
+                }
+                XTextEdit.XButton.Content = textString;
+                XTextEdit.XTextEdit.Text = textString;
+                UpdateGUI();
             }
+        }
+
+
+        #region update user interface
+        //-----------------------------------------------------------------------------------
+        // Helper Functions to update UI
+
+        private void UpdateGUI()
+        {
+            if (ValueHolder.Connections.Count > 0)
+            {
+                XTextEdit.XButton.Foreground = Brushes.DodgerBlue;
+                XTextEdit.IsEnabled = false;
+            }
+            else
+            {
+                XTextEdit.XButton.Foreground = Brushes.White;
+                XTextEdit.IsEnabled = true;
+            }
+        }
+        #endregion
+
+
+
+
+        private bool IsConnected
+        {
+            get { return ValueHolder != null && ValueHolder.Connections.Count > 0; }
         }
 
         private UpdateOperatorPartValueFunctionCommand _updateValueCommand;

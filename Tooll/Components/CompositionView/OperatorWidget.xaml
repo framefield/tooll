@@ -62,7 +62,7 @@
 
 
         <!-- Input range seperation lines -->
-        <Grid Name="inputSeparators"/>
+        <Canvas Name="XInputSeparators"/>
 
         <Canvas Name="XInputZoneIndicators"/>
 
