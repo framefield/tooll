@@ -201,8 +201,8 @@ namespace Framefield.Tooll
                 {"g", 2},
                 {"b", 3},
                 {"width", 1},
-                {"height", 1},
-                {"depth", 1},
+                {"height", 2},
+                {"depth", 3},
             };
 
             var index = 0;
