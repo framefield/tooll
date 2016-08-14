@@ -31,6 +31,8 @@ namespace Framefield.Tooll
     class AnimationCurveEditor: CurveEditor
     {
 
+
+
         ObservableCollection<ICurve> m_FocusedCurves  = new ObservableCollection<ICurve>();
         public ObservableCollection<ICurve> FocusedCurves
         { 
@@ -47,7 +49,8 @@ namespace Framefield.Tooll
         {
             m_FocusedCurves.CollectionChanged +=new System.Collections.Specialized.NotifyCollectionChangedEventHandler(m_FocusedCurves_CollectionChanged);
             XHorizontalScaleLines.Visibility= System.Windows.Visibility.Collapsed;
-            
+          
+  
         }
 
         void m_FocusedCurves_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -163,8 +166,11 @@ namespace Framefield.Tooll
                             continue;
 
                         var animationCurve = animationOpPart.Func as ICurve;
+                        
                         if (animationCurve == null)
                             continue;
+
+                        animationCurve.ComponentIndex = GetComponentIndexFromParameterName(input.Name);
 
                         if (m_FocusedCurves.Count == 0 ||m_FocusedCurves.Contains(animationCurve))
                         {
@@ -176,6 +182,32 @@ namespace Framefield.Tooll
                 }
             }
             SetCurveOperators(animationCurves);
+        }
+
+        private int GetComponentIndexFromParameterName(string name)
+        {
+            var parts = name.Split('.');
+            if (parts.Length == 0)
+                return 0;
+
+            var suffix = parts[parts.Length - 1];
+
+            var suffixesWithIndeces = new Dictionary<string,int>() 
+            {
+                {"x", 1},
+                {"y", 2},
+                {"z", 3},
+                {"r", 1},
+                {"g", 2},
+                {"b", 3},
+                {"width", 1},
+                {"height", 1},
+                {"depth", 1},
+            };
+
+            var index = 0;
+            suffixesWithIndeces.TryGetValue(suffix.ToLower(), out index);
+            return index;
         }
 
         public override double UOffset

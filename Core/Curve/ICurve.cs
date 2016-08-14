@@ -1,12 +1,8 @@
 // Copyright (c) 2016 Framefield. All rights reserved.
 // Released under the MIT license. (see LICENSE.txt)
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Framefield.Core.Curve
 {
@@ -29,10 +25,12 @@ namespace Framefield.Core.Curve
         void AddOrUpdateV(double u, VDefinition v);
         void RemoveV(double u);
         void MoveV(double u, double newU);
+
         List<KeyValuePair<double, VDefinition>> GetPoints();
 
         VDefinition GetV(double u);
         double GetSampledValue(double u);
-    }
 
+        int ComponentIndex { get; set; }
+    }
 }
