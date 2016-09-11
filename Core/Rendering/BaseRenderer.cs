@@ -557,7 +557,7 @@ namespace Framefield.Core.Rendering
                     blendStateDescription.RenderTarget[0].SourceBlend = BlendOption.SourceAlpha;
                     blendStateDescription.RenderTarget[0].DestinationBlend = BlendOption.InverseSourceAlpha;
                     blendStateDescription.RenderTarget[0].BlendOperation = BlendOperation.Add;
-                    blendStateDescription.RenderTarget[0].SourceAlphaBlend = BlendOption.SourceAlpha;
+                    blendStateDescription.RenderTarget[0].SourceAlphaBlend = BlendOption.One;
                     blendStateDescription.RenderTarget[0].DestinationAlphaBlend = BlendOption.InverseSourceAlpha;
                     blendStateDescription.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
                     blendStateDescription.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
