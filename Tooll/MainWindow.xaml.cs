@@ -1288,8 +1288,20 @@ namespace Framefield.Tooll
 
         private Dictionary<String, String> _assetFiles = new Dictionary<string, string>();
 
-        private void ScanAssetDirectory(String path) {
-            foreach (var filename in Directory.GetFiles(path)) {
+        private void ScanAssetDirectory(String path)
+        {
+            string[] files = new string[0];
+            try
+            {
+                files = Directory.GetFiles(path);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Logger.Warn( String.Format("unable to access directory '{0}'. \nThis could be due to a broken file-link.",path));
+                return;
+            }
+
+            foreach (var filename in files) {
                 var basename = filename.Split('\\').Last();
                 if (_assetFiles.ContainsKey(basename)) {
                     Logger.Info("Ignoring reappearing instance of file: {0}", path + "/" + basename);
