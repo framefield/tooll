@@ -92,33 +92,6 @@ namespace Framefield.Tooll.Components.CompositionView
                             // Add non-animated connections
                             relevantOrConnectedInputs.Add(input);
                         }
-                        else
-                        {
-                            // Find animation connections that are visible or routed through paraent-operator-inputs
-                            bool somethingFound = false;
-                            foreach (var c in opWidget.Operator.Parent.Definition.Connections)
-                            {
-                                if (c.SourceOpPartID == input.Connections[0].ID)
-                                {
-                                    foreach (var op in opWidget.Operator.InternalOps)
-                                    {
-                                        somethingFound = true;
-                                        if (op.ID == c.TargetOpID)
-                                        {
-                                            if (op.Visible)
-                                            {
-                                                relevantOrConnectedInputs.Add(input);
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            if (!somethingFound)
-                            {
-                                relevantOrConnectedInputs.Add(input);
-                            }                            
-                        }
                     }
                 }
             }
