@@ -409,7 +409,8 @@ namespace Framefield.Core.Rendering
                                      DepthStencilView = null,
                                      CameraProjection = Matrix.OrthoLH(1, 1, -100, 100),
                                      WorldToCamera = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
-                                     InputLayout = ScreenQuadInputLayout
+                                     InputLayout = ScreenQuadInputLayout,
+                                     BlendState = DefaultBlendState,
                                  };
 
             var shaderResourceViewDescription = new ShaderResourceViewDescription();

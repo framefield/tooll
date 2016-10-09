@@ -143,7 +143,9 @@ namespace Framefield.Core
                                      WorldToCamera = Matrix.Identity,
                                      ObjectTWorld = Matrix.Identity,
                                      TextureMatrix = Matrix.Identity,
-                                     BlendState = _blendState// OperatorPartContext.DefaultRenderer.DefaultBlendState, 
+                                     //BlendState = _blendState// OperatorPartContext.DefaultRenderer.DefaultBlendState, 
+                                     BlendState =  OperatorPartContext.DefaultRenderer.DisabledBlendState, 
+                                     //context.
                                  };
             subContext.Renderer.SetupEffect(subContext);
             subContext.Renderer.Render(subContext.Renderer._screenQuadMesh, subContext);
