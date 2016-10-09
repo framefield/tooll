@@ -122,7 +122,11 @@ namespace Framefield.Tooll
             return result;
         }
 
-        public static Format TranslateFormat(SharpDX.Direct3D11.Texture2D Texture) {
+        public static Format TranslateFormat(SharpDX.Direct3D11.Texture2D Texture)
+        {
+            if (Texture == null)
+                return SharpDX.Direct3D9.Format.Unknown;
+
             switch (Texture.Description.Format) {
                 case SharpDX.DXGI.Format.R10G10B10A2_UNorm:
                     return SharpDX.Direct3D9.Format.A2B10G10R10;

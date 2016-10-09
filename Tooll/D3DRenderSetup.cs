@@ -305,6 +305,7 @@ namespace Framefield.Tooll
             Setup(context, Operator, _renderer, worldToCamera);
 
             _imageBackgroundOperator.Outputs[0].Eval(context);
+            context.Image = null;
 
             Texture2D image = Operator.Outputs[outputIdx].Eval(new OperatorPartContext(context)).Image;
             if (image != null)
