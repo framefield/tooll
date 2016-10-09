@@ -79,18 +79,9 @@ namespace Framefield.Tooll
             if (File.Exists(@"../.dropbox"))
                 throw new ArgumentException(String.Format("Tooll may not be started within this dropbox directory.\nPlease make a local copy to your hard drive, e.g. To your desktop."));
 
-            TryToRecoverFromBackupAfterCrash();
 
-            // Start Logging
-            Directory.CreateDirectory(@"Log");
-            var logWriter = new FileWriter(String.Format(@"Log/{0}.log", DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss_fff")))
-                                {
-                                    Filter = LogEntry.EntryLevel.ALL
-                                };
-            Logger.AddWriter(logWriter);
-            Logger.Info(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP + DateTime.Now);
-            Logger.Info("Version: {0}", Core.Utilities.GetCompleteVersionString());
 
+            // Load Configu
             if (!Directory.Exists("Config"))
             {
                 Logger.Debug("Creating missing directory 'Config'...");
@@ -100,7 +91,22 @@ namespace Framefield.Tooll
             ProjectSettings = new Settings("Config/ProjectSettings.json");
             UserSettings = new Settings("Config/UserSettings.json");
 
+            if (UserSettings.GetOrSetDefault("Tooll.AutoBackupEnabled", true))
+            {
+                TryToRecoverFromBackupAfterCrash();
+            }
 
+            // Start Logging
+            Directory.CreateDirectory(@"Log");
+            var logWriter = new FileWriter(String.Format(@"Log/{0}.log", DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss_fff")))
+            {
+                Filter = LogEntry.EntryLevel.ALL
+            };
+            Logger.AddWriter(logWriter);
+            Logger.Info(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP + DateTime.Now);
+            Logger.Info("Version: {0}", Core.Utilities.GetCompleteVersionString());
+
+            
             SetupOperatorGitRepository();
 
             D3DDevice.Device = new Device(DriverType.Hardware, /*DeviceCreationFlags.Debug | */ DeviceCreationFlags.BgraSupport);
