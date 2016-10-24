@@ -7,7 +7,7 @@ namespace Framefield.Core
 {
     public static class Constants
     {
-        public static int Version { get { return 0x000207; } } //major, minor, sub, subsub (for hotfix)
+        public static int Version { get { return 0x00020800; } } //major, minor, sub, subsub (for hotfix)
         public static string VersionAsString { get { return String.Format("{0}.{1}.{2}.{3}", Version >> 24, (Version >> 16) & 0xff, (Version >> 8) & 0xff, Version & 0xff); } }
 
         public static double Epsilon { get { return 0.001; } }

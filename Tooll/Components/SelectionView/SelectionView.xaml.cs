@@ -255,9 +255,22 @@ namespace Framefield.Tooll.Components.SelectionView
             this.BorderBrush = Brushes.Black;
         }
 
-        private void XGridButton_Click(object sender, RoutedEventArgs e)
+        private void XGizmoButton_Click(object sender, RoutedEventArgs e)
         {
-            XShowSceneControl.ShowGridAndGizmos = (XGridButton.IsChecked == true);
+            XShowSceneControl.ShowGridAndGizmos = (XGizmoButton.IsChecked == true);
+
+            if (_shownOperatorWidget == null)
+                return;
+
+            // FixMe: A more efficient implementation should use InvalidateVariableAccessors()
+            var invalidator = new Framefield.Core.OperatorPart.InvalidateInvalidatables();
+            _shownOperatorWidget.Operator.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
+
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+        private void XLinearButton_Click(object sender, RoutedEventArgs e)
+        {
+            XShowSceneControl.RenderWithGammaCorrection = (XLinearButton.IsChecked == true);
 
             if (_shownOperatorWidget == null)
                 return;

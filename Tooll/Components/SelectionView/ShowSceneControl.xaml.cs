@@ -297,6 +297,7 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
         public bool ShowGridAndGizmos { get; set; }
+        public bool RenderWithGammaCorrection { get; set; }
         public bool TimeLoggingSourceEnabled { get; set; }
         public D3DRenderSetup RenderSetup { get { return _renderSetup; } set { _renderSetup = value; } }  // make D3DRenderSetup available for Fullscreen-View
 
