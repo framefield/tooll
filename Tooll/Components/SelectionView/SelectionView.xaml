@@ -40,7 +40,7 @@
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top">
             <ToggleButton x:Name="XGizmoButton" Click="XGizmoButton_Click"  IsChecked="True">Gizmos</ToggleButton>
-            <ToggleButton x:Name="XLinearButton" Click="XLinearButton_Click"  IsChecked="True">Gamma</ToggleButton>
+            <ToggleButton x:Name="XLinearButton" Click="XLinearButton_Click"  IsChecked="False">Gamma</ToggleButton>
         </StackPanel>
 
 
