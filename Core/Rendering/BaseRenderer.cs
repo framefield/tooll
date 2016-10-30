@@ -405,7 +405,6 @@ namespace Framefield.Core.Rendering
         {
             var subContext = new OperatorPartContext(context)
                                  {
-                                     Effect = ScreenRenderEffect,
                                      DepthStencilView = null,
                                      CameraProjection = Matrix.OrthoLH(1, 1, -100, 100),
                                      WorldToCamera = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
@@ -476,6 +475,7 @@ namespace Framefield.Core.Rendering
         private InputLayout _sceneDefaultInputLayout;
 
         private Effect _screenRenderEffect;
+        private Effect _screenRenderGammaCorrectionEffect;
         private InputLayout _screenQuadInputLayout;
 
         public InputLayout ScreenQuadInputLayout
@@ -502,6 +502,19 @@ namespace Framefield.Core.Rendering
                         _screenRenderEffect = new Effect(D3DDevice.Device, bytecode);
                 }
                 return _screenRenderEffect;
+            }
+        }
+
+        public Effect ScreenRenderGammaCorrectionEffect
+        {
+            get
+            {
+                if (_screenRenderGammaCorrectionEffect == null && D3DDevice.Device != null)
+                {
+                    using (var bytecode = ShaderBytecode.CompileFromFile("assets-common/fx/GammaCorrection.fx", "fx_5_0"))
+                        _screenRenderGammaCorrectionEffect = new Effect(D3DDevice.Device, bytecode);
+                }
+                return _screenRenderGammaCorrectionEffect;
             }
         }
 

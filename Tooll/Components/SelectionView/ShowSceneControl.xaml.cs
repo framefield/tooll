@@ -196,12 +196,12 @@ namespace Framefield.Tooll.Components.SelectionView
 
             var contextSettings = new ContextSettings();
             contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
-            {
-                Width = _renderSetup.WindowWidth,
-                Height = _renderSetup.WindowHeight,
-                RefreshRate = 60,
-                Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
-            };
+                                              {
+                                                  Width = _renderSetup.WindowWidth,
+                                                  Height = _renderSetup.WindowHeight,
+                                                  RefreshRate = 60,
+                                                  Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
+                                              };
             contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
 
             _defaultContext = OperatorPartContext.createDefault(contextSettings);
@@ -267,13 +267,13 @@ namespace Framefield.Tooll.Components.SelectionView
                     case FunctionType.Mesh:
                         _renderSetup.Operator = _operator;
                         var isMeshType = evaluationType == FunctionType.Mesh;
-                        _renderSetup.Render(context, _shownOutputIndex, ShowGridAndGizmos, isMeshType);
+                        _renderSetup.Render(context, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos, isMeshType);
                         _D3DImageContainer.InvalidateD3DImage();
                         break;
 
                     case FunctionType.Image:
                         _renderSetup.Operator = _operator;
-                        _renderSetup.RenderImage(context, _shownOutputIndex);
+                        _renderSetup.RenderImage(context, RenderWithGammaCorrection, _shownOutputIndex);
                         _D3DImageContainer.InvalidateD3DImage();
                         break;
                 }

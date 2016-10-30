@@ -20,7 +20,8 @@ namespace Framefield.Tooll
     {
         public Device D3DDevice { get; set; }
         private InputLayout _inputLayout;
-        private RenderTargetView _renderView;
+        private RenderTargetView _sharedTextureRenderView;
+        private RenderTargetView _sceneRenderTargetTextureRenderView;
         private Texture2D _depthTexture;
         private ShaderResourceView _texture;
         private Mesh _screenQuadMesh;
@@ -47,6 +48,8 @@ namespace Framefield.Tooll
 
         private Texture2D _sharedTexture;
         public Texture2D SharedTexture { get { return _sharedTexture; } }
+        private Texture2D _sceneRenderTargetTexture;
+        public Texture2D SceneRenderTargetTexture { get { return _sceneRenderTargetTexture; } }
         public Operator Operator { get; set; }
 
         public Vector3 CameraPosition
@@ -179,10 +182,12 @@ namespace Framefield.Tooll
 
         private void DisposeTargets()
         {
-            Utilities.DisposeObj(ref _renderView);
+            Utilities.DisposeObj(ref _sharedTextureRenderView);
+            Utilities.DisposeObj(ref _sceneRenderTargetTextureRenderView);
             Utilities.DisposeObj(ref _renderTargetDepthView);
             Utilities.DisposeObj(ref _inputLayout);
             Utilities.DisposeObj(ref _sharedTexture);
+            Utilities.DisposeObj(ref _sceneRenderTargetTexture);
             Utilities.DisposeObj(ref _depthTexture);
             Utilities.DisposeObj(ref _texture);
             Utilities.DisposeObj(ref _renderDepth);
@@ -196,12 +201,12 @@ namespace Framefield.Tooll
 
         public int IndexOfGizmoPartBelowMouse { get; set; }
 
-        public void Render(OperatorPartContext context, int outputIdx = 0, bool showGizmos = false, bool renderMesh = false)
+        public void Render(OperatorPartContext context, bool renderWithGammaCorrection, int outputIdx = 0, bool showGizmos = false, bool renderMesh = false)
         {
             context.D3DDevice = D3DDevice;
             context.Effect = _renderer.SceneDefaultEffect;
             context.InputLayout = _renderer.SceneDefaultInputLayout;
-            context.RenderTargetView = _renderView;
+            context.RenderTargetView = renderWithGammaCorrection ? _sceneRenderTargetTextureRenderView : _sharedTextureRenderView;
             context.DepthStencilView = _renderTargetDepthView;
             context.DepthStencilState = _renderer.DefaultDepthStencilState;
             context.BlendState = _renderer.DefaultBlendState;
@@ -262,6 +267,25 @@ namespace Framefield.Tooll
             {
                 EvaluateOperator(context, outputIdx, renderMesh);
             }
+
+            if (renderWithGammaCorrection)
+            {
+                // in this case we need an additional pass gamma correcting the RT Texture to the shared texture
+                context.D3DDevice = D3DDevice;
+                context.Effect = _renderer.ScreenRenderGammaCorrectionEffect;
+                context.InputLayout = _renderer.ScreenQuadInputLayout;
+                context.RenderTargetView = _sharedTextureRenderView;
+                context.DepthStencilView = null;
+                context.DepthStencilState = _renderer.DefaultDepthStencilState;
+                context.BlendState = _renderer.DisabledBlendState; // DefaultBlendState;
+                context.BlendFactor = _renderer.DefaultBlendFactor;
+                context.RasterizerState = _renderer.DefaultRasterizerState;
+                context.SamplerState = _renderer.DefaultSamplerState;
+                context.Viewport = new Viewport(0, 0, WindowWidth, WindowHeight, 0.0f, 1.0f);
+                context.Texture0 = _texture;
+
+                _renderer.RenderToScreen(_sceneRenderTargetTexture, context);
+            }
             _gpuSyncer.Sync(D3DDevice.ImmediateContext);
         }
 
@@ -283,12 +307,12 @@ namespace Framefield.Tooll
         public const string GIZMO_PART_VARIBALE_NAME = "IndexGizmoPartUnderMouse";
 
 
-        public void RenderImage(OperatorPartContext context, int outputIdx = 0)
+        public void RenderImage(OperatorPartContext context, bool withGammaCorrection, int outputIdx = 0)
         {
             context.D3DDevice = D3DDevice;
-            context.Effect = _renderer.ScreenRenderEffect;
+            context.Effect = withGammaCorrection ? _renderer.ScreenRenderGammaCorrectionEffect : _renderer.ScreenRenderEffect;
             context.InputLayout = _renderer.ScreenQuadInputLayout;
-            context.RenderTargetView = _renderView;
+            context.RenderTargetView = _sharedTextureRenderView;
             context.DepthStencilView = null;
             context.DepthStencilState = _renderer.DefaultDepthStencilState;
             context.BlendState = _renderer.DisabledBlendState; // DefaultBlendState;
@@ -380,7 +404,7 @@ namespace Framefield.Tooll
             {
                 D3DDevice = Core.D3DDevice.Device;
 
-                var colordesc = new Texture2DDescription
+                var colorDesc = new Texture2DDescription
                                     {
                                         BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                                         Format = Format.B8G8R8A8_UNorm,
@@ -408,11 +432,15 @@ namespace Framefield.Tooll
                                         ArraySize = 1
                                     };
 
-                _sharedTexture = new Texture2D(D3DDevice, colordesc);
+                _sharedTexture = new Texture2D(D3DDevice, colorDesc);
+                colorDesc.OptionFlags = ResourceOptionFlags.None;
+                colorDesc.Format = Format.R16G16B16A16_UNorm;
+                _sceneRenderTargetTexture = new Texture2D(D3DDevice, colorDesc);
                 _depthTexture = new Texture2D(D3DDevice, depthdesc);
                 _renderDepth = new Texture2D(D3DDevice, depthdesc);
 
-                _renderView = new RenderTargetView(D3DDevice, SharedTexture);
+                _sharedTextureRenderView = new RenderTargetView(D3DDevice, SharedTexture);
+                _sceneRenderTargetTextureRenderView = new RenderTargetView(D3DDevice, SceneRenderTargetTexture);
                 _renderTargetDepthView = new DepthStencilView(D3DDevice, _renderDepth);
 
                 _texture = ShaderResourceView.FromFile(D3DDevice, "./assets-common/image/white.png");

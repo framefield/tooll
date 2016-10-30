@@ -1,11 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5EB693F4-CDD7-441C-81FF-D8EB89A0506B}"
 	ProjectSection(SolutionItems) = preProject
-		..\tooll_vendor\FBX.Net\FBX.Net.sln = ..\tooll_vendor\FBX.Net\FBX.Net.sln
 		Framefield.vsmdi = Framefield.vsmdi
 		Local.testsettings = Local.testsettings
 		Performance1.psess = Performance1.psess
@@ -20,8 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperatorTester", "OperatorTester\OperatorTester.csproj", "{75CB0010-840E-4AD5-AE90-27ED65B2E9CF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTests", "CoreTests\CoreTests.csproj", "{2A6D6D67-F14A-4F12-85F1-7A95760E2357}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{E5048C20-4BC8-4063-90E1-622DFC6E5955}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,6 +144,5 @@ Global
 		{CE285FC4-E022-4B95-AE60-979E3B200788} = {5EB693F4-CDD7-441C-81FF-D8EB89A0506B}
 		{75CB0010-840E-4AD5-AE90-27ED65B2E9CF} = {5EB693F4-CDD7-441C-81FF-D8EB89A0506B}
 		{2A6D6D67-F14A-4F12-85F1-7A95760E2357} = {5EB693F4-CDD7-441C-81FF-D8EB89A0506B}
-		{E5048C20-4BC8-4063-90E1-622DFC6E5955} = {5EB693F4-CDD7-441C-81FF-D8EB89A0506B}
 	EndGlobalSection
 EndGlobal
