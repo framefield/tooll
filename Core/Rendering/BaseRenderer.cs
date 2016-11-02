@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SharpDX;
 using SharpDX.Direct3D;
@@ -354,7 +353,16 @@ namespace Framefield.Core.Rendering
 
             var v2 = effect.GetVariableByName("txDiffuse").AsShaderResource();
             v2.SetResource(context.Texture0);
+
+            var v3 = effect.GetVariableByName("cubeMapSideIndex");
+            if (v3 != null && v3.IsValid)
+            {
+                float index = 0;
+                context.Variables.TryGetValue(OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX, out index);
+                v3.AsScalar().Set((int)index);
+            }
         }
+        
 
         public virtual void Render(Mesh mesh, OperatorPartContext context)
         {
@@ -401,8 +409,11 @@ namespace Framefield.Core.Rendering
             }
         }
 
+
+
         public virtual void RenderToScreen(Texture2D image, OperatorPartContext context)
         {
+
             var subContext = new OperatorPartContext(context)
                                  {
                                      DepthStencilView = null,
@@ -415,6 +426,7 @@ namespace Framefield.Core.Rendering
             var shaderResourceViewDescription = new ShaderResourceViewDescription();
             if (image.Description.ArraySize > 1)
             {
+                // Assume its a Cube-map
                 shaderResourceViewDescription.Format = image.Description.Format;
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
                 shaderResourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource
@@ -427,12 +439,14 @@ namespace Framefield.Core.Rendering
             }
             else if (image.Description.Format == Format.R32_Typeless)
             {
+                // Depth-Buffer
                 shaderResourceViewDescription.Format = Format.R32_Float;
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
                 shaderResourceViewDescription.Texture2D.MipLevels = 1;
             }
             else
             {
+                // Normal Texture
                 shaderResourceViewDescription.Format = image.Description.Format; 
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
                 shaderResourceViewDescription.Texture2D = new ShaderResourceViewDescription.Texture2DResource
@@ -475,6 +489,7 @@ namespace Framefield.Core.Rendering
         private InputLayout _sceneDefaultInputLayout;
 
         private Effect _screenRenderEffect;
+        private Effect _screenQuadCubeMapSideEffect;
         private Effect _screenRenderGammaCorrectionEffect;
         private InputLayout _screenQuadInputLayout;
 
@@ -505,6 +520,19 @@ namespace Framefield.Core.Rendering
             }
         }
 
+        public Effect ScreenQuadCubeMapSideEffect
+        {
+            get
+            {
+                if (_screenQuadCubeMapSideEffect == null && D3DDevice.Device != null)
+                {
+                    using (var bytecode = ShaderBytecode.CompileFromFile("assets-common/fx/ScreenQuadCubeMapSide.fx", "fx_5_0"))
+                        _screenQuadCubeMapSideEffect = new Effect(D3DDevice.Device, bytecode);
+                }
+                return _screenQuadCubeMapSideEffect;
+            }
+        }
+
         public Effect ScreenRenderGammaCorrectionEffect
         {
             get
@@ -517,6 +545,7 @@ namespace Framefield.Core.Rendering
                 return _screenRenderGammaCorrectionEffect;
             }
         }
+
 
         private DepthStencilState _defaultDepthStencilState;
 

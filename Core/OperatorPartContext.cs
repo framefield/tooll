@@ -19,6 +19,7 @@ namespace Framefield.Core
         public static readonly string TESTS_EVALUATOR_ID = "Core.Testing.TestsEvaluator";
         public static readonly string UI_EVENT_ID = "Core.UI.Event";
         public static readonly string DEBUG_VARIABLE_NAME = "ShowDebugOverlays";
+        public static readonly string PREFERRED_CUBEMAP_SIDE_INDEX = "Tooll.UI.CubeMapSideIndex"; 
 
         public float Time { get; set; }
         public float GlobalTime { get; private set; }

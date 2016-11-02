@@ -306,6 +306,7 @@ namespace Framefield.Tooll
 
         public const string GIZMO_PART_VARIBALE_NAME = "IndexGizmoPartUnderMouse";
 
+        public int PreferredCubeMapSideIndex { get; set; }
 
         public void RenderImage(OperatorPartContext context, bool withGammaCorrection, int outputIdx = 0)
         {
@@ -334,11 +335,24 @@ namespace Framefield.Tooll
             Texture2D image = Operator.Outputs[outputIdx].Eval(new OperatorPartContext(context)).Image;
             if (image != null)
             {
+                if (image.Description.ArraySize > 1)
+                {
+                    context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = PreferredCubeMapSideIndex;
+                    context.Effect = _renderer.ScreenQuadCubeMapSideEffect;
+                }
+
                 _renderer.SetupBaseEffectParameters(context);
                 _renderer.RenderToScreen(image, context);
+                lastRenderedImageDescription = image.Description;
+            }
+            else
+            {
+                lastRenderedImageDescription = null;
             }
             _gpuSyncer.Sync(D3DDevice.ImmediateContext);
         }
+
+        public Texture2DDescription? lastRenderedImageDescription;
 
         public static void Setup(OperatorPartContext context, Operator op, DefaultRenderer renderer, Matrix worldToCamera, float nearClipping = 0.01f, float farClipping = 10000)
         {

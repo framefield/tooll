@@ -37,11 +37,43 @@ namespace Framefield.Tooll.Components.SelectionView
             int outputIdx = 0;
             foreach (var output in Operator.Outputs)
             {
+
                 var entryText = string.Format("Show Output: {0} ({1})", output.Name, outputIdx + 1);
-                var menuItem = new MenuItem { Header = entryText, IsChecked = _shownOutputIndex == outputIdx};
+                var menuItem = new MenuItem { Header = entryText, IsChecked = _shownOutputIndex == outputIdx };
                 var outputIdxClosure = outputIdx;
                 menuItem.Click += (o, args) => SelectShownOutput(outputIdxClosure);
                 ContextMenu.Items.Add(menuItem);
+
+                // Add sub menu for cube-map image selection
+                if (output.Type == FunctionType.Image)
+                {
+                    var description = XShowSceneControl.RenderSetup.lastRenderedImageDescription;
+                    if (description.HasValue)
+                    {
+                        if (description.Value.ArraySize > 1)
+                        {
+                            for (var cubeMapSideIndex = 0;
+                                cubeMapSideIndex < description.Value.ArraySize;
+                                ++cubeMapSideIndex)
+                            {
+                                var cubeMapSelectionItem = new MenuItem()
+                                {
+                                    Header = "Cube Map Side " + (cubeMapSideIndex + 1),
+                                    IsChecked = XShowSceneControl.RenderSetup.PreferredCubeMapSideIndex == cubeMapSideIndex
+                                };
+                                var cubeMapSideIndexClosure = cubeMapSideIndex;
+                                menuItem.Items.Add(cubeMapSelectionItem);
+                                cubeMapSelectionItem.Click +=
+                                    (o, args) =>
+                                    {
+                                        XShowSceneControl.RenderSetup.PreferredCubeMapSideIndex =
+                                            cubeMapSideIndexClosure;
+                                    };
+                            }
+                        }
+                    }
+                }
+
                 outputIdx++;
             }
             ContextMenu.IsOpen = true;            
