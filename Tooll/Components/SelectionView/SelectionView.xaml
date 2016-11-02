@@ -14,9 +14,14 @@
              SnapsToDevicePixels="True" 
              UseLayoutRounding="True"
              GotFocus="GotFocusHandler" 
-             LostFocus="LostFocusHandler" BorderThickness="1"
-             
-             >
+             LostFocus="LostFocusHandler" BorderThickness="1"             
+    >
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
+        <Style BasedOn="{StaticResource ToggleButtonStyle}" TargetType="{x:Type ToggleButton}"/>
+
+    </UserControl.Resources>
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Text="Nothing Selected" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
         <SelectionView:ShowCurveControl x:Name="XShowCurveControl" Visibility="Hidden"/>
@@ -40,7 +45,9 @@
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top">
             <ToggleButton x:Name="XGizmoButton" Click="XGizmoButton_Click"  IsChecked="True">Gizmos</ToggleButton>
-            <ToggleButton x:Name="XLinearButton" Click="XLinearButton_Click"  IsChecked="False">Gamma</ToggleButton>
+            <ToggleButton x:Name="XLinearButton" Click="XLinearButton_Click"  IsChecked="False">
+                <Image Source="/Tooll;component/Images/icon-key-off.png"></Image>
+            </ToggleButton>
         </StackPanel>
 
 
