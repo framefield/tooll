@@ -107,7 +107,7 @@ namespace Framefield.Core.Rendering
                     var context = new OperatorPartContext(_defaultContext, (float)_currentTime)
                     {
                         D3DDevice = D3DDevice.Device,
-                        Effect = _renderer.SceneDefaultEffect,
+                        Effect = _renderer.ScreenRenderEffect,
                         InputLayout = _renderer.SceneDefaultInputLayout,
                         RenderTargetView = _renderTargetView,
                         DepthStencilView = _renderTargetDepthView,
@@ -118,15 +118,9 @@ namespace Framefield.Core.Rendering
                         SamplerState = _renderer.DefaultSamplerState,
                         Viewport = _viewport,
                         Texture0 = _texture                        
-                    };                    
+                    };
 
-                    if (_outputOpPart.Parent.FunctionType == FunctionType.Scene)
-                    {
-
-                        _outputOpPart.Eval(context);
-                        _gpuSyncer.Sync(D3DDevice.Device.ImmediateContext);
-                    }
-                    else if (_outputOpPart.Type == FunctionType.Image)
+                    if (_outputOpPart.Type == FunctionType.Image)
                     {
                         var image = _outputOpPart.Eval(new OperatorPartContext(context)).Image;
                         if (image != null)
@@ -134,7 +128,11 @@ namespace Framefield.Core.Rendering
                             _renderer.SetupBaseEffectParameters(context);
                             _renderer.RenderToScreen(image, context);
                         }
-                        _gpuSyncer.Sync(D3DDevice.Device.ImmediateContext);                    
+                        _gpuSyncer.Sync(D3DDevice.Device.ImmediateContext);
+                    }
+                    else
+                    {
+                        Logger.Error("SequenceCreator: input is not of image type.");
                     }
 
                     var format = ImageFileFormat.Png;
