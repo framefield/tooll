@@ -38,7 +38,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             SharpDX.Vector3 viewDir;
             SharpDX.Vector3 sideDir;
             SharpDX.Vector3 upDir;
-            _renderSetup.CalcDirections(out viewDir, out sideDir, out upDir);
+            _renderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;

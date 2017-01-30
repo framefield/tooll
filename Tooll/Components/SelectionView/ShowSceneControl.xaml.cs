@@ -265,14 +265,14 @@ namespace Framefield.Tooll.Components.SelectionView
                 {
                     case FunctionType.Scene:
                     case FunctionType.Mesh:
-                        _renderSetup.Operator = _operator;
+                        _renderSetup.RenderedOperator = _operator;
                         var isMeshType = evaluationType == FunctionType.Mesh;
-                        _renderSetup.Render(context, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos, isMeshType);
+                        _renderSetup.RenderGeometry(context, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos, isMeshType);
                         _D3DImageContainer.InvalidateD3DImage();
                         break;
 
                     case FunctionType.Image:
-                        _renderSetup.Operator = _operator;
+                        _renderSetup.RenderedOperator = _operator;
                         _renderSetup.RenderImage(context, RenderWithGammaCorrection, _shownOutputIndex);
                         _D3DImageContainer.InvalidateD3DImage();
                         break;

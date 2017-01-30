@@ -378,7 +378,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private void LookAround()
         {
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.CalcDirections(out viewDir, out sideDir, out upDir);
+            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var factorX = (float) (_mouseDragDelta.X/_showSceneControl.ActualHeight*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
             var factorY = (float) (_mouseDragDelta.Y/_showSceneControl.ActualHeight*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
@@ -407,7 +407,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             Vector3 viewDir, sideDir, upDir;
             var currentTarget = _showSceneControl.RenderSetup.CameraTarget;
 
-            D3DRenderSetup.CalcDirections(currentTarget, _cameraPositionGoal, 0, out viewDir, out sideDir, out upDir);
+            D3DRenderSetup.GetViewDirections(currentTarget, _cameraPositionGoal, 0, out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -426,7 +426,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private void Pan()
         {
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.CalcDirections(out viewDir, out sideDir, out upDir);
+            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var factorX = (float) (-_mouseDragDelta.X/_showSceneControl.ActualHeight);
             var factorY = (float) (_mouseDragDelta.Y/_showSceneControl.ActualHeight);
@@ -455,7 +455,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             var frameDurationFactor = (float) (App.Current.TimeSinceLastFrame);
 
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.CalcDirections(out viewDir, out sideDir, out upDir);
+            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             var initialVelocity = MoveVelocity.Length() < STOP_DISTANCE_THRESHOLD ? INITIAL_MOVE_VELOCITY : 0;

@@ -174,10 +174,10 @@ namespace Framefield.Tooll.Components.SelectionView
             //    return;
             //var op = _showSceneControl.Operator;
             //var d3DScene = _showSceneControl.RenderSetup;
-            if (d3DScene == null || d3DScene.Operator == null || d3DScene.Operator.Outputs.Count <= 0)
+            if (d3DScene == null || d3DScene.RenderedOperator == null || d3DScene.RenderedOperator.Outputs.Count <= 0)
                 return;
 
-            var op = d3DScene.Operator;
+            var op = d3DScene.RenderedOperator;
             D3DDevice.WindowSize = new SharpDX.Size2(Size.Width, Size.Height);
             D3DDevice.TouchWidth = Size.Width;
             D3DDevice.TouchHeight = Size.Height;
@@ -210,10 +210,10 @@ namespace Framefield.Tooll.Components.SelectionView
                 Vector3 viewDir;
                 Vector3 sideDir;
                 Vector3 upDir;
-                D3DRenderSetup.CalcDirections(d3DScene.CameraTarget, d3DScene.CameraPosition, d3DScene.CameraRoll, out viewDir, out sideDir, out upDir);
+                D3DRenderSetup.GetViewDirections(d3DScene.CameraTarget, d3DScene.CameraPosition, d3DScene.CameraRoll, out viewDir, out sideDir, out upDir);
                 var worldToCamera = Matrix.LookAtLH(d3DScene.CameraPosition, d3DScene.CameraTarget, upDir);
 
-                d3DScene.Operator = op;
+                d3DScene.RenderedOperator = op;
 
                 switch (op.FunctionType)
                 {
@@ -222,7 +222,7 @@ namespace Framefield.Tooll.Components.SelectionView
                         context.InputLayout = _renderer.SceneDefaultInputLayout;
                         context.DepthStencilView = _depthStencilView;
 
-                        D3DRenderSetup.Setup(context, op, _renderer, worldToCamera);
+                        D3DRenderSetup.SetupContextForRenderingCamToBuffer(context, op, _renderer, worldToCamera);
 
                         op.Outputs[0].Eval(context);
                         break;
@@ -231,7 +231,7 @@ namespace Framefield.Tooll.Components.SelectionView
                         context.InputLayout = _renderer.ScreenQuadInputLayout;
                         context.DepthStencilView = null;
 
-                        D3DRenderSetup.Setup(context, op, _renderer, worldToCamera);
+                        D3DRenderSetup.SetupContextForRenderingCamToBuffer(context, op, _renderer, worldToCamera);
 
                         var image = op.Outputs[0].Eval(new OperatorPartContext(context)).Image;
                         if (image != null)
@@ -328,7 +328,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             var initialVelocity = _moveVelocity.Length() < Constants.Epsilon ? INITIAL_MOVE_VELOCITY : 0;
@@ -467,7 +467,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             viewDir.Normalize();
             viewDir *= 0.001f;
@@ -486,7 +486,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -512,7 +512,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -537,7 +537,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var factorX = (float) (-diff.X/Height*10.0);
@@ -557,7 +557,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.CalcDirections(out viewDir, out sideDir, out upDir);
+            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var velocity = (float) (-diff.Y/Height*5.0);

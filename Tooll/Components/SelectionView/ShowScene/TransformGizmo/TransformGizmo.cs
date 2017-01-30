@@ -137,7 +137,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
             _context = context;
             _transformGizmoTargetOp = op;
             _transformGizmoTargetValueFunction = op.Outputs[0].Func as Utilities.ValueFunction;
-            _transformGizmoTargetValueFunction.EvaluatedEvent += GizmoValueFunc_EvaluatedEvent; // Setup Evaluation Callback                
+            _transformGizmoTargetValueFunction.EvaluatedEvent += GizmoValueFunc_EvaluatedEvent; // SetupContextForRenderingCamToBuffer Evaluation Callback                
             _translateXParam.Input = _translateInputs.X;
             _translateYParam.Input = _translateInputs.Y;
             _translateZParam.Input = _translateInputs.Z;

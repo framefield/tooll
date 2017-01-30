@@ -47,7 +47,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 // Add sub menu for cube-map image selection
                 if (output.Type == FunctionType.Image)
                 {
-                    var description = XShowSceneControl.RenderSetup.lastRenderedImageDescription;
+                    var description = XShowSceneControl.RenderSetup.LastRenderedImageDescription;
                     if (description.HasValue)
                     {
                         if (description.Value.ArraySize > 1)

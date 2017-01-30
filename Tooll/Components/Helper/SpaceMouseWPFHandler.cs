@@ -45,7 +45,7 @@ namespace Framefield.Tooll.Components.Helper
             // Connect to Raw Input & find devices
             Active3DxMouse = new SpaceMouse(hwndSource.Handle);
 
-            // Setup event handlers to be called when something happens
+            // SetupContextForRenderingCamToBuffer event handlers to be called when something happens
             //Active3DxMouse.MotionEvent += MotionEventHandler;
             //Active3DxMouse.ButtonEvent += ButtonEventHandler;
 
