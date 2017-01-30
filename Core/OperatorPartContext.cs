@@ -44,6 +44,7 @@ namespace Framefield.Core
         public DepthStencilView DepthStencilView { get; set; }
         public ViewportF Viewport { get; set; }
         public ShaderResourceView Texture0 { get; set; }
+        public ShaderResourceView SkySphereSRV { get; set; }
         public InputLayout InputLayout { get; set; }
         public IRenderer Renderer { get; set; }
         public BlendState BlendState { get; set; }
@@ -121,6 +122,7 @@ namespace Framefield.Core
             DepthStencilView = other.DepthStencilView;
             Viewport = other.Viewport;
             Texture0 = other.Texture0;
+            SkySphereSRV = other.SkySphereSRV;
             Renderer = other.Renderer;
             InputLayout = other.InputLayout;
             BlendState = other.BlendState;
