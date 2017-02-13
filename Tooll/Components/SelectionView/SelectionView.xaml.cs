@@ -64,12 +64,27 @@ namespace Framefield.Tooll.Components.SelectionView
                                     XShowSceneControl.PreferredCubeMapSideIndex = cubeMapSideIndexClosure;
                                 };
                         }
+
+                        // Entry for rendering as sphere
+                        var cubeMapAsSphereItem = new MenuItem()
+                        {
+                            Header = "Cube Map as Sphere ",
+                            IsChecked = XShowSceneControl.PreferredCubeMapSideIndex == CUBE_MAP_AS_SPHERE_SIDE
+                        };
+                        menuItem.Items.Add(cubeMapAsSphereItem);
+                        cubeMapAsSphereItem.Click +=
+                            (o, args) =>
+                            {
+                                XShowSceneControl.PreferredCubeMapSideIndex = CUBE_MAP_AS_SPHERE_SIDE;
+                            };
                     }
                 }
                 outputIdx++;
             }
             ContextMenu.IsOpen = true;            
         }
+
+        private const int CUBE_MAP_AS_SPHERE_SIDE = 6;
 
         public bool TimeLoggingSourceEnabled
         {

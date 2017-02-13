@@ -34,6 +34,9 @@ namespace Framefield.Tooll
             var imageBackgroundDefinition = MetaManager.Instance.GetMetaOperator(Guid.Parse("1e4f6cd4-86fa-4c8f-833c-0b8c128cf221"));
             _imageBackgroundOperator = imageBackgroundDefinition.CreateOperator(Guid.Empty);
 
+            var cubemapSphereDefinition = MetaManager.Instance.GetMetaOperator(Guid.Parse("276da400-ea2d-4769-9e69-07dd652c928e"));
+            _cubemapSphereOperator = cubemapSphereDefinition.CreateOperator(Guid.Empty);
+
             TransformGizmo = new TransformGizmo();
         }
 
@@ -160,6 +163,7 @@ namespace Framefield.Tooll
             DisposeTargets();
             Utilities.DisposeObj(ref _sceneGridOperator);
             Utilities.DisposeObj(ref _imageBackgroundOperator);
+            Utilities.DisposeObj(ref _cubemapSphereOperator);
         }
 
         #region rendering geometry
@@ -247,20 +251,6 @@ namespace Framefield.Tooll
             return previousDebugSetting;
         }
 
-        private void EvaluateSceneOrMeshOperator(OperatorPartContext context, int outputIdx, bool renderAsMesh)
-        {
-            if (renderAsMesh)
-            {
-                var mesh = RenderedOperator.Outputs[outputIdx].Eval(context).Mesh;
-                context.Renderer.SetupEffect(context);
-                context.Renderer.Render(mesh, context);
-            }
-            else
-            {
-                // scene renders itself
-                RenderedOperator.Outputs[outputIdx].Eval(context);
-            }
-        }
 
         public const string GIZMO_PART_VARIBALE_NAME = "IndexGizmoPartUnderMouse";
 
@@ -284,7 +274,7 @@ namespace Framefield.Tooll
             if (cubemapSide > -1)
             {
                 context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = cubemapSide;
-                context.Effect = _renderer.ScreenQuadCubeMapSideEffect;                
+                context.Effect = _renderer.ScreenQuadCubeMapSideEffect;
             }
 
             _renderer.SetupBaseEffectParameters(context);
@@ -293,7 +283,23 @@ namespace Framefield.Tooll
             _gpuSyncer.Sync(D3DDevice.ImmediateContext);
         }
 
-        //public int PreferredCubeMapSideIndex { get; set; }
+
+        public void RenderCubemapAsSphere(Texture2D cubeMapImage, OperatorPartContext context, bool withGammaCorrection)
+        {
+            // Set cubemap to context
+            var _texture = new ShaderResourceView(context.D3DDevice, cubeMapImage);
+            if (_texture == null)
+                return;
+
+            context.SkySphereSRV = _texture;
+
+            Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
+            {
+                _cubemapSphereOperator.Outputs[0].Eval(context);
+            };
+            
+            RenderGeometry(context, lambdaForMeshes, withGammaCorrection, 0);
+        }
         #endregion
 
 
@@ -488,6 +494,7 @@ namespace Framefield.Tooll
         private BlockingGpuSyncer _gpuSyncer;
         private Operator _sceneGridOperator;
         private Operator _imageBackgroundOperator;
+        private Operator _cubemapSphereOperator;
 
         private InputLayout _inputLayout;
         private RenderTargetView _sharedTextureRenderView;

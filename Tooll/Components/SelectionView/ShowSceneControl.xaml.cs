@@ -289,7 +289,13 @@ namespace Framefield.Tooll.Components.SelectionView
 
                         RenderedImageIsACubemap = image.Description.ArraySize > 1;
                         var cubeMapSide = RenderedImageIsACubemap ? PreferredCubeMapSideIndex : -1;
-                        _renderSetup.RenderImage(image, context, RenderWithGammaCorrection, cubeMapSide);
+                        if (cubeMapSide == 6)
+                        {
+                            _renderSetup.RenderCubemapAsSphere(image, context, RenderWithGammaCorrection);
+                        }
+                        else {
+                            _renderSetup.RenderImage(image, context, RenderWithGammaCorrection, cubeMapSide);
+                        }                        
                         break;
                 }
                 _D3DImageContainer.InvalidateD3DImage();
