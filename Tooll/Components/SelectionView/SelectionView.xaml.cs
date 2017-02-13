@@ -47,33 +47,25 @@ namespace Framefield.Tooll.Components.SelectionView
                 // Add sub menu for cube-map image selection
                 if (output.Type == FunctionType.Image)
                 {
-                    var description = XShowSceneControl.RenderSetup.LastRenderedImageDescription;
-                    if (description.HasValue)
+                    if (XShowSceneControl.RenderedImageIsACubemap)
                     {
-                        if (description.Value.ArraySize > 1)
+                        for (var cubeMapSideIndex = 0; cubeMapSideIndex < 6; ++cubeMapSideIndex)
                         {
-                            for (var cubeMapSideIndex = 0;
-                                cubeMapSideIndex < description.Value.ArraySize;
-                                ++cubeMapSideIndex)
+                            var cubeMapSelectionItem = new MenuItem()
                             {
-                                var cubeMapSelectionItem = new MenuItem()
+                                Header = "Cube Map Side " + (cubeMapSideIndex + 1),
+                                IsChecked = XShowSceneControl.PreferredCubeMapSideIndex == cubeMapSideIndex
+                            };
+                            var cubeMapSideIndexClosure = cubeMapSideIndex;
+                            menuItem.Items.Add(cubeMapSelectionItem);
+                            cubeMapSelectionItem.Click +=
+                                (o, args) =>
                                 {
-                                    Header = "Cube Map Side " + (cubeMapSideIndex + 1),
-                                    IsChecked = XShowSceneControl.RenderSetup.PreferredCubeMapSideIndex == cubeMapSideIndex
+                                    XShowSceneControl.PreferredCubeMapSideIndex = cubeMapSideIndexClosure;
                                 };
-                                var cubeMapSideIndexClosure = cubeMapSideIndex;
-                                menuItem.Items.Add(cubeMapSelectionItem);
-                                cubeMapSelectionItem.Click +=
-                                    (o, args) =>
-                                    {
-                                        XShowSceneControl.RenderSetup.PreferredCubeMapSideIndex =
-                                            cubeMapSideIndexClosure;
-                                    };
-                            }
                         }
                     }
                 }
-
                 outputIdx++;
             }
             ContextMenu.IsOpen = true;            

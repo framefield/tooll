@@ -164,20 +164,11 @@ namespace Framefield.Tooll
 
         #region rendering geometry
 
-        public void RenderGeometry(OperatorPartContext context, bool renderWithGammaCorrection, int outputIdx = 0, bool showGizmos = false, bool renderAsMesh = false)
+
+        public void RenderGeometry(OperatorPartContext context, Action<OperatorPartContext, int> evaluateMeshOrScene, bool renderWithGammaCorrection, int outputIdx = 0,
+            bool showGizmos = false)
         {
-            SetupContextForRenderingGeometry(context, renderWithGammaCorrection);
-
-            Vector3 viewDir, sideDir, upDir;
-            GetViewDirections(out viewDir, out sideDir, out upDir);
-            var worldToCamera = Matrix.LookAtLH(CameraPosition, CameraTarget, upDir);
-
-            // Find a nice balance between small and large objects (probably skyspheres)
-            var zoomLength = (CameraPosition - CameraTarget).Length();
-            var farClipping = (zoomLength*2) + 5000;
-            var nearClipping = zoomLength/100;
-
-            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float)nearClipping, (float)farClipping);
+            SetupContextForGeometry(context, renderWithGammaCorrection);
 
             LastContext = context;  // Make context accessible to read last camera position
 
@@ -186,23 +177,18 @@ namespace Framefield.Tooll
                 // Check the selected operators for attributes that can be show as Gizmo
                 var selectedOps = (from selectable in App.Current.MainWindow.CompositionView.CompositionGraphView.SelectionHandler.SelectedElements
                                    select selectable as OperatorWidget
-                                   into opWidget
-                                   where opWidget != null && opWidget.Operator.Outputs.Any()
-                                   select opWidget.Operator).ToArray();
+                                       into opWidget
+                                       where opWidget != null && opWidget.Operator.Outputs.Any()
+                                       select opWidget.Operator).ToArray();
 
                 TransformGizmo.SetupEvalCallbackForSelectedTransformOperators(selectedOps, context);
 
                 // Override DebugSetting with ShowGizmo-Setting
-                float? previousDebugSetting = null;
-                if (context.Variables.ContainsKey(OperatorPartContext.DEBUG_VARIABLE_NAME))
-                {
-                    previousDebugSetting = context.Variables[OperatorPartContext.DEBUG_VARIABLE_NAME];
-                }
+                var previousDebugSetting = GetDebugSettingFromContextVariables(context);
                 context.Variables[OperatorPartContext.DEBUG_VARIABLE_NAME] = 1;
                 context.Variables[GIZMO_PART_VARIBALE_NAME] = IndexOfGizmoPartBelowMouse;
 
-                // Evaluate the scene
-                EvaluateSceneOrMeshOperator(context, outputIdx, renderAsMesh);
+                evaluateMeshOrScene(context, outputIdx);
 
                 // Render Grid and Gizmos
                 _sceneGridOperator.Outputs[0].Eval(context);
@@ -220,21 +206,50 @@ namespace Framefield.Tooll
             }
             else
             {
-                EvaluateSceneOrMeshOperator(context, outputIdx, renderAsMesh);
+                evaluateMeshOrScene(context, outputIdx);
             }
 
+            // With gamma correction we need an additional pass gamma correcting the RT Texture to the shared texture
             if (renderWithGammaCorrection)
-            {
-                // In this case we need an additional pass gamma correcting the RT Texture to the shared texture
-                SetupContextForRenderingImage(context, withGammaCorrection:true);
+            {                
+                SetupContextForRenderingImage(context, withGammaCorrection: true);
                 _renderer.RenderToScreen(_sceneRenderTargetTexture, context);
             }
             _gpuSyncer.Sync(D3DDevice.ImmediateContext);
         }
 
-        private void EvaluateSceneOrMeshOperator(OperatorPartContext context, int outputIdx, bool renderMesh)
+
+        private void SetupContextForGeometry(OperatorPartContext context, bool renderWithGammaCorrection)
         {
-            if (renderMesh)
+            SetupContextForRenderingGeometry(context, renderWithGammaCorrection);
+
+            Vector3 viewDir, sideDir, upDir;
+            GetViewDirections(out viewDir, out sideDir, out upDir);
+            var worldToCamera = Matrix.LookAtLH(CameraPosition, CameraTarget, upDir);
+
+            // Find a nice balance between small and large objects (probably skyspheres)
+            var zoomLength = (CameraPosition - CameraTarget).Length();
+            var farClipping = (zoomLength*2) + 5000;
+            var nearClipping = zoomLength/100;
+
+            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float) nearClipping,
+                (float) farClipping);
+        }
+
+
+        private static float? GetDebugSettingFromContextVariables(OperatorPartContext context)
+        {
+            float? previousDebugSetting = null;
+            if (context.Variables.ContainsKey(OperatorPartContext.DEBUG_VARIABLE_NAME))
+            {
+                previousDebugSetting = context.Variables[OperatorPartContext.DEBUG_VARIABLE_NAME];
+            }
+            return previousDebugSetting;
+        }
+
+        private void EvaluateSceneOrMeshOperator(OperatorPartContext context, int outputIdx, bool renderAsMesh)
+        {
+            if (renderAsMesh)
             {
                 var mesh = RenderedOperator.Outputs[outputIdx].Eval(context).Mesh;
                 context.Renderer.SetupEffect(context);
@@ -253,10 +268,8 @@ namespace Framefield.Tooll
 
 
         #region rendering images
-
-        public void RenderImage(OperatorPartContext context, bool withGammaCorrection, int outputIdx = 0)
+        public void RenderImage( Texture2D image,  OperatorPartContext context, bool withGammaCorrection, int cubemapSide = -1)
         {
-
             SetupContextForRenderingImage(context,  withGammaCorrection);
 
             Vector3 viewDir, sideDir, upDir;
@@ -268,28 +281,19 @@ namespace Framefield.Tooll
             _imageBackgroundOperator.Outputs[0].Eval(context);
             context.Image = null;
 
-            var image = RenderedOperator.Outputs[outputIdx].Eval(new OperatorPartContext(context)).Image;
-            if (image != null)
+            if (cubemapSide > -1)
             {
-                if (image.Description.ArraySize > 1)
-                {
-                    context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = PreferredCubeMapSideIndex;
-                    context.Effect = _renderer.ScreenQuadCubeMapSideEffect;
-                }
+                context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = cubemapSide;
+                context.Effect = _renderer.ScreenQuadCubeMapSideEffect;                
+            }
 
-                _renderer.SetupBaseEffectParameters(context);
-                _renderer.RenderToScreen(image, context);
-                LastRenderedImageDescription = image.Description;
-            }
-            else
-            {
-                LastRenderedImageDescription = null;
-            }
+            _renderer.SetupBaseEffectParameters(context);
+            _renderer.RenderToScreen(image, context);
+
             _gpuSyncer.Sync(D3DDevice.ImmediateContext);
         }
-        public Texture2DDescription? LastRenderedImageDescription;  // This is used for figure out of format is a cube-map
-        public int PreferredCubeMapSideIndex { get; set; }
 
+        //public int PreferredCubeMapSideIndex { get; set; }
         #endregion
 
 

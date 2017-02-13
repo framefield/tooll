@@ -252,31 +252,48 @@ namespace Framefield.Tooll.Components.SelectionView
             {
                 var context = new OperatorPartContext(_defaultContext, (float)App.Current.Model.GlobalTime);
 
-                // FIXME: the following lines are commented out to enable different values for debugOverlay-Variable
-                //if (context.Time != _previousTime)
-                //{
                 var invalidator = new OperatorPart.InvalidateInvalidatables();
                 _operator.Outputs[_shownOutputIndex].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
-                //_previousTime = context.Time;
-                //}
+
+                _renderSetup.RenderedOperator = _operator;
 
                 var evaluationType = _operator.Outputs[_shownOutputIndex].Type;
+
                 switch (evaluationType)
                 {
                     case FunctionType.Scene:
-                    case FunctionType.Mesh:
-                        _renderSetup.RenderedOperator = _operator;
-                        var isMeshType = evaluationType == FunctionType.Mesh;
-                        _renderSetup.RenderGeometry(context, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos, isMeshType);
-                        _D3DImageContainer.InvalidateD3DImage();
+                        Action<OperatorPartContext, int> lambdaForScenes = (OperatorPartContext context2, int outputIdx) =>
+                                                                  {
+                                                                      _operator.Outputs[outputIdx].Eval(context);
+                                                                  };
+                        _renderSetup.RenderGeometry(context, lambdaForScenes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
+
                         break;
 
+                    case FunctionType.Mesh:
+                    {
+                        Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
+                                                                  {
+                                                                      var mesh = _operator.Outputs[outputIdx].Eval(context2).Mesh;
+                                                                      context2.Renderer.SetupEffect(context2);
+                                                                      context2.Renderer.Render(mesh, context2);
+                                                                  };
+                        _renderSetup.RenderGeometry(context, lambdaForMeshes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
+                        break;
+                    }
+
                     case FunctionType.Image:
-                        _renderSetup.RenderedOperator = _operator;
-                        _renderSetup.RenderImage(context, RenderWithGammaCorrection, _shownOutputIndex);
-                        _D3DImageContainer.InvalidateD3DImage();
+                        var image = _operator.Outputs[_shownOutputIndex].Eval(new OperatorPartContext(context)).Image;
+                        if (image == null)
+                            break;
+
+                        RenderedImageIsACubemap = image.Description.ArraySize > 1;
+                        var cubeMapSide = RenderedImageIsACubemap ? PreferredCubeMapSideIndex : -1;
+                        _renderSetup.RenderImage(image, context, RenderWithGammaCorrection, cubeMapSide);
                         break;
                 }
+                _D3DImageContainer.InvalidateD3DImage();
+
             }
             catch (Exception exception)
             {
@@ -287,6 +304,12 @@ namespace Framefield.Tooll.Components.SelectionView
             if (TimeLoggingSourceEnabled)
                 TimeLogger.EndFrame();
         }
+
+        public bool RenderedImageIsACubemap;
+        public int PreferredCubeMapSideIndex { get; set; }
+
+
+
         #endregion
 
 
