@@ -16,7 +16,7 @@ Dim filename
 filename = WScript.Arguments(0) & "BuildProperties.cs"
 
 'we assume that only the build server sets the correct parameters otherwise this must be a local build
-if WScript.Arguments.Count > 1 then
+if WScript.Arguments.Count >= 4 then
     buildNr = WScript.Arguments(1)
     branchName = WScript.Arguments(2)
     revisionHash = WScript.Arguments(3)
