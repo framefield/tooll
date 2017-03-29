@@ -287,11 +287,11 @@ namespace Framefield.Tooll
         public void RenderCubemapAsSphere(Texture2D cubeMapImage, OperatorPartContext context, bool withGammaCorrection)
         {
             // Set cubemap to context
-            var _texture = new ShaderResourceView(context.D3DDevice, cubeMapImage);
-            if (_texture == null)
+            var texture = new ShaderResourceView(context.D3DDevice, cubeMapImage);
+            if (texture == null)
                 return;
 
-            context.SkySphereSRV = _texture;
+            context.SkySphereSRV = texture;
 
             Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
             {

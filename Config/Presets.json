@@ -5582,6 +5582,38 @@
       "Id": "0d5020d6-2953-4731-a494-50deed6b4484"
     }
   ],
+  "353cea99-ca2e-4eec-8f0f-02f4fb4c7336": [
+    {
+      "ValuesByParameterID": {
+        "0adfba7b-8bb0-42d1-8cdc-7a5115f13d30": 4.57,
+        "7d537a96-0ed8-43cd-9ac9-bb4514cd08ea": -0.09,
+        "b3fda468-c8ad-49cd-bd91-5942aa089a04": -0.7709999
+      },
+      "MetaOperatorID": "353cea99-ca2e-4eec-8f0f-02f4fb4c7336",
+      "Name": null,
+      "Id": "a988a521-b762-4641-a164-3ddb4ee9f936"
+    },
+    {
+      "ValuesByParameterID": {
+        "0adfba7b-8bb0-42d1-8cdc-7a5115f13d30": 1.0,
+        "7d537a96-0ed8-43cd-9ac9-bb4514cd08ea": 0.05,
+        "b3fda468-c8ad-49cd-bd91-5942aa089a04": 0.37
+      },
+      "MetaOperatorID": "353cea99-ca2e-4eec-8f0f-02f4fb4c7336",
+      "Name": null,
+      "Id": "003b1a41-2b7d-4fe9-9ded-761afa1e7a84"
+    },
+    {
+      "ValuesByParameterID": {
+        "0adfba7b-8bb0-42d1-8cdc-7a5115f13d30": 1.0,
+        "7d537a96-0ed8-43cd-9ac9-bb4514cd08ea": 0.05,
+        "b3fda468-c8ad-49cd-bd91-5942aa089a04": 1.91
+      },
+      "MetaOperatorID": "353cea99-ca2e-4eec-8f0f-02f4fb4c7336",
+      "Name": null,
+      "Id": "a5fef7c7-3794-465b-98e9-500053d2d7e1"
+    }
+  ],
   "35b0e458-a718-4b93-87e0-83322e46a70f": [
     {
       "ValuesByParameterID": {
