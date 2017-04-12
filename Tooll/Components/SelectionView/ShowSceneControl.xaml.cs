@@ -283,6 +283,8 @@ namespace Framefield.Tooll.Components.SelectionView
                     }
 
                     case FunctionType.Image:
+                        _renderSetup.SetupContextForRenderingImage(context, RenderWithGammaCorrection);
+
                         var image = _operator.Outputs[_shownOutputIndex].Eval(new OperatorPartContext(context)).Image;
                         if (image == null)
                             break;

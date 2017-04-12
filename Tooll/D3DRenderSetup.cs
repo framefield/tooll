@@ -260,8 +260,6 @@ namespace Framefield.Tooll
         #region rendering images
         public void RenderImage( Texture2D image,  OperatorPartContext context, bool withGammaCorrection, int cubemapSide = -1)
         {
-            SetupContextForRenderingImage(context,  withGammaCorrection);
-
             Vector3 viewDir, sideDir, upDir;
             GetViewDirections(out viewDir, out sideDir, out upDir);
             var worldToCamera = Matrix.LookAtLH(CameraPosition, CameraTarget, upDir);
@@ -439,7 +437,7 @@ namespace Framefield.Tooll
             context.Texture0 = _texture;
         }
 
-        private void SetupContextForRenderingImage(OperatorPartContext context, bool withGammaCorrection)
+        public void SetupContextForRenderingImage(OperatorPartContext context, bool withGammaCorrection)
         {
             context.Effect = withGammaCorrection ? _renderer.ScreenRenderGammaCorrectionEffect : _renderer.ScreenRenderEffect;
             context.D3DDevice = D3DDevice;
