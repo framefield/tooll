@@ -391,6 +391,86 @@ namespace Framefield.Core
             return String.Format("T2 - {0}.{1} ({2}, {3})", Constants.VersionAsString, BuildProperties.Build,
                                  BuildProperties.Branch, BuildProperties.CommitShort);
         }
+
+        public static float Noise(int x, int seed)
+        {
+            int n = x + seed * 137;
+            n = (n << 13) ^ n;
+            return (float)(1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+        }
+
+        //public static float Lerp(float a, float b, float t)
+        //{
+        //    return a + t * (b - a);
+        //}
+
+        public static float Fade(float t)
+        {
+            return t * t * t * (t * (t * 6 - 15) + 10);
+        }
+
+        public static float Interpolate(float a, float b, float t)
+        {
+            float ft = t * 3.1415927f;
+            float f = (float)(1.0 - Math.Cos(ft)) * 0.5f;
+            return (float)(a * (1.0f - f) + b * f);
+        }
+
+        public static float PerlinNoise(float u, float seed, int octaves)
+        {
+            var noiseSum = 0.0f;
+            var period = 1f;
+            var zoom = 1f;
+            for (var a = 0; a < octaves - 1; a++)
+            {
+                var frequency = (float)Math.Pow(2, a);
+                var amplitude = (float)Math.Pow(period, a);
+
+                var v = u * frequency / zoom + seed * 12.468f;
+
+                noiseSum += Lerp(Noise((int)v, (int)seed),
+                    Noise((int)v + 1, (int)seed),
+                    Fade(v - (float)Math.Floor(v))
+                    ) * amplitude;
+            }
+            return noiseSum;
+        }
+
+        public static Vector3 PerlinNoise3(float u, float seed = 1, int octaves = 2)
+        {
+            var noiseSum = Vector3.Zero;
+            var period = 1f;
+            var zoom = 1f;
+
+            for (var a = 0; a < octaves - 1; a++)
+            {
+                var frequency = (float)Math.Pow(2, a);
+                var amplitude = (float)Math.Pow(period, a);
+
+                //var v = u * frequency / zoom + seed * 12.468f;
+                var vInt = (int)(u*frequency);
+                var vInt1 = vInt + 1;
+
+                var n1 = new Vector3(
+                    Noise(vInt, (int)seed),
+                    Noise(vInt, (int)(seed + 12.1f)),
+                    Noise(vInt, (int)(seed + 1314.1f))
+                    );
+                var n2 = new Vector3(
+                    Noise(vInt1, (int)seed),
+                    Noise(vInt1, (int)(seed + 12.1f)),
+                    Noise(vInt1, (int)(seed + 1314.1f))
+                    );
+                noiseSum += Vector3.Lerp(n1, n2, Fade(u - (float)Math.Floor(u))) * amplitude;
+                //noiseSum += Lerp(
+                //    Noise((int)v, (int)seed),
+                //    Noise((int)v + 1, (int)seed),
+                //    Fade(v - (float)Math.Floor(v))
+                //) * amplitude;
+            }
+            return noiseSum;
+        }
+
     }
 
     public static class CrashReporter
@@ -585,7 +665,7 @@ namespace Framefield.Core
                 {
                     _speed -= Acceleration*timeFragment;
                 }
-                    // accelerate neg 
+                // accelerate neg 
                 else if (Math.Abs(distance) > distanceBrake)
                 {
                     if (Math.Abs(_speed) < _maxSpeed)
@@ -598,7 +678,7 @@ namespace Framefield.Core
                     }
                 }
 
-                    //
+                //
                 else
                 {
                     if (Math.Abs(distance) < Precision*5.0 && Math.Abs(Acceleration) < Precision)
@@ -616,7 +696,7 @@ namespace Framefield.Core
                     _speed += Acceleration*timeFragment;
                 }
 
-                    // accelerate neg
+                // accelerate neg
                 else if (Math.Abs(distance) > distanceBrake)
                 {
                     if (Math.Abs(_speed) < _maxSpeed)
@@ -628,7 +708,7 @@ namespace Framefield.Core
                         _speed *= 0.99;
                     }
                 }
-                    // deccalerate neg
+                // deccalerate neg
                 else
                 {
                     if (Math.Abs(distance) < Precision*5.0 && Math.Abs(Acceleration) < Precision)
@@ -692,7 +772,8 @@ namespace Framefield.Core
         /// <param name="time"></param>
         /// <param name="speed"></param>
         /// <param name="maxSpeed"></param>
-        public void AnimateTo(double value, double time = Double.NaN, double speed = double.NaN, double maxSpeed = Double.PositiveInfinity)
+        public void AnimateTo(double value, double time = Double.NaN, double speed = double.NaN,
+            double maxSpeed = Double.PositiveInfinity)
         {
             _maxSpeed = maxSpeed;
 
@@ -745,6 +826,10 @@ namespace Framefield.Core
                 max = min;
             _max = max;
         }
-    }
 
+
+
+
+
+    }
 }
