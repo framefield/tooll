@@ -65,4 +65,22 @@ namespace Framefield.Core
         public Texture2D NormalMap { get { return null; } }
         public Texture2D AO { get { return null; } }
     }
+
+    public interface IPbrImageBasedLightingSetup
+    {
+        Texture2D PrefilteredSpecularCubeMap { get; }
+        Texture2D BrdfLookupTexture { get; }
+        Matrix DiffuseR { get; }
+        Matrix DiffuseG { get; }
+        Matrix DiffuseB { get; }
+    }
+
+    public struct DefaultPbrImageBasedLightingSetup : IPbrImageBasedLightingSetup
+    {
+        public Texture2D PrefilteredSpecularCubeMap => null;
+        public Texture2D BrdfLookupTexture => null;
+        public Matrix DiffuseR => Matrix.Identity;
+        public Matrix DiffuseG => Matrix.Identity;
+        public Matrix DiffuseB => Matrix.Identity;
+    }
 }
