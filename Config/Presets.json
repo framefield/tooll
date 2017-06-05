@@ -1050,6 +1050,98 @@
       "Id": "1db5a6b9-f8fc-44da-b93c-d208eac3eacd"
     }
   ],
+  "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1": [
+    {
+      "ValuesByParameterID": {
+        "3f05b0d6-a41e-48d7-be8a-a6f052b0fdc8": 0.0,
+        "7c396feb-e4ab-469b-83d9-8221dcd19c55": 0.0,
+        "901af2b9-c89e-487e-bef6-87dd62ad8a7a": 1.0,
+        "a2449c34-60b7-4aa0-8260-a65e3dc98097": 0.0,
+        "abaf3539-117d-45f5-8b22-461088bc0257": 0.0,
+        "bb80d8f9-1e66-432c-b975-0c164d0f6706": 1.0,
+        "cf886d5f-0909-433c-a6df-620767871de9": 0.320000052,
+        "d77c012f-cc8f-465b-bbbe-4779d474c7fa": 0.0,
+        "e5b86c8e-e900-43bc-85ce-bdfc42689216": 1.0,
+        "efa8700b-ff1d-46b6-801a-52cbf83731c1": 1.0,
+        "f67fce0c-f2ed-4a88-a108-df38df411084": 0.0
+      },
+      "MetaOperatorID": "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1",
+      "Name": null,
+      "Id": "d2b81c5e-d926-4d02-bc87-d9e7d9992577"
+    },
+    {
+      "ValuesByParameterID": {
+        "3f05b0d6-a41e-48d7-be8a-a6f052b0fdc8": 1.0,
+        "7c396feb-e4ab-469b-83d9-8221dcd19c55": 0.0,
+        "901af2b9-c89e-487e-bef6-87dd62ad8a7a": 0.94,
+        "a2449c34-60b7-4aa0-8260-a65e3dc98097": 0.0,
+        "abaf3539-117d-45f5-8b22-461088bc0257": 0.0,
+        "bb80d8f9-1e66-432c-b975-0c164d0f6706": 0.54,
+        "cf886d5f-0909-433c-a6df-620767871de9": 0.168000042,
+        "d77c012f-cc8f-465b-bbbe-4779d474c7fa": 0.0,
+        "e5b86c8e-e900-43bc-85ce-bdfc42689216": 1.0,
+        "efa8700b-ff1d-46b6-801a-52cbf83731c1": 0.64,
+        "f67fce0c-f2ed-4a88-a108-df38df411084": 0.0
+      },
+      "MetaOperatorID": "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1",
+      "Name": null,
+      "Id": "5f70df6f-c240-4ec2-9548-86b1f56e2981"
+    },
+    {
+      "ValuesByParameterID": {
+        "3f05b0d6-a41e-48d7-be8a-a6f052b0fdc8": 1.0,
+        "7c396feb-e4ab-469b-83d9-8221dcd19c55": 0.0,
+        "901af2b9-c89e-487e-bef6-87dd62ad8a7a": 1.0,
+        "a2449c34-60b7-4aa0-8260-a65e3dc98097": 0.0,
+        "abaf3539-117d-45f5-8b22-461088bc0257": 0.0,
+        "bb80d8f9-1e66-432c-b975-0c164d0f6706": 0.29,
+        "cf886d5f-0909-433c-a6df-620767871de9": 0.160000041,
+        "d77c012f-cc8f-465b-bbbe-4779d474c7fa": 0.0,
+        "e5b86c8e-e900-43bc-85ce-bdfc42689216": 1.0,
+        "efa8700b-ff1d-46b6-801a-52cbf83731c1": 0.71,
+        "f67fce0c-f2ed-4a88-a108-df38df411084": 0.0
+      },
+      "MetaOperatorID": "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1",
+      "Name": null,
+      "Id": "07cf4afd-9f4c-48ab-86eb-5a5c773ab12d"
+    },
+    {
+      "ValuesByParameterID": {
+        "3f05b0d6-a41e-48d7-be8a-a6f052b0fdc8": 0.0,
+        "7c396feb-e4ab-469b-83d9-8221dcd19c55": 0.0,
+        "901af2b9-c89e-487e-bef6-87dd62ad8a7a": 1.0,
+        "a2449c34-60b7-4aa0-8260-a65e3dc98097": 0.0,
+        "abaf3539-117d-45f5-8b22-461088bc0257": 0.0,
+        "bb80d8f9-1e66-432c-b975-0c164d0f6706": 0.0,
+        "cf886d5f-0909-433c-a6df-620767871de9": 0.168000042,
+        "d77c012f-cc8f-465b-bbbe-4779d474c7fa": 0.0,
+        "e5b86c8e-e900-43bc-85ce-bdfc42689216": 1.0,
+        "efa8700b-ff1d-46b6-801a-52cbf83731c1": 0.0,
+        "f67fce0c-f2ed-4a88-a108-df38df411084": 0.0
+      },
+      "MetaOperatorID": "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1",
+      "Name": null,
+      "Id": "83e0d557-e37c-4206-8930-dbf6a04e0a46"
+    },
+    {
+      "ValuesByParameterID": {
+        "3f05b0d6-a41e-48d7-be8a-a6f052b0fdc8": 0.0,
+        "7c396feb-e4ab-469b-83d9-8221dcd19c55": 0.0,
+        "901af2b9-c89e-487e-bef6-87dd62ad8a7a": 0.94,
+        "a2449c34-60b7-4aa0-8260-a65e3dc98097": 0.0,
+        "abaf3539-117d-45f5-8b22-461088bc0257": 0.0,
+        "bb80d8f9-1e66-432c-b975-0c164d0f6706": 0.54,
+        "cf886d5f-0909-433c-a6df-620767871de9": 0.168000042,
+        "d77c012f-cc8f-465b-bbbe-4779d474c7fa": 0.0,
+        "e5b86c8e-e900-43bc-85ce-bdfc42689216": 1.0,
+        "efa8700b-ff1d-46b6-801a-52cbf83731c1": 0.64,
+        "f67fce0c-f2ed-4a88-a108-df38df411084": 0.0
+      },
+      "MetaOperatorID": "0eec0983-c6a5-41c7-a83a-4e0944d8f2f1",
+      "Name": null,
+      "Id": "b14a8342-ad45-4673-a36b-572f461c03f1"
+    }
+  ],
   "0f494c1b-c2c2-403b-998f-f7306e7ef956": [
     {
       "ValuesByParameterID": {
