@@ -55,6 +55,7 @@ namespace Framefield.Core
         Texture2D Metal { get; }
         Texture2D NormalMap { get; }
         Texture2D AO { get; }
+        Texture2D Emissive { get; }
     }
 
     public struct DefaultPbrMaterial : IPbrMaterial
@@ -64,6 +65,7 @@ namespace Framefield.Core
         public Texture2D Metal { get { return null; } }
         public Texture2D NormalMap { get { return null; } }
         public Texture2D AO { get { return null; } }
+        public Texture2D Emissive { get { return null; } }
     }
 
     public interface IPbrImageBasedLightingSetup
