@@ -1591,7 +1591,7 @@ namespace Framefield.Tooll
 
         #region navigate with selection through graph
 
-        private void SelectConnectedOutputWidget()
+        public void SelectConnectedOutputWidget()
         {
             SelectConnectedWidget(ow => ow.GetOpsConnectedToOutputs());
         }
