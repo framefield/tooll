@@ -87,3 +87,9 @@ UITests/obj/*
 /assets-supermedium
 /assets-vj-milemarker
 /_render
+/assets-1x
+/assets-lena/images
+/.vscode
+/.vscode/settings.json
+/Core.dll
+/Core.UI.dll
