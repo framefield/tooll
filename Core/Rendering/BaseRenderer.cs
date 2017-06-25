@@ -248,6 +248,22 @@ namespace Framefield.Core.Rendering
             }
         }
 
+        protected void SetupPbrPointLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer pointLightsBuffer, ref ShaderResourceView pointLightsSRV)
+        {
+            var pointLights = (List<IPbrPointLight>)context.Objects[OperatorPartContext.PBR_POINT_LIGHT_CONTAINER_ID];
+            if (SetupStructuredBuffer(context.D3DDevice, pointLights.ToArray(), pl => new PbrPointLightBufferLayout(pl), ref pointLightsBuffer, ref pointLightsSRV))
+            {
+                var pointLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
+                if (pointLightVariable != null)
+                {
+                    pointLightVariable.SetResource(pointLightsSRV);
+                }
+                else
+                {
+                    Logger.Warn("Found no PBR point light effect variable '{0}'.", effectVariableName);
+                }
+            }
+        }
 
         protected void SetupFogSettingsConstBuffer(OperatorPartContext context)
         {
@@ -352,7 +368,10 @@ namespace Framefield.Core.Rendering
             }
 
             var v2 = effect.GetVariableByName("txDiffuse").AsShaderResource();
-            v2.SetResource(context.Texture0);
+            if (v2 != null && v.IsValid)
+            {
+                v2.SetResource(context.Texture0);
+            }
 
             var v3 = effect.GetVariableByName("cubeMapSideIndex");
             if (v3 != null && v3.IsValid)

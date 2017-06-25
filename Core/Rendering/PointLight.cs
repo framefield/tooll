@@ -19,7 +19,6 @@ namespace Framefield.Core
         Vector3 Attenuation { get; }
     }
 
-
     [StructLayout(LayoutKind.Explicit, Size = 80)]
     public struct PointLightBufferLayout
     {
@@ -82,5 +81,28 @@ namespace Framefield.Core
         public PointLightBufferLayout PointLight2;
     }
 
+
+    public interface IPbrPointLight
+    {
+        Vector3 Position { get; }
+        Color3 Color { get; }
+        Vector3 Intensity { get; }
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct PbrPointLightBufferLayout
+    {
+        public PbrPointLightBufferLayout(IPbrPointLight pointLight)
+        {
+            Position = new Vector4(pointLight.Position, 1);
+            Color = pointLight.Color.ToVector3()*pointLight.Intensity;
+        }
+        [FieldOffset(0)]
+        public Vector4 Position;
+        [FieldOffset(16)]
+        public Vector3 Color;
+//        [FieldOffset(28)]
+//        public float Dummy;
+    }
 
 }
