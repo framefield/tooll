@@ -368,7 +368,7 @@ namespace Framefield.Core.Rendering
             }
 
             var v2 = effect.GetVariableByName("txDiffuse").AsShaderResource();
-            if (v2 != null && v.IsValid)
+            if (v2 != null && v2.IsValid)
             {
                 v2.SetResource(context.Texture0);
             }
