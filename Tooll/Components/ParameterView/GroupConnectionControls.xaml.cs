@@ -29,10 +29,13 @@ namespace Framefield.Tooll
             if (opParts[0].Connections.Any())
             {
                 var input = opParts[0].Connections[0];
-                var connectedTo = input.Connections[0];
-                m_SourceOperator = connectedTo.Parent;
+                if(input.Connections.Any())
+                {
+                    var connectedTo = input.Connections[0];
+                    m_SourceOperator = connectedTo.Parent;
+                    this.ToolTip = "Connected to " + m_SourceOperator;
+                }
 
-                this.ToolTip = "Connected to " + m_SourceOperator;
             }
             InitializeComponent();
         }
