@@ -626,6 +626,28 @@ namespace Framefield.Tooll
             UpdateConnectionsToOutputs();
         }
 
+        private List<AnnotationViewModel> FindAnnotationsInsideSelectionFence()
+        {
+            var visualParent = this.VisualParent as UIElement;
+
+            var selectedAnnotations = new List<AnnotationViewModel>();
+            var fenceBounds = m_FenceSelection.Bounds;
+
+            foreach (var a in Annotations)
+            {
+                var bounds = new Rect(
+                    point1: XOperatorCanvas.TranslatePoint(a.Position, XBackgroundGrid),
+                    point2: XOperatorCanvas.TranslatePoint(a.Position + new Vector(a.Width, a.Height), XBackgroundGrid)
+                );
+
+                if (fenceBounds.Contains(bounds))
+                {
+                    selectedAnnotations.Add(a);
+                }
+            }
+            return selectedAnnotations;
+        }
+
         private void OnDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (_isRightMouseDragging)
@@ -637,8 +659,8 @@ namespace Framefield.Tooll
             else
             {
                 m_FenceSelection.HandleDragCompleted(sender, e);
-
-                if ((Math.Abs(e.HorizontalChange) + Math.Abs(e.VerticalChange)) < SystemParameters.MinimumHorizontalDragDistance)
+                var dragWasClick = (Math.Abs(e.HorizontalChange) + Math.Abs(e.VerticalChange)) < SystemParameters.MinimumHorizontalDragDistance;
+                if (dragWasClick)
                 {
                     Point pointInCanvas = new Point(m_DragStartPosition.X + e.HorizontalChange, m_DragStartPosition.Y + e.VerticalChange);
                     Point pointInCompositionView = (sender as UIElement).TranslatePoint(pointInCanvas, XOperatorCanvas);
@@ -651,6 +673,13 @@ namespace Framefield.Tooll
                     else
                     {
                         e.Handled = false;
+                    }
+                }
+                else
+                {
+                    foreach (var a in FindAnnotationsInsideSelectionFence())
+                    {
+                        SelectionHandler.AddElement(a.OperatorWidget);
                     }
                 }
             }
