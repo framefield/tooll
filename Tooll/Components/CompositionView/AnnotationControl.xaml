@@ -9,7 +9,7 @@
              Height="{Binding Height, FallbackValue=200}"
              Width="{Binding Width, FallbackValue=200}"
 
-             x:Name="XTimeMarkerControl" Loaded="OnLoaded">
+             x:Name="XAnnotationControl" Loaded="OnLoaded">
     <UserControl.Resources>
         <local:ColorToBrushConverter x:Key="colorToBrushConverter" />
     </UserControl.Resources>

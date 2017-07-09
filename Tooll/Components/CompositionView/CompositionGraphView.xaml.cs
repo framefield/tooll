@@ -371,6 +371,12 @@ namespace Framefield.Tooll
                 UpdateConnectionsFromInputs();
                 UpdateConnectionsToOutputs();
             }
+
+            if (_opWidgetToFocusAfterRender != null)
+            {
+                FocusNewlyAddedAnnotation(_opWidgetToFocusAfterRender);
+                _opWidgetToFocusAfterRender = null;
+            }
         }
 
         #endregion UI update handlers
@@ -1485,6 +1491,11 @@ namespace Framefield.Tooll
                     AlignSelectedOperators();
                     e.Handled = true;
                     break;
+
+                case Key.A:
+                    AddAnnotation(Mouse.GetPosition(this));
+                    e.Handled = true;
+                    break;
             }
         }
 
@@ -1666,10 +1677,9 @@ namespace Framefield.Tooll
             }
         }
 
-        private void AddAnnotationEventHandler(object sender, RoutedEventArgs e)
+        private void AddAnnotation(Point position)
         {
             var selectedOps = GetSelectedOps();
-            //int x, y, width;
             Rect bounds = new Rect(
                 x: _contextMenuPosition.X,
                 y: _contextMenuPosition.Y,
@@ -1700,6 +1710,7 @@ namespace Framefield.Tooll
 
             // Set Height
             var newOpWidget = FindOperatorWidgetById(addOpCommand.AddedInstanceID);
+            _opWidgetToFocusAfterRender = newOpWidget;
             foreach (var param in newOpWidget.Operator.Inputs)
             {
                 if (param.Name != "Height")
@@ -1714,6 +1725,34 @@ namespace Framefield.Tooll
             }
 
             App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+        private OperatorWidget _opWidgetToFocusAfterRender = null;
+
+        private void FocusNewlyAddedAnnotation(OperatorWidget newOpWidget)
+        {
+            for (int i = 0; i < XAnnotationsControl.Items.Count; i++)
+            {
+                var item = XAnnotationsControl.Items[i] as AnnotationViewModel;
+                if (item.OperatorWidget != newOpWidget)
+                    continue;
+
+                var element = (UIElement)XAnnotationsControl.ItemContainerGenerator.ContainerFromIndex(i);
+
+                if (element != null)
+                {
+                    var annotationControl = UIHelper.FindVisualChild<AnnotationControl>(element);
+                    if (annotationControl != null)
+                    {
+                        annotationControl.EnableTextEdit();
+                    }
+                }
+            }
+        }
+
+        private void AddAnnotationEventHandler(object sender, RoutedEventArgs e)
+        {
+            AddAnnotation(_contextMenuPosition);
         }
 
         private List<OperatorWidget> GetSelectedOps()
