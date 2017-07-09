@@ -23,6 +23,7 @@ using Matrix = System.Windows.Media.Matrix;
 using Path = System.Windows.Shapes.Path;
 using Point = System.Windows.Point;
 using Utilities = Framefield.Core.Utilities;
+using Framefield.Tooll.Utils;
 
 namespace Framefield.Tooll
 {
@@ -259,10 +260,12 @@ namespace Framefield.Tooll
             SelectCompositionOperator();
         }
 
-        public void CenterSelectedElements()
+        public void CenterAllOrSelectedElements()
         {
             var operatorWidgetsToCenter = new List<OperatorWidget>();
-            if (SelectionHandler.SelectedElements.Count > 0 && !SelectionHandler.SelectedElements.Contains(this))
+            var someAreSelected = SelectionHandler.SelectedElements.Count > 0
+                                  && !SelectionHandler.SelectedElements.Contains(this);
+            if (someAreSelected)
             {
                 operatorWidgetsToCenter.AddRange(from e in SelectionHandler.SelectedElements
                                                  let opWidget = e as OperatorWidget
@@ -987,7 +990,7 @@ namespace Framefield.Tooll
             }
             else
             {
-                CenterSelectedElements();
+                CenterAllOrSelectedElements();
             }
         }
 
@@ -1394,8 +1397,7 @@ namespace Framefield.Tooll
             {
                 foreach (UIElement child in XOperatorCanvas.Children)
                 {
-                    var cl = child as ConnectionLine;
-                    if (cl != null && cl.ConnectionPath == r.VisualHit as Path)
+                    if (child is ConnectionLine cl && cl.ConnectionPath == r.VisualHit as Path)
                     {
                         cl.HandleClicked();
                         eventWasHandled = true;
@@ -1617,7 +1619,7 @@ namespace Framefield.Tooll
                     selectedOps.First().Focus();
                 }
             }
-            CenterSelectedElements();
+            CenterAllOrSelectedElements();
         }
 
         private List<OperatorWidget> GetSiblingsOfSelectedOperator()
@@ -1664,14 +1666,69 @@ namespace Framefield.Tooll
             }
         }
 
-        private static readonly Guid ANNOTATION_OP_META_ID = Guid.Parse("{e65cc223-c1cf-4b68-9d79-d6356e6546a4}");
-
         private void AddAnnotationEventHandler(object sender, RoutedEventArgs e)
         {
-            var command = new AddOperatorCommand(CompositionOperator, ANNOTATION_OP_META_ID, (int)_contextMenuPosition.X, (int)_contextMenuPosition.Y, 200, false);
-            App.Current.UndoRedoStack.AddAndExecute(command);
+            var selectedOps = GetSelectedOps();
+            //int x, y, width;
+            Rect bounds = new Rect(
+                x: _contextMenuPosition.X,
+                y: _contextMenuPosition.Y,
+                width: 200,
+                height: 200
+            );
+
+            if (selectedOps.Any())
+            {
+                bounds = selectedOps[0].Bounds;
+                for (int i = 1; i < selectedOps.Count(); i++)
+                {
+                    bounds.Union(selectedOps[i].Bounds);
+                }
+                bounds.Inflate(new Size(50, 50));
+            }
+
+            // Note: We only provide the width here, because the height will be stored as Op-Parameter
+            var addOpCommand = new AddOperatorCommand(
+                CompositionOperator,
+                SpecialOperators.ANNOTATION,
+                bounds.X,
+                bounds.Y,
+                bounds.Width,
+                false);
+
+            App.Current.UndoRedoStack.AddAndExecute(addOpCommand);
+
+            // Set Height
+            var newOpWidget = FindOperatorWidgetById(addOpCommand.AddedInstanceID);
+            foreach (var param in newOpWidget.Operator.Inputs)
+            {
+                if (param.Name != "Height")
+                    continue;
+
+                var setHeightCommand = new SetFloatValueCommand(
+                    param,
+                    (float)bounds.Height
+                    );
+                App.Current.UndoRedoStack.AddAndExecute(setHeightCommand);
+                break;
+            }
 
             App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+        private List<OperatorWidget> GetSelectedOps()
+        {
+            var operatorWidgetsToCenter = new List<OperatorWidget>();
+            var someAreSelected = SelectionHandler.SelectedElements.Count > 0
+                                  && !SelectionHandler.SelectedElements.Contains(this);
+            if (someAreSelected)
+            {
+                operatorWidgetsToCenter.AddRange(from e in SelectionHandler.SelectedElements
+                                                 let opWidget = e as OperatorWidget
+                                                 where opWidget != null && opWidget.Operator.Visible
+                                                 select opWidget);
+            }
+            return operatorWidgetsToCenter;
         }
 
         private void SaveAsIngredientHandler(object sender, RoutedEventArgs e)
@@ -1686,9 +1743,8 @@ namespace Framefield.Tooll
                 MessageBox.Show("Please select a single Operator to add as ingredient");
                 return;
             }
-            var opWidget =
-            SelectionHandler.SelectedElements.First() as OperatorWidget;
-            if (opWidget != null)
+
+            if (SelectionHandler.SelectedElements.First() is OperatorWidget opWidget)
             {
                 var hasBeenAdded = IngredientsManager.TryAddOperatorAsIngredientToDefaultPalette(opWidget.Operator);
                 if (!hasBeenAdded)
@@ -1719,7 +1775,7 @@ namespace Framefield.Tooll
             {
                 SelectionHandler.SetElements(opWidgetsToSelect);
             }
-            CenterSelectedElements();
+            CenterAllOrSelectedElements();
         }
 
         public ConnectionDragHelper ConnectionDragHelper;

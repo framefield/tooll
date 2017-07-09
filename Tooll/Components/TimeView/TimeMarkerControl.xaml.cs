@@ -154,7 +154,7 @@ namespace Framefield.Tooll
         }
 
         private void XTimeClip_Thumb_DoubleClicked(object sender, MouseButtonEventArgs e) {
-            App.Current.MainWindow.CompositionView.CompositionGraphView.CenterSelectedElements();
+            App.Current.MainWindow.CompositionView.CompositionGraphView.CenterAllOrSelectedElements();
         }
         #endregion
 

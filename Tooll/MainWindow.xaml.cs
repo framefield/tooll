@@ -1189,7 +1189,7 @@ namespace Framefield.Tooll
             e.CanExecute = true;
         }
         private void CenterSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
-            App.Current.MainWindow.CompositionView.CompositionGraphView.CenterSelectedElements();
+            App.Current.MainWindow.CompositionView.CompositionGraphView.CenterAllOrSelectedElements();
         }
 
         private void StickySelectedElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

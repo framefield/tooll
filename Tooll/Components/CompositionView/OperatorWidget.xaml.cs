@@ -18,13 +18,12 @@ using Framefield.Core;
 using Framefield.Core.Commands;
 using Framefield.Tooll.Components.CompositionView;
 
-
 namespace Framefield.Tooll
 {
     public partial class OperatorWidget : IConnectionLineSource, IConnectionLineTarget, INotifyPropertyChanged
     {
-
         #region construction
+
         public OperatorWidget(Operator op)
         {
             Operator = op;
@@ -106,32 +105,36 @@ namespace Framefield.Tooll
             //Window.GetWindow(this).PreviewKeyDown -= XControl_KeyDown;
             //Window.GetWindow(this).PreviewKeyUp -= XControl_KeyUp;
         }
-        #endregion
+
+        #endregion construction
 
         #region events
+
         public event EventHandler<RoutedEventArgs> SelectedEvent;
+
         public event EventHandler<RoutedEventArgs> OpenedEvent;
-        #endregion
+
+        #endregion events
 
         #region Event handlers
 
-        void Operator_ModifiedHandler(object sender, EventArgs e)
+        private void Operator_ModifiedHandler(object sender, EventArgs e)
         {
             UpdateStyleAndIndicators();
         }
 
-        void Operator_OutputsChangedHandler(object obj, OperatorPartChangedEventArgs args)
+        private void Operator_OutputsChangedHandler(object obj, OperatorPartChangedEventArgs args)
         {
             UpdateColors();
             UpdateOutputNoses();
         }
 
-        void Operator_InputsChangedHandler(object obj, OperatorPartChangedEventArgs args)
+        private void Operator_InputsChangedHandler(object obj, OperatorPartChangedEventArgs args)
         {
             GetAndDrawInputZones();
         }
 
-        void OperatorOutputFunction_EvaluatedHandler(object sender, EventArgs e)
+        private void OperatorOutputFunction_EvaluatedHandler(object sender, EventArgs e)
         {
             _evaluationCounter++;
             int tickAreaHeight = (int)Height - 2;
@@ -159,9 +162,10 @@ namespace Framefield.Tooll
             e.Handled = true;
         }
 
-        #endregion
+        #endregion Event handlers
 
         #region public properties
+
         public Operator Operator { get; private set; }
         public List<OperatorPart> Outputs { get { return _outputs; } }
         public List<OperatorPart> Inputs { get { return _inputs; } }
@@ -212,7 +216,7 @@ namespace Framefield.Tooll
                 return XOutputThumbGrid.Children.OfType<Thumb>().ToList();
             }
         }
-        
+
         public List<ConnectionLine> ConnectionsOut { get { return _connectionsOut; } }
         public List<ConnectionLine> ConnectionsIn { get { return _connectionsIn; } }
 
@@ -231,14 +235,13 @@ namespace Framefield.Tooll
             }
         }
 
-
-
-        #endregion
+        #endregion public properties
 
         #region Dependency properties
 
         // IsSelected
         public bool IsSelected { get { return (bool)GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value); } }
+
         public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(OperatorWidget), new UIPropertyMetadata() { DefaultValue = false, PropertyChangedCallback = IsSelectedChangedHandler });
 
         private static void IsSelectedChangedHandler(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -250,7 +253,6 @@ namespace Framefield.Tooll
                 {
                     foreach (Path nosePath in obj.XOutputThumbGrid.Children.OfType<Path>())
                         nosePath.Fill = Brushes.White;
-
                 }
                 else
                 {
@@ -267,6 +269,7 @@ namespace Framefield.Tooll
 
         // Sticky Count
         public int StickyCount { get { return (int)GetValue(StickyCountProperty); } set { SetValue(StickyCountProperty, value); } }
+
         public static readonly DependencyProperty StickyCountProperty = DependencyProperty.Register("StickyCount", typeof(int), typeof(OperatorWidget), new UIPropertyMetadata() { DefaultValue = 0, PropertyChangedCallback = StickyCountChangedHandler });
 
         private static void StickyCountChangedHandler(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -281,13 +284,11 @@ namespace Framefield.Tooll
             }
         }
 
-
         public bool IsInactive { get { return (bool)GetValue(IsInactiveProperty); } set { SetValue(IsInactiveProperty, value); } }
         public static readonly DependencyProperty IsInactiveProperty = DependencyProperty.Register("IsInactive", typeof(bool), typeof(OperatorWidget), new UIPropertyMetadata() { DefaultValue = true, PropertyChangedCallback = IsSelectedChangedHandler });
 
         public bool IsDisabled { get { return (bool)GetValue(_isDisabledProperty); } set { SetValue(_isDisabledProperty, value); } }
         private static readonly DependencyProperty _isDisabledProperty = DependencyProperty.Register("IsDisabled", typeof(bool), typeof(OperatorWidget), new UIPropertyMetadata(false));
-
 
         public Point Position
         {
@@ -300,22 +301,22 @@ namespace Framefield.Tooll
                 SetValue(PositionProperty, value);
             }
         }
+
         public static readonly DependencyProperty PositionProperty =
             DependencyProperty.Register("Position", typeof(Point), typeof(OperatorWidget), new UIPropertyMetadata() { DefaultValue = new Point() });
 
-        #endregion
-
+        #endregion Dependency properties
 
         #region public update triggers and accessor
-        
+
         public void UpdateConnections()
         {
             foreach (var cl in ConnectionsIn)
             {
                 cl.Update();
-                 //var opWidget = cl.Source as OperatorWidget;
-                 //if (opWidget != null)
-                 //    opWidget.UpdateCornerRadius();
+                //var opWidget = cl.Source as OperatorWidget;
+                //if (opWidget != null)
+                //    opWidget.UpdateCornerRadius();
             }
 
             foreach (var cl in ConnectionsOut)
@@ -354,7 +355,6 @@ namespace Framefield.Tooll
             return Math.Min(Operator.Position.X + Width, op.Position.X + op.Width) - Math.Max(Operator.Position.X, op.Position.X);
         }
 
-
         public Rect GetRangeForInputConnectionLine(OperatorPart input, int multiInputIndex, bool insertConnection = false)
         {
             var zones = OperatorWidgetInputZoneManager.ComputeInputZonesForOp(this);
@@ -377,12 +377,11 @@ namespace Framefield.Tooll
             {
                 return new Rect(0, 0, 0, 0);
             }
-                
+
             double minX = matchingZone.LeftPosition;
             double maxX = matchingZone.LeftPosition + matchingZone.Width;
             return new Rect(minX, Height, maxX - minX, 0);
         }
-
 
         public void ClearHighlightInput()
         {
@@ -404,7 +403,6 @@ namespace Framefield.Tooll
                                                       && (!onlyVisible || cl.Output.Parent.Visible)
                     select cl.Source as OperatorWidget).ToList();
         }
-
 
         public List<OperatorWidget> GetOperatorsSnappedAbove()
         {
@@ -430,13 +428,12 @@ namespace Framefield.Tooll
             return _snapHandler.DragGroup.Contains(el);
         }
 
-        #endregion
-
+        #endregion public update triggers and accessor
 
         #region XAML - Dragging widget (moving around and changing width)
 
-        Point _dragStartPositionOnCanvas;
-        double _dragStartWidth;
+        private Point _dragStartPositionOnCanvas;
+        private double _dragStartWidth;
         private ConnectionLine _connectionHighlightedForSplitting;
 
         private void XWidgetThumb_DragStartHandler(object sender, DragStartedEventArgs e)
@@ -445,11 +442,12 @@ namespace Framefield.Tooll
 
             _dragStartPositionOnCanvas = Mouse.GetPosition(_visualParent);
 
-            _isDraggingNewConnection= Keyboard.Modifiers == ModifierKeys.Control;
-            if (_isDraggingNewConnection) 
+            _isDraggingNewConnection = Keyboard.Modifiers == ModifierKeys.Control;
+            if (_isDraggingNewConnection)
             {
-                if( Operator.Outputs.Count>0) {
-                    var outputIndex = (int)(Math.Floor(Mouse.GetPosition(this).X/ Width * Operator.Outputs.Count));
+                if (Operator.Outputs.Count > 0)
+                {
+                    var outputIndex = (int)(Math.Floor(Mouse.GetPosition(this).X / Width * Operator.Outputs.Count));
                     CV.CompositionGraphView.ConnectionDragHelper.DoDragDropNewConnection(this, Operator.Outputs[outputIndex]);
                 }
                 return;
@@ -466,10 +464,9 @@ namespace Framefield.Tooll
             }
         }
 
-        bool _isDraggingNewConnection = false;
-        bool _isDraggingRightEdge = false;
+        private bool _isDraggingNewConnection = false;
+        private bool _isDraggingRightEdge = false;
         private const double DRAG_HANDLE_WIDTH = 10;
-
 
         private void XWidgetThumb_DragDeltaHandler(object sender, DragDeltaEventArgs e)
         {
@@ -482,10 +479,9 @@ namespace Framefield.Tooll
                 return;
             }
 
-
             if (_isDraggingRightEdge)
             {
-                var orginalPositionInsideWidget = _visualParent.TranslatePoint(_dragStartPositionOnCanvas, this );
+                var orginalPositionInsideWidget = _visualParent.TranslatePoint(_dragStartPositionOnCanvas, this);
                 var currentPositionInsideWidget = _visualParent.TranslatePoint(Mouse.GetPosition(_visualParent), this);
                 var delta = currentPositionInsideWidget - orginalPositionInsideWidget;
 
@@ -529,7 +525,6 @@ namespace Framefield.Tooll
             }
         }
 
-
         private void XWidgetThumb_DragCompletedHandler(object sender, DragCompletedEventArgs e)
         {
             e.Handled = true;
@@ -543,7 +538,7 @@ namespace Framefield.Tooll
             var offset = _dragStartPositionOnCanvas - Mouse.GetPosition(_visualParent);
             if (offset.Length < 4)
             {
-                if( SelectedEvent!= null)
+                if (SelectedEvent != null)
                     SelectedEvent(this, new RoutedEventArgs());
                 return;
             }
@@ -559,17 +554,16 @@ namespace Framefield.Tooll
 
             if (_isDraggingRightEdge)
                 return;
-            
+
             // Split connection if set by OnDragDelta
             if (_connectionHighlightedForSplitting != null &&
-                _connectionHighlightedForSplitting.Output.Parent != Operator) {
-            
+                _connectionHighlightedForSplitting.Output.Parent != Operator)
+            {
                 SplitConnection();
                 return;
             }
 
             UpdateConnectedOps();
-           
         }
 
         public void UpdateUI()
@@ -592,13 +586,14 @@ namespace Framefield.Tooll
         }
 
         private UpdateOperatorPropertiesCommand _updateWidthCommand;
-        #endregion
 
+        #endregion XAML - Dragging widget (moving around and changing width)
 
         #region XAML - mouse events for connection nose
+
         private void NoseThumb_DragStarted(object sender, DragStartedEventArgs e)
         {
-            e.Handled= true;
+            e.Handled = true;
 
             var outputIdx = FindIndexOfNoseThumb((Thumb)e.Source);
             if (outputIdx < 0)
@@ -606,7 +601,6 @@ namespace Framefield.Tooll
 
             CV.CompositionGraphView.ConnectionDragHelper.DoDragDropNewConnection(this, Operator.Outputs[outputIdx]);
         }
-
 
         private void MouseEnterOutputNoseHandler(object sender, MouseEventArgs e)
         {
@@ -635,26 +629,21 @@ namespace Framefield.Tooll
             }
         }
 
-
         private void XOperatorWidgetThumb_DragEnter(object sender, DragEventArgs e)
         {
             GetAndDrawInputZones();
             e.Handled = true;
         }
 
-
         private void XOperatorWidgetThumb_DragOver(object sender, DragEventArgs e)
         {
             CV.CompositionGraphView.ConnectionDragHelper.HandleDragOverEvent(e, this);
         }
 
-
-
         private void XOperatorWidgetThumb_DragLeave(object sender, DragEventArgs e)
-        {            
+        {
             GetAndDrawInputZones();
         }
-
 
         private void XOperatorWidgetThumb_Drop(object sender, DragEventArgs e)
         {
@@ -667,32 +656,30 @@ namespace Framefield.Tooll
             }
             e.Handled = true;
         }
-        #endregion
 
+        #endregion XAML - mouse events for connection nose
 
         #region update cursor-shapes with modifier keys when connecting
+
         private void XWidgetThumb_MouseMove(object sender, MouseEventArgs e)
         {
             UpdateCursorShape();
             e.Handled = true;
         }
 
-
         private void XControl_KeyDown(object sender, KeyEventArgs e)
         {
             UpdateCursorShape();
         }
-
 
         private void XControl_KeyUp(object sender, KeyEventArgs e)
         {
             UpdateCursorShape();
         }
 
-
         private void UpdateCursorShape()
         {
-            if (!IsMouseOver) 
+            if (!IsMouseOver)
                 return;
 
             // Connecting
@@ -700,7 +687,7 @@ namespace Framefield.Tooll
             {
                 Cursor = CustomCursorProvider.GetCursorStream(CustomCursorProvider.Cursors.StartConnection);
             }
-                // Normal
+            // Normal
             else
             {
                 if (Mouse.GetPosition(this).X > Width - DRAG_HANDLE_WIDTH)
@@ -714,11 +701,9 @@ namespace Framefield.Tooll
             }
         }
 
-        #endregion
-
+        #endregion update cursor-shapes with modifier keys when connecting
 
         #region Internal Helper Functions
-
 
         private ConnectionLine TryPickingConnectionLineForSplitting()
         {
@@ -748,7 +733,6 @@ namespace Framefield.Tooll
             return connectionToHighlight;
         }
 
-
         public void UpdateCornerRadius()
         {
             var snappedAtBottom = (GetOperatorsSnappedBelow().Count > 0);
@@ -761,7 +745,6 @@ namespace Framefield.Tooll
 
             Height = CompositionGraphView.GRID_SIZE + (snappedAtBottom ? 1 : 0);
         }
-
 
         private void DisconnectGroupAfterShakingOff(ICollection<OperatorWidget> opWidgets)
         {
@@ -779,7 +762,7 @@ namespace Framefield.Tooll
                     foreach (var cl in connectionLineTarget.ConnectionsIn)
                     {
                         var sourceWidget = cl.Source as OperatorWidget;
-                        if (sourceWidget == null || opWidgets.Contains(sourceWidget)) 
+                        if (sourceWidget == null || opWidgets.Contains(sourceWidget))
                             continue;
 
                         deleteLater.Add(cl);
@@ -788,15 +771,15 @@ namespace Framefield.Tooll
                 }
 
                 var src = thumb as IConnectionLineSource;
-                if (src == null) 
+                if (src == null)
                     continue;
 
                 foreach (var cl in src.ConnectionsOut)
                 {
                     var targetWidget = cl.Target as OperatorWidget;
-                    if (targetWidget == null || opWidgets.Contains(targetWidget)) 
+                    if (targetWidget == null || opWidgets.Contains(targetWidget))
                         continue;
-                    
+
                     deleteLater.Add(cl);
                     disconnectedOutputs.Add(targetWidget);
                     reconnectInput = cl.Input;
@@ -818,7 +801,7 @@ namespace Framefield.Tooll
                 cl.Remove();
             }
 
-            if (disconnectedInputs.Count != 1 || disconnectedOutputs.Count != 1) 
+            if (disconnectedInputs.Count != 1 || disconnectedOutputs.Count != 1)
                 return;
 
             var multiIndexForAppending = reconnectInput.IsMultiInput ? multiInputIndexForRewiring
@@ -833,12 +816,11 @@ namespace Framefield.Tooll
 
         internal void UpdateColors()
         {
-            XOperatorContent.Background = new SolidColorBrush(UIHelper.ColorFromType(Type)) {Opacity = 0.6};
+            XOperatorContent.Background = new SolidColorBrush(UIHelper.ColorFromType(Type)) { Opacity = 0.6 };
             XOperatorContent.Background.Freeze();
             XOperatorLabel.Foreground = new SolidColorBrush(UIHelper.BrightColorFromType(Type));
             XOperatorLabel.Foreground.Freeze();
         }
-
 
         private void UpdateStyleAndIndicators()
         {
@@ -853,7 +835,7 @@ namespace Framefield.Tooll
             {
                 XOperatorLabel.FontStyle = FontStyles.Italic;
             }
-       } 
+        }
 
         private void UpdateInputRanges(List<OperatorWidgetInputZone> inputZones2)
         {
@@ -871,7 +853,7 @@ namespace Framefield.Tooll
                         Fill = Brushes.Black
                     };
                     XInputSeparators.Children.Add(r);
-                    Canvas.SetLeft(r, zone.LeftPosition-2);
+                    Canvas.SetLeft(r, zone.LeftPosition - 2);
                     Canvas.SetBottom(r, 0);
                 }
                 lastInput = zone.Input;
@@ -902,7 +884,7 @@ namespace Framefield.Tooll
 
             for (var i = 0; i < Operator.Outputs.Count; ++i)
             {
-                var cd = new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)};
+                var cd = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
                 XOutputThumbGrid.ColumnDefinitions.Add(cd);
 
                 var nosePath = new Path
@@ -945,7 +927,6 @@ namespace Framefield.Tooll
             }
         }
 
-
         public void UpdateInputZonesUIFromDescription(IEnumerable<OperatorWidgetInputZone> inputZones)
         {
             XInputZoneIndicators.Children.Clear();
@@ -960,12 +941,12 @@ namespace Framefield.Tooll
                     Canvas.SetLeft(inputBg, zone.LeftPosition + 1);
                     Canvas.SetBottom(inputBg, -2);
                     inputBg.Height = 2;
-                    inputBg.Width = zone.Width -1; // don't overlap range separator
+                    inputBg.Width = zone.Width - 1; // don't overlap range separator
                     inputBg.Fill = zone.IsBelowMouse ? new SolidColorBrush(UIHelper.BrightColorFromType(zone.Input.Type))
                         : new SolidColorBrush(UIHelper.ColorFromType(zone.Input.Type));
 
                     inputBg.Fill.Freeze();
-                    XInputZoneIndicators.Children.Add(inputBg);                    
+                    XInputZoneIndicators.Children.Add(inputBg);
                 }
                 else if (zone.IsBelowMouse)
                 {
@@ -978,8 +959,8 @@ namespace Framefield.Tooll
                         : new SolidColorBrush(UIHelper.ColorFromType(zone.Input.Type));
 
                     inputBg.Fill.Freeze();
-                    XInputZoneIndicators.Children.Add(inputBg);                    
-                }                    
+                    XInputZoneIndicators.Children.Add(inputBg);
+                }
             }
         }
 
@@ -989,20 +970,26 @@ namespace Framefield.Tooll
             UpdateInputZonesUIFromDescription(inputZonesForDrag);
             UpdateInputRanges(inputZonesForDrag);
         }
-        #endregion
+
+        public Rect Bounds
+        {
+            get { return new Rect(x: Position.X, y: Position.Y, width: Width, height: Height); }
+        }
+
+        #endregion Internal Helper Functions
 
         #region Binding and Value converter
 
         private void CreateBindingsToOperator()
         {
-            var multiBinding = new MultiBinding {Converter = MNameAndTypeToTitleConverter};
+            var multiBinding = new MultiBinding { Converter = MNameAndTypeToTitleConverter };
 
             multiBinding.Bindings.Add(new Binding("Name") { Source = Operator });
             multiBinding.Bindings.Add(new Binding("Name") { Source = Operator.Definition });
             BindingOperations.SetBinding(XOperatorLabel, TextBlock.TextProperty, multiBinding);
         }
 
-        static readonly NameAndTypeToTitleConverter MNameAndTypeToTitleConverter = new NameAndTypeToTitleConverter();
+        private static readonly NameAndTypeToTitleConverter MNameAndTypeToTitleConverter = new NameAndTypeToTitleConverter();
 
         public class NameAndTypeToTitleConverter : IMultiValueConverter
         {
@@ -1016,7 +1003,6 @@ namespace Framefield.Tooll
                 var name = (string)values[0];
                 var type = (string)values[1];
 
-                
                 return name == string.Empty ? type : "\"" + name + "\"";
             }
 
@@ -1025,8 +1011,8 @@ namespace Framefield.Tooll
                 throw new NotImplementedException();
             }
         }
-        #endregion
 
+        #endregion Binding and Value converter
 
         private List<OperatorPart> _outputs = new List<OperatorPart>();
         private List<OperatorPart> _inputs = new List<OperatorPart>();
@@ -1036,6 +1022,7 @@ namespace Framefield.Tooll
         private UIElement _visualParent;
 
         #region notifier
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void NotifyPropertyChanged(string propName)
@@ -1045,9 +1032,11 @@ namespace Framefield.Tooll
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
             }
         }
-        #endregion
+
+        #endregion notifier
 
         #region find composition view
+
         private CompositionView _CV;
 
         public CompositionView CV
@@ -1059,7 +1048,7 @@ namespace Framefield.Tooll
                 return _CV;
             }
         }
-        #endregion
 
+        #endregion find composition view
     }
 }

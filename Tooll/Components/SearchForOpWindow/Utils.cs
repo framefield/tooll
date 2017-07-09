@@ -74,7 +74,7 @@ namespace Framefield.Tooll.Components.SearchForOpWindow
                 App.Current.MainWindow.CompositionView.CompositionGraphView.SelectedElements.Clear();
                 var list = new List<ISelectable> { widget };
                 App.Current.MainWindow.CompositionView.CompositionGraphView.SelectedElements = list;
-                App.Current.MainWindow.CompositionView.CompositionGraphView.CenterSelectedElements();
+                App.Current.MainWindow.CompositionView.CompositionGraphView.CenterAllOrSelectedElements();
                 App.Current.MainWindow.CompositionView.XCompositionToolBar.XBreadCrumbs.Clear();
                 App.Current.MainWindow.CompositionView.XCompositionToolBar.XBreadCrumbs.Push(GetHierachy(widget.Operator));
             }

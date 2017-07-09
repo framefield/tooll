@@ -330,7 +330,7 @@ namespace Framefield.Tooll.Components.SelectionView
             {
                 var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
                 cgv.SelectionHandler.SetElement(_shownOperatorWidget);
-                cgv.CenterSelectedElements();
+                cgv.CenterAllOrSelectedElements();
             }
         }
     }
