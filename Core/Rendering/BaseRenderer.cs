@@ -116,6 +116,7 @@ namespace Framefield.Core.Rendering
             if (bufferSizeInBytes == 0)
             {
                 Utilities.DisposeObj(ref structuredBuffer);
+                Utilities.DisposeObj(ref srv);
                 return false;
             }
 
@@ -251,17 +252,16 @@ namespace Framefield.Core.Rendering
         protected void SetupPbrPointLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer pointLightsBuffer, ref ShaderResourceView pointLightsSRV)
         {
             var pointLights = (List<IPbrPointLight>)context.Objects[OperatorPartContext.PBR_POINT_LIGHT_CONTAINER_ID];
-            if (SetupStructuredBuffer(context.D3DDevice, pointLights.ToArray(), pl => new PbrPointLightBufferLayout(pl), ref pointLightsBuffer, ref pointLightsSRV))
+            bool success = SetupStructuredBuffer(context.D3DDevice, pointLights.ToArray(), pl => new PbrPointLightBufferLayout(pl),
+                                                 ref pointLightsBuffer, ref pointLightsSRV);
+            var pointLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
+            if (pointLightVariable != null)
             {
-                var pointLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
-                if (pointLightVariable != null)
-                {
-                    pointLightVariable.SetResource(pointLightsSRV);
-                }
-                else
-                {
-                    Logger.Warn("Found no PBR point light effect variable '{0}'.", effectVariableName);
-                }
+                pointLightVariable.SetResource(success ? pointLightsSRV : null);
+            }
+            else
+            {
+                Logger.Warn("Found no PBR point light effect variable '{0}'.", effectVariableName);
             }
         }
 
