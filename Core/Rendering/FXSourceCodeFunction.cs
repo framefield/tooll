@@ -54,8 +54,14 @@ namespace Framefield.Core.Rendering
             var errors = new CompilerErrorCollection();
             try
             {
-                using (var bytecode = ShaderBytecode.Compile(GetCode(codeIdx), "fx_5_0", ShaderFlags.OptimizationLevel3, EffectFlags.None, null, null))
-                    _effect = new Effect(D3DDevice.Device, bytecode);
+                using (var compilationResult = ShaderBytecode.Compile(GetCode(codeIdx), "fx_5_0", ShaderFlags.OptimizationLevel3, EffectFlags.None, null, null))
+                {
+                    _effect = new Effect(D3DDevice.Device, compilationResult);
+                    if (compilationResult.Message != null)
+                    {
+                        Logger.Warn("HLSL compile warning in '{0}':\n{1}", OperatorPart?.Name , compilationResult.Message);
+                    }
+                }
             }
             catch (SharpDX.CompilationException ex)
             {
