@@ -115,6 +115,13 @@ namespace Framefield.Tooll
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
             List<ISelectable> selectedElements = cgv.SelectedElements;
 
+            if (cgv.CompositionOperator.Parent == null)
+            {
+                MessageBox.Show("You cannot publish a parameter to the home-operator. First, either combine some operators into a new Operator-Type or open another operator.",
+                "Sorry");
+                return;
+            }
+
             var baseName = m_OperatorParts[0].Parent.GetMetaInput(m_OperatorParts[0]).Name.Split(new[] { '.' })[0];
             var parameters = (from opPart in m_OperatorParts
                               let splittedName = opPart.Parent.GetMetaInput(opPart).Name.Split(new[] { '.' })
