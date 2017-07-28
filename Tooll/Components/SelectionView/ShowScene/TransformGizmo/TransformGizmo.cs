@@ -209,10 +209,13 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
 
             GizmoToWorld = ObjectToWorldWithGizmo(context);
 
+            var keepObjectToWorld = context.ObjectTWorld;
             context.ObjectTWorld = GizmoToWorld;
 
             _sceneTransformGizmoOperator.Outputs[0].Eval(context);
 
+            context.ObjectTWorld = keepObjectToWorld;
+                 
             if (_transformGizmoTargetValueFunction != null)
                 _transformGizmoTargetValueFunction.EvaluatedEvent -= GizmoValueFunc_EvaluatedEvent;
         }
