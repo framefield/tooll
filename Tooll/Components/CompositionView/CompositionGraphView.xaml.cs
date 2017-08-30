@@ -140,15 +140,24 @@ namespace Framefield.Tooll
             CV.XTimeView.ApplyState(level.TimeViewState);
         }
 
+
+
         public void ReorderInputs()
         {
-            var sortedByPosition = _inputsWidgets;
-            sortedByPosition.Sort((a, b) => (a.Position.X.CompareTo(b.Position.X)));
+            var inputsSortedByPosition = new List<InputWidget>();
+            foreach(var iw in InputView.Panel.Children)
+            {
+                if (iw is InputWidget x)
+                {
+                    inputsSortedByPosition.Add(x);
+                }
+            }
+            inputsSortedByPosition.Sort((a, b) => (a.Position.X.CompareTo(b.Position.X)));
 
             var needsReorder = false;
-            for(int index = 0; index<_inputsWidgets.Count; index++)
+            for(int index = 0; index< InputView.Panel.Children.Count; index++)
             {
-                if(sortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index]) {
+                if(inputsSortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index]) {
                     needsReorder = true;
                     break;
                 }
@@ -157,7 +166,7 @@ namespace Framefield.Tooll
                 return;
 
             var reorderedMetaInputIds = new List<Guid>();
-            foreach(var i in sortedByPosition)
+            foreach(var i in inputsSortedByPosition)
             {
                 var opPart = i.OperatorPart;
                 var metaInput = CompositionOperator.GetMetaInput(opPart);
@@ -165,10 +174,6 @@ namespace Framefield.Tooll
             }
             var reorderCommand = new ReorderInputsCommand(CompositionOperator, reorderedMetaInputIds);
             App.Current.UndoRedoStack.AddAndExecute(reorderCommand);
-
-            //_inputsWidgets.Clear();
-            //InputView.Panel.Children.Clear();
-            //_compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
 
             App.Current.UpdateRequiredAfterUserInteraction = true;
             SelectionHandler.SetElements(SelectionHandler.SelectedElements);
@@ -1021,7 +1026,7 @@ namespace Framefield.Tooll
             _compositionOperator.Outputs.ForEach(opPart => AddOutput(opPart));
             LayoutOutputOperatorWidgets();        
 
-            _inputsWidgets.Clear();
+            
             _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
 
 
@@ -1122,7 +1127,7 @@ namespace Framefield.Tooll
             SelectElement(input);
         }
 
-        private List<InputWidget> _inputsWidgets = new List<InputWidget>();
+        //private List<InputWidget> _inputsWidgets = new List<InputWidget>();
 
         private InputWidget AddInput(OperatorPart opPart)
         {
@@ -1130,7 +1135,7 @@ namespace Framefield.Tooll
             var inputIndex = InputView.Panel.Children.Count;
 
             InputView.Panel.Children.Add(newInputWidget);
-            _inputsWidgets.Add(newInputWidget);
+            
 
             var posX = 10 + inputIndex  * (newInputWidget.Width + 5);
             newInputWidget.Position = new Point(posX, 0);
