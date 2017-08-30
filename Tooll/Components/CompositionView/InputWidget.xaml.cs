@@ -134,6 +134,11 @@ namespace Framefield.Tooll
                     select cl.Target as IConnectableWidget).ToList();
         }
 
+        public override string ToString()
+        {
+            return this.OperatorPart.Name + "  " + base.ToString();
+        }
+
 
         #region protected/private stuff
 
@@ -157,6 +162,7 @@ namespace Framefield.Tooll
         private void OnDragCompleted(object sender, DragCompletedEventArgs e) {
             m_MoveHandler.Stop(new Vector(e.HorizontalChange, e.VerticalChange));
             //m_SnapHandler.Stop();
+            CV.CompositionGraphView.ReorderInputs();
         }
         #endregion
 

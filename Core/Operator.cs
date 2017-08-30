@@ -155,7 +155,7 @@ namespace Framefield.Core
             }
         }
 
-        public List<OperatorPart> Inputs { get; private set; }
+        public List<OperatorPart> Inputs { get; internal set; }
         public List<OperatorPart> Outputs { get; private set; }
         public List<Operator> InternalOps { get; private set; }
         public List<OperatorPart> InternalParts { get; private set; }

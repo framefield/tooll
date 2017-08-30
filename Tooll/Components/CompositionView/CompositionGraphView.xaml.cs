@@ -140,6 +140,33 @@ namespace Framefield.Tooll
             CV.XTimeView.ApplyState(level.TimeViewState);
         }
 
+        public void ReorderInputs()
+        {
+            var sortedByPosition = _inputsWidgets;
+            sortedByPosition.Sort((a, b) => (a.Position.X.CompareTo(b.Position.X)));
+
+            var needsReorder = false;
+            for(int index = 0; index<_inputsWidgets.Count; index++)
+            {
+                if(sortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index]) {
+                    needsReorder = true;
+                    break;
+                }
+            }
+            if (!needsReorder)
+                return;
+
+            var reorderedMetaInputIds = new List<Guid>();
+            foreach(var i in sortedByPosition)
+            {
+                var opPart = i.OperatorPart;
+                var metaInput = CompositionOperator.GetMetaInput(opPart);
+                reorderedMetaInputIds.Add(metaInput.ID);
+            }
+            var reorderCommand = new ReorderInputsCommand(CompositionOperator, reorderedMetaInputIds);
+            App.Current.UndoRedoStack.AddAndExecute(reorderCommand);
+        }
+
         #region public command methods
 
         public void CopySelectionToClipboard()
@@ -578,6 +605,8 @@ namespace Framefield.Tooll
 
         #endregion model change event handles
 
+
+
         #region XAML event handlers
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -965,12 +994,13 @@ namespace Framefield.Tooll
 
             /**
              * List list of timeClips in the current compositionOperator needs to be updated
-             * every time we enter/leave a sub operator. This will will then automatically
+             * every time we enter/leave a sub operator. This will then automatically
              * update the TimeClipEditor.
              */
             TimeClips.Clear();
             TimeMarkers.Clear();
             Annotations.Clear();
+            _inputsWidgets.Clear();
 
             ClearGUI();
 
@@ -1083,17 +1113,21 @@ namespace Framefield.Tooll
             SelectElement(input);
         }
 
+        private List<InputWidget> _inputsWidgets = new List<InputWidget>();
+
         private InputWidget AddInput(OperatorPart opPart)
         {
-            var input = new InputWidget(opPart);
-            InputView.Panel.Children.Add(input);
+            var newInputWidget = new InputWidget(opPart);
+            var inputIndex = InputView.Panel.Children.Count;
 
-            int numInputs = InputView.Panel.Children.Count;
-            double x = 10 + (numInputs - 1) * (input.Width + 5);
-            input.Position = new Point(x, 0);
+            InputView.Panel.Children.Add(newInputWidget);
+            _inputsWidgets.Add(newInputWidget);
 
-            input.Selected += OnInputSelected;
-            return input;
+            var posX = 10 + inputIndex  * (newInputWidget.Width + 5);
+            newInputWidget.Position = new Point(posX, 0);
+            
+            newInputWidget.Selected += OnInputSelected;
+            return newInputWidget;
         }
 
         private void RemoveOutput(OperatorPart opPart)

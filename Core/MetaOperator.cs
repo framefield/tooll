@@ -117,7 +117,36 @@ namespace Framefield.Core
             }
         }
 
-        public List<MetaInput> Inputs { get; internal set; }
+        private List<MetaInput> _metaInputs;
+        public List<MetaInput> Inputs {
+            get { return _metaInputs; }
+            internal set {
+                _metaInputs = value;
+                ReorderInputsOfOpInstance();
+            }
+        }
+
+        public void ReorderInputsOfOpInstance()
+        {
+            foreach (var instance in _instances)
+            {
+                var newList = new List<OperatorPart>();
+
+                foreach(var input in instance.Inputs)
+                {
+                    for(int index = 0; index< _metaInputs.Count; index++)
+                    {
+                        if(input.ID == _metaInputs[index].ID)
+                        {
+                            newList.Add(input);
+                        }
+                    }
+                }
+                instance.Inputs = newList;
+            }
+            Changed = true; 
+        }
+
         public List<MetaOutput> Outputs { get; internal set; }
         internal Dictionary<Guid, Tuple<MetaOperator, InstanceProperties>> Operators { get; set; }
 
