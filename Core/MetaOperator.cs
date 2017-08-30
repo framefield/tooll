@@ -132,13 +132,14 @@ namespace Framefield.Core
             {
                 var newList = new List<OperatorPart>();
 
-                foreach(var input in instance.Inputs)
+                for (int index = 0; index < _metaInputs.Count; index++)
                 {
-                    for(int index = 0; index< _metaInputs.Count; index++)
+                    foreach (var input in instance.Inputs)
                     {
-                        if(input.ID == _metaInputs[index].ID)
+                        if (input.ID == _metaInputs[index].ID)
                         {
                             newList.Add(input);
+                            break; // there should be no 2 inputs with same id
                         }
                     }
                 }

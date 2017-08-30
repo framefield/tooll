@@ -9,8 +9,8 @@ namespace Framefield.Core.Commands
 {
     public class ReorderInputsCommand : ICommand
     {
-        public string Name { get { return "Reorder Inputs"; } }
-        public bool IsUndoable { get { return true;} }
+        public string Name => "Reorder Inputs";
+        public bool IsUndoable => true;
 
         public ReorderInputsCommand(Operator compOp, List<Guid> operatorPartIds)
         {
@@ -30,26 +30,22 @@ namespace Framefield.Core.Commands
             var newList = new List<MetaInput>();
             foreach (var id in _newMetaInputIds)
             {
-                foreach(var input in _oldMetaInputs)
+                foreach (var input in _oldMetaInputs)
                 {
-                    if(input.ID == id)
+                    if (input.ID == id)
                     {
                         newList.Add(input);
                         break;
                     }
-                }        
+                }
             }
             var metaOp = MetaOp;
-            var count = newList.Count;
             metaOp.Inputs = newList;
-
-            Logger.Info("newList:" + newList + " / "+ metaOp);
-            metaOp.ReorderInputsOfOpInstance();
         }
 
-        private MetaOperator MetaOp { get { return MetaManager.Instance.GetMetaOperator(_metaOpID); } }
+        private MetaOperator MetaOp => MetaManager.Instance.GetMetaOperator(_metaOpID);
 
-        private List<MetaInput> _oldMetaInputs;
+        private readonly List<MetaInput> _oldMetaInputs;
 
         [JsonProperty]
         private Guid _metaOpID;
