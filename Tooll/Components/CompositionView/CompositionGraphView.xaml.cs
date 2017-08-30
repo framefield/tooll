@@ -165,6 +165,14 @@ namespace Framefield.Tooll
             }
             var reorderCommand = new ReorderInputsCommand(CompositionOperator, reorderedMetaInputIds);
             App.Current.UndoRedoStack.AddAndExecute(reorderCommand);
+
+            //_inputsWidgets.Clear();
+            //InputView.Panel.Children.Clear();
+            //_compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
+
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+            SelectionHandler.SetElements(SelectionHandler.SelectedElements);
+            SetCompositionOperator(CompositionOperator);
         }
 
         #region public command methods
@@ -1000,7 +1008,6 @@ namespace Framefield.Tooll
             TimeClips.Clear();
             TimeMarkers.Clear();
             Annotations.Clear();
-            _inputsWidgets.Clear();
 
             ClearGUI();
 
@@ -1011,10 +1018,12 @@ namespace Framefield.Tooll
             }
 
             _compositionOperator.InternalOps.ForEach(op => AddOperatorWidget(op));
-            _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
             _compositionOperator.Outputs.ForEach(opPart => AddOutput(opPart));
+            LayoutOutputOperatorWidgets();        
 
-            LayoutOutputOperatorWidgets();
+            _inputsWidgets.Clear();
+            _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
+
 
             if (_compositionOperator.InternalParts.Count > 0)
             {
