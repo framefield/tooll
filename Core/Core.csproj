@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
+    <Compile Include="Commands\RenameOperatorNamespaceCommand.cs" />
     <Compile Include="Commands\ReorderInputsCommand.cs" />
     <Compile Include="Commands\AddInputCommand.cs" />
     <Compile Include="Commands\MoveKeyframeCommand.cs" />
