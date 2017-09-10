@@ -8,6 +8,9 @@ using AvalonDock;
 using Framefield.Core;
 using System.Windows;
 using System.IO;
+using System.Text;
+using Framefield.Tooll.Components.Dialogs;
+using Framefield.Core.Commands;
 
 namespace Framefield.Tooll
 {
@@ -42,7 +45,7 @@ namespace Framefield.Tooll
                         File.Delete(@"Config/Home.mop");
                         //Directory.Delete(@".\Operators\Cache");
                     }
-                    
+
                     App.Current.Shutdown(110);
                     Environment.Exit(110);
                 }
@@ -52,6 +55,7 @@ namespace Framefield.Tooll
             _operatorTypeButtons.Clear();
             PopulateTree(XTreeView, _typeTree, "", expandedItems);
         }
+
 
         HashSet<string> CollectExpandedItems(String prefix, ItemsControl item)
         {
@@ -70,34 +74,106 @@ namespace Framefield.Tooll
                 if (child is ItemsControl)
                 {
                     foreach (var e in CollectExpandedItems(fullname, (ItemsControl)child))
+                    {
                         expandedItems.Add(e);
+                    }
                 }
             }
             return expandedItems;
         }
+
+        private ContextMenu CreateContextMenu()
+        {
+            var newContextMenu = new ContextMenu();
+
+            var menuItem = new MenuItem()
+            {
+                Header = "Rename namespace",
+            };
+            menuItem.Click += RenameNamespaceHandler;
+            newContextMenu.Items.Add(menuItem);
+            return newContextMenu;
+        }
+
+        private void RenameNamespaceHandler(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.DataContext is OperatorTypeTree tree)
+            {
+                var names = new List<String>();
+                foreach (var p in tree.Parents)
+                {
+                    names.Add(p.Name);
+                }
+                names.Add(tree.Name);
+
+                var joinedNames = String.Join(".", names);
+
+                var popup = new TextInputWindow();
+                popup.XText.Text = "Rename operator namespace?";
+                popup.XTextBox.Text = joinedNames;
+                popup.XTextBox.SelectAll();
+                popup.XTextBox.Focus();
+                popup.ShowDialog();
+
+                if (popup.DialogResult == false)
+                    return;
+
+                var newNameSpace = popup.XTextBox.Text;
+                if (newNameSpace.EndsWith("."))
+                {
+                    MessageBox.Show("Namespace should have tailing '.' character.", "Sorry");
+                    return;
+                }
+
+                if (newNameSpace.Contains(" "))
+                {
+                    MessageBox.Show("Namespace should not contain spaces.", "Sorry");
+                    return;
+                }
+
+                var renamedOpCount = 0;
+                foreach (var opDefinition in App.Current.Model.MetaOpManager.MetaOperators.Values)
+                {
+                    if (!opDefinition.Namespace.StartsWith(joinedNames))
+                        continue;
+
+                    opDefinition.Namespace = opDefinition.Namespace.Replace(joinedNames, newNameSpace);
+                    renamedOpCount++;
+                }
+                App.Current.MainWindow.XLibraryView.UpdateOperatorTree();
+                Logger.Info("Updated namespace of {0} Operators", renamedOpCount);
+            }
+        }
+
 
         /**
          * Recursively create subtree and add OperatorTypeButtons
          */
         private void PopulateTree(ItemsControl item, OperatorTypeTree typeTree, String prefix, HashSet<string> expandedItems)
         {
+            typeTree.Children.Sort(CompareOpsTypeTreeByName);
+
+            foreach (var subtree in typeTree.Children)
+            {
+                var newSubTreeItem = new TreeViewItem()
+                {
+                    IsExpanded = expandedItems.Contains(prefix + subtree.Name),
+                    Header = subtree.Name,
+                    DataContext = subtree,
+                };
+
+                newSubTreeItem.ContextMenu = CreateContextMenu();
+                item.Items.Add(newSubTreeItem);
+                PopulateTree(newSubTreeItem, subtree, prefix + subtree.Name, expandedItems);
+            }
+
             typeTree.Operators.Sort(CompareOpsByName);
+
             foreach (var op in typeTree.Operators)
             {
                 var b = new OperatorTypeButton(op, false);
                 _operatorTypeButtons.Add(b);
                 item.Items.Add(b);
-            }
-            typeTree.Children.Sort(CompareOpsTypeTreeByName);
-            foreach (var subtree in typeTree.Children)
-            {
-                var newSubTree = new TreeViewItem
-                                     {
-                                         IsExpanded = expandedItems.Contains(prefix + subtree.Name), 
-                                         Header = subtree.Name
-                                     };
-                item.Items.Add(newSubTree);
-                PopulateTree(newSubTree, subtree, prefix + subtree.Name, expandedItems);
             }
         }
 
@@ -150,7 +226,7 @@ namespace Framefield.Tooll
             return lhs.Name.CompareTo(rhs.Name);
         }
 
-        private readonly OperatorTypeTree _typeTree = new OperatorTypeTree("root");
+        private readonly OperatorTypeTree _typeTree = new OperatorTypeTree("root", new List<OperatorTypeTree>());
         private readonly List<OperatorTypeButton> _operatorTypeButtons = new List<OperatorTypeButton>();
     }
 }

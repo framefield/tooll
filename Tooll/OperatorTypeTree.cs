@@ -7,34 +7,39 @@ using System.Linq;
 
 namespace Framefield.Tooll
 {
+    /** A nested container that can contain further instances of OperatorTypeTree */
     public class OperatorTypeTree
     {
         public string Name { get { return _name; } }
         public List<OperatorTypeTree> Children { get { return _children; } }
         public List<Core.MetaOperator> Operators { get { return _operators; } }
+        public List<OperatorTypeTree> Parents { get { return _parents; } }
 
-        public OperatorTypeTree(String name)
+        public OperatorTypeTree(String name, List<OperatorTypeTree> parents)
         {
             _name = name;
+            _parents = parents;
         }
 
         public void Clear()
         {
             _children.Clear();
+            _parents.Clear();
             _operators.Clear();
         }
 
         public void SortInOperator(Core.MetaOperator metaOp)
         {
-            if (metaOp == null || metaOp.Namespace==null)
+            if (metaOp == null || metaOp.Namespace == null)
             {
                 return;
-
             }
-            var spaces = metaOp.Namespace.Split(new[] { ' ', ',', '.', ':', '\t' });
+
+            var spaces = metaOp.Namespace.Split(new[] { '.' });
 
             var currentNode = this;
             var expandingSubTree = false;
+            var parentSpaces = new List<OperatorTypeTree>();
 
             foreach (var spaceName in spaces)
             {
@@ -43,10 +48,11 @@ namespace Framefield.Tooll
 
                 if (!expandingSubTree)
                 {
-                    var node= currentNode.FindNodeDataByName(spaceName);
+                    var node = currentNode.FindNodeDataByName(spaceName);
                     if (node != null)
                     {
                         currentNode = node;
+                        parentSpaces.Add(node);
                     }
                     else
                     {
@@ -56,8 +62,9 @@ namespace Framefield.Tooll
 
                 if (expandingSubTree)
                 {
-                    var newNode = new OperatorTypeTree(spaceName);
+                    var newNode = new OperatorTypeTree(spaceName, new List<OperatorTypeTree>(parentSpaces));
                     currentNode._children.Add(newNode);
+                    parentSpaces.Add(newNode);
                     currentNode = newNode;
                 }
             }
@@ -72,6 +79,7 @@ namespace Framefield.Tooll
 
         private readonly String _name = "";
         private readonly List<OperatorTypeTree> _children = new List<OperatorTypeTree>();
+        private readonly List<OperatorTypeTree> _parents = new List<OperatorTypeTree>();
         private readonly List<Core.MetaOperator> _operators = new List<Core.MetaOperator>();
     }
 }
