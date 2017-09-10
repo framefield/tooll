@@ -927,9 +927,9 @@ namespace Framefield.Tooll
                                                      select widget as ISelectable).ToList();
                     CompositionView.CompositionGraphView.SelectedElements = list;
                 }
-                CompositionView.XCompositionToolBar.XBreadCrumbs.Clear();
-                CompositionView.XCompositionToolBar.XBreadCrumbs.Push(bookmark.GetHierarchy(newCompOp));
-                CompositionView.XCompositionToolBar.XBreadCrumbs.Push(newCompOp);
+                CompositionView.XCompositionToolBar.XBreadCrumbsView.Clear();
+                CompositionView.XCompositionToolBar.XBreadCrumbsView.Push(bookmark.GetHierarchy(newCompOp));
+                CompositionView.XCompositionToolBar.XBreadCrumbsView.Push(newCompOp);
             }
             catch (Exception)
             {

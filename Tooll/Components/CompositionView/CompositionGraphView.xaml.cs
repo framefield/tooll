@@ -92,7 +92,7 @@ namespace Framefield.Tooll
 
         private void CompositionGraphView_Loaded(object sender, RoutedEventArgs e)
         {
-            CV.XCompositionToolBar.XBreadCrumbs.JumpOutEvent += XBreadCrumbs_JumpOutEvent;
+            CV.XCompositionToolBar.XBreadCrumbsView.JumpOutEvent += XBreadCrumbs_JumpOutEvent;
             SelectionHandler.SelectionChanged += SelectionChangedHandler;
             KeyUp += KeyUpHandler;
             SizeChanged += CompositionGraphView_SizeChanged;
@@ -117,7 +117,7 @@ namespace Framefield.Tooll
 
         private void CompositionGraphView_Unloaded(object sender, RoutedEventArgs e)
         {
-            CV.XCompositionToolBar.XBreadCrumbs.JumpOutEvent -= XBreadCrumbs_JumpOutEvent;
+            CV.XCompositionToolBar.XBreadCrumbsView.JumpOutEvent -= XBreadCrumbs_JumpOutEvent;
             SelectionHandler.SelectionChanged -= SelectionChangedHandler;
             KeyUp -= KeyUpHandler;
             SizeChanged -= CompositionGraphView_SizeChanged;
@@ -145,7 +145,7 @@ namespace Framefield.Tooll
         public void ReorderInputs()
         {
             var inputsSortedByPosition = new List<InputWidget>();
-            foreach(var iw in InputView.Panel.Children)
+            foreach (var iw in InputView.Panel.Children)
             {
                 if (iw is InputWidget x)
                 {
@@ -155,9 +155,10 @@ namespace Framefield.Tooll
             inputsSortedByPosition.Sort((a, b) => (a.Position.X.CompareTo(b.Position.X)));
 
             var needsReorder = false;
-            for(int index = 0; index< InputView.Panel.Children.Count; index++)
+            for (int index = 0; index < InputView.Panel.Children.Count; index++)
             {
-                if(inputsSortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index]) {
+                if (inputsSortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index])
+                {
                     needsReorder = true;
                     break;
                 }
@@ -166,7 +167,7 @@ namespace Framefield.Tooll
                 return;
 
             var reorderedMetaInputIds = new List<Guid>();
-            foreach(var i in inputsSortedByPosition)
+            foreach (var i in inputsSortedByPosition)
             {
                 var opPart = i.OperatorPart;
                 var metaInput = CompositionOperator.GetMetaInput(opPart);
@@ -376,6 +377,15 @@ namespace Framefield.Tooll
 
         public void AddOperatorAtPosition(MetaOperator metaOp, Point mousePos)
         {
+            foreach (var level in CV.XCompositionToolBar.XBreadCrumbsView.Hierarchy)
+            {
+                if (level.Operator.Definition == metaOp)
+                {
+                    MessageBox.Show("You cannot create an Operator within itself");
+                    return;
+                }
+            }
+
             var oldSelectedOperators = (from op in SelectedElements
                                         where op is OperatorWidget
                                         select (op as OperatorWidget).Operator);
@@ -460,7 +470,7 @@ namespace Framefield.Tooll
                 }
             }
 
-            CV.XCompositionToolBar.XBreadCrumbs.Push(opWidget.Operator);
+            CV.XCompositionToolBar.XBreadCrumbsView.Push(opWidget.Operator);
 
             CompositionOperator = opWidget.Operator;
 
@@ -1018,15 +1028,15 @@ namespace Framefield.Tooll
 
             if (_compositionOperator.Parent == null)
             {
-                CV.XCompositionToolBar.XBreadCrumbs.Clear();
-                CV.XCompositionToolBar.XBreadCrumbs.Push(_compositionOperator);
+                CV.XCompositionToolBar.XBreadCrumbsView.Clear();
+                CV.XCompositionToolBar.XBreadCrumbsView.Push(_compositionOperator);
             }
 
             _compositionOperator.InternalOps.ForEach(op => AddOperatorWidget(op));
             _compositionOperator.Outputs.ForEach(opPart => AddOutput(opPart));
-            LayoutOutputOperatorWidgets();        
+            LayoutOutputOperatorWidgets();
 
-            
+
             _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
 
 
@@ -1135,11 +1145,11 @@ namespace Framefield.Tooll
             var inputIndex = InputView.Panel.Children.Count;
 
             InputView.Panel.Children.Add(newInputWidget);
-            
 
-            var posX = 10 + inputIndex  * (newInputWidget.Width + 5);
+
+            var posX = 10 + inputIndex * (newInputWidget.Width + 5);
             newInputWidget.Position = new Point(posX, 0);
-            
+
             newInputWidget.Selected += OnInputSelected;
             return newInputWidget;
         }

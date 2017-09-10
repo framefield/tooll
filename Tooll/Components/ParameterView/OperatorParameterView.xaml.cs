@@ -55,6 +55,9 @@ namespace Framefield.Tooll
             InitializeComponent();
             _operator = op;
 
+            _exampleMetaOp = FindExampleOperator();
+            XExampleButton.IsEnabled = _exampleMetaOp != null;
+
             var binding = new Binding("Namespace");
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             binding.Source = op.Definition;
@@ -308,5 +311,32 @@ namespace Framefield.Tooll
 
         private TextDocument _descriptionDoc { get; set; }
         private Operator _operator { get; set; }
+
+        private void ShowExample_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (_exampleMetaOp == null)
+            {
+                Logger.Info("Boooh No example found");
+                return;
+            }
+
+            var CGV = App.Current.MainWindow.CompositionView.CompositionGraphView;
+            CGV.AddOperatorAtPosition(_exampleMetaOp, _operator.Position + new Vector(100, 100));
+        }
+
+        private MetaOperator FindExampleOperator()
+        {
+            foreach (var metaOp in App.Current.Model.MetaOpManager.MetaOperators.Values)
+            {
+                if (metaOp.Name != _operator.Definition.Name + "Example"
+                 && metaOp.Name != _operator.Definition.Name + "Examples")
+                    continue;
+
+                return metaOp;
+            }
+            return null;
+        }
+
+        MetaOperator _exampleMetaOp;
     }
 }

@@ -47,9 +47,10 @@
                                   Watermark="Click to set name"
                                   Grid.Row="1" Grid.Column="0" Text=""
                                   ToolTip="Operator name" />
-            <Button Grid.Row="1" Grid.Column="1"  Foreground="Gray" FontStretch="Normal"
+            <Button x:Name="XExampleButton" Grid.Row="1" Grid.Column="1"  Foreground="#FFC3C3C3" FontStretch="Normal"
                     ToolTip="Operator Preset. Ctrl-Click to save"
-                    >Custom</Button>
+                    Click="ShowExample_Clicked"
+                    >Show Example</Button>
             <Button Grid.Row="1" Foreground="#61000000" Grid.Column="2" Content="->"
                     ToolTip="Connected outputs" Click="Output_Clicked" />
         </Grid>
