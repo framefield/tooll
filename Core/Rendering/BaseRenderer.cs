@@ -385,11 +385,12 @@ namespace Framefield.Core.Rendering
 
         public virtual void Render(Mesh mesh, OperatorPartContext context)
         {
-            Render(mesh, context, 0);
+            if(mesh != null)
+                Render(mesh, context, 0);
         }
 
         public virtual void Render(Mesh mesh, OperatorPartContext context, int techniqueIdx)
-        {
+        {            
             if (context.DepthStencilView != null && context.RenderTargetViews != null)
                 context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.DepthStencilView, context.RenderTargetViews);
             else if (context.DepthStencilView != null && context.RenderTargetView != null)
