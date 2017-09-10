@@ -131,17 +131,28 @@ namespace Framefield.Tooll
                     return;
                 }
 
-                var renamedOpCount = 0;
+                var commands = new List<ICommand>();
+
                 foreach (var opDefinition in App.Current.Model.MetaOpManager.MetaOperators.Values)
                 {
                     if (!opDefinition.Namespace.StartsWith(joinedNames))
                         continue;
 
-                    opDefinition.Namespace = opDefinition.Namespace.Replace(joinedNames, newNameSpace);
-                    renamedOpCount++;
+                    var newNamespace = opDefinition.Namespace.Replace(joinedNames, newNameSpace);
+                    commands.Add(new RenameOperatorNamespaceCommand(opDefinition, newNamespace));
                 }
-                App.Current.MainWindow.XLibraryView.UpdateOperatorTree();
-                Logger.Info("Updated namespace of {0} Operators", renamedOpCount);
+
+                if (commands.Count > 0)
+                {
+                    Logger.Info("Updated namespace of {0} Operators", commands.Count);
+                    var macroCommand = new MacroCommand("Rename namespace", commands);
+                    App.Current.UndoRedoStack.AddAndExecute(macroCommand);
+                    App.Current.MainWindow.XLibraryView.UpdateOperatorTree();
+                }
+                else
+                {
+                    Logger.Info("No matching operators found");
+                }
             }
         }
 
