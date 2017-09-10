@@ -259,6 +259,7 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0x3c, 0x4a, 0x30);
                 case FunctionType.Image: return Color.FromRgb(0x4C, 0x34, 0x51);
                 case FunctionType.Generic: return Color.FromRgb(0x4a, 0x47, 0x30);
+                case FunctionType.Mesh: return Color.FromRgb(0x5f, 0x4b, 0x4b);
                 default: return Color.FromRgb(0x4f, 0x4b, 0x4b);
             }
         }
@@ -271,6 +272,7 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0xc4, 0xdd, 0x96);
                 case FunctionType.Image: return Color.FromRgb(0xDF, 0xA8, 0xE2);
                 case FunctionType.Generic: return Color.FromRgb(0xdd, 0xd9, 0x96);
+                case FunctionType.Mesh: return Color.FromRgb(0xd6, 0xbb, 0xbb);
                 default: return Color.FromRgb(0xc6, 0xbb, 0xbb);
             }
         }
@@ -283,6 +285,8 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0x17, 0x1f, 0x11);
                 case FunctionType.Image: return Color.FromRgb(0x21, 0x13, 0x24);
                 case FunctionType.Generic: return Color.FromRgb(0x1f, 0x1e, 0x11);
+                case FunctionType.Mesh: return Color.FromRgb(0x1e, 0x0b, 0x0b);
+
                 default: return Color.FromRgb(0x0e, 0x0b, 0x0b);
             }
         }
