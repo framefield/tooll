@@ -143,8 +143,8 @@ namespace Framefield.Tooll.Components.Helper
             {
                 var level = 0f;
 
-                var startIndex = (int)Mathf.Lerp(0, SPECTRUM_LENGTH, Mathf.Clamp01(this.lowerLimit));
-                var endIndex = (int)Mathf.Min(SPECTRUM_LENGTH, Mathf.Lerp(0, SPECTRUM_LENGTH, Mathf.Clamp01(this.upperLimit)));
+                var startIndex = (int)Utilities.Lerp(0, SPECTRUM_LENGTH, Utilities.Clamp(this.lowerLimit, 0, 1));
+                var endIndex = (int)Math.Min(SPECTRUM_LENGTH, Utilities.Lerp(0, SPECTRUM_LENGTH, Utilities.Clamp(this.upperLimit, 0, 1)));
 
 
 

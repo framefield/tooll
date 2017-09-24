@@ -212,7 +212,6 @@
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="IOperatorPartState.cs" />
     <Compile Include="Inputs\MouseInput.cs" />
-    <Compile Include="Mathf\Mathf.cs" />
     <Compile Include="OperatorPartTraits\IAnnotation.cs" />
     <Compile Include="OperatorPartTraits\IMeshSupplier.cs" />
     <Compile Include="OperatorPartTraits\ISceneTransform.cs" />
