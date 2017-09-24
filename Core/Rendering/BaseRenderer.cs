@@ -393,6 +393,8 @@ namespace Framefield.Core.Rendering
         {            
             if (context.DepthStencilView != null && context.RenderTargetViews != null)
                 context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.DepthStencilView, context.RenderTargetViews);
+            else if (context.DepthStencilView == null && context.RenderTargetViews != null)
+                context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.RenderTargetViews);
             else if (context.DepthStencilView != null && context.RenderTargetView != null)
                 context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.DepthStencilView, context.RenderTargetView);
             else if (context.RenderTargetView != null)
