@@ -21,6 +21,8 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using System.Diagnostics;
 
+using Framefield.Tooll.Utils;
+
 namespace Framefield.Tooll
 {
     /// <summary>
@@ -55,8 +57,9 @@ namespace Framefield.Tooll
             InitializeComponent();
             _operator = op;
 
-            _exampleMetaOp = FindExampleOperator();
+            _exampleMetaOp = OpUtils.FindExampleOperator(_operator.Definition);
             XExampleButton.IsEnabled = _exampleMetaOp != null;
+            XExampleButton.Foreground = _exampleMetaOp != null ? Brushes.White : Brushes.Black;
 
             var binding = new Binding("Namespace");
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
@@ -308,7 +311,6 @@ namespace Framefield.Tooll
             CGV.SelectConnectedOutputWidget();
         }
 
-
         private TextDocument _descriptionDoc { get; set; }
         private Operator _operator { get; set; }
 
@@ -324,19 +326,6 @@ namespace Framefield.Tooll
             CGV.AddOperatorAtPosition(_exampleMetaOp, _operator.Position + new Vector(100, 100));
         }
 
-        private MetaOperator FindExampleOperator()
-        {
-            foreach (var metaOp in App.Current.Model.MetaOpManager.MetaOperators.Values)
-            {
-                if (metaOp.Name != _operator.Definition.Name + "Example"
-                 && metaOp.Name != _operator.Definition.Name + "Examples")
-                    continue;
-
-                return metaOp;
-            }
-            return null;
-        }
-
-        MetaOperator _exampleMetaOp;
+        private MetaOperator _exampleMetaOp;
     }
 }

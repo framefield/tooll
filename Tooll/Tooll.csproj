@@ -555,6 +555,7 @@
     <Compile Include="Components\ParameterView\VectorNParameterValue.xaml.cs">
       <DependentUpon>VectorNParameterValue.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\OpUtils.cs" />
     <Compile Include="Utils\SetWaitCursor.cs" />
     <Compile Include="Utils\SpecialOperators.cs" />
     <Page Include="Components\AdditionalAssembliesWindow.xaml">

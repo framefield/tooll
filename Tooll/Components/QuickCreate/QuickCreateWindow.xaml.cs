@@ -23,6 +23,7 @@ namespace Framefield.Tooll
 
         private readonly Operator _compositionOperator;
         private readonly Dictionary<Guid, int> _numberOfMetaOperatorUsage = new Dictionary<Guid, int>();
+
         private bool IsCompositionOperatorAProjectOperator
         {
             get
@@ -44,7 +45,7 @@ namespace Framefield.Tooll
         public QuickCreateWindow(Operator compositionOperator)
         {
             SelectedType = FunctionType.Generic;
-            InitializeComponent();            
+            InitializeComponent();
             SelectedMetaOp = null;
             _compositionOperator = compositionOperator;
         }
@@ -54,7 +55,8 @@ namespace Framefield.Tooll
             InitDictionaryWithMetaOperatorUsageCount();
             XSearchTextBox.Focus();
             SelectedMetaOp = null;
-            if (SelectedType != FunctionType.Generic) {
+            if (SelectedType != FunctionType.Generic)
+            {
                 UpdateSearchResults();
             }
         }
@@ -67,7 +69,7 @@ namespace Framefield.Tooll
         {
             if (XSearchTextBox.Text != "")
             {
-                UpdateSearchResults();    
+                UpdateSearchResults();
             }
             UpdateSearchResultVisibility();
         }
@@ -88,7 +90,8 @@ namespace Framefield.Tooll
             }
         }
 
-        private void UpdateSearchResults() {
+        private void UpdateSearchResults()
+        {
             var pattern = XSearchTextBox.Text.Select((t, i) => XSearchTextBox.Text.Substring(i, 1))
                           .Where(subString => Regex.Match(subString, "[A-Z0-9_-]", RegexOptions.IgnoreCase) != Match.Empty)
                           .Aggregate(".*", (current, subString) => current + (subString + ".*"));
@@ -105,7 +108,8 @@ namespace Framefield.Tooll
                                      select new { Op = metaOpEntry.Value, Rating = rating }).Reverse().Take(100);
 
             XResultList.Items.Clear();
-            foreach (var o in filteredOpEntries) {
+            foreach (var o in filteredOpEntries)
+            {
                 var button = new OperatorTypeButton(o.Op);
                 button.Opacity = IsOperatorRelevantToProject(o.Op) ? 1 : 0.4;
                 XResultList.Items.Add(button);
@@ -126,14 +130,12 @@ namespace Framefield.Tooll
             return currentProjectName;
         }
 
-
         private static Operator GetCurrentCompositionOperator()
         {
             var CGV = App.Current.MainWindow.CompositionView.CompositionGraphView;
             var cgvOperator = CGV.CompositionOperator;
             return cgvOperator;
         }
-
 
         private static string GetProjectFromNamespace(string nameSpace)
         {
@@ -157,7 +159,7 @@ namespace Framefield.Tooll
 
                 return true;
             }
-                
+
             if (operatorDefinition.Namespace.StartsWith("examples."))
                 return true;
 
@@ -166,11 +168,10 @@ namespace Framefield.Tooll
             // Projects-operators in Home
             if (operatorDefinition.Namespace.StartsWith("projects.") &&
                 operatorDefinition.Namespace.Split('.').Count() == 2 &&
-                GetCurrentCompositionOperator().Definition.Name=="Home")
+                GetCurrentCompositionOperator().Definition.Name == "Home")
             {
                 return true;
             }
-
 
             // Same project ?
             var projectNamespace = GetProjectFromNamespace(operatorDefinition.Namespace);
@@ -180,11 +181,8 @@ namespace Framefield.Tooll
             // Current user
             // TODO:implement
 
-            
-
             return false;
         }
-
 
         private double ComputeRelevancy(MetaOperator op, string query, string currentProjectName)
         {
@@ -199,7 +197,6 @@ namespace Framefield.Tooll
             {
                 relevancy *= 4.5;
             }
-
             else
             {
                 if (op.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -221,21 +218,19 @@ namespace Framefield.Tooll
                 relevancy *= 0.3;
 
             if (op.Name == "Curve")      // disfavor shadow ops
-               relevancy *= 0.05;
+                relevancy *= 0.05;
 
             if (op.InstanceCount > 0)
             {
                 relevancy *= -0.5 / op.InstanceCount + 2.0;
             }
-                
 
             relevancy *= 2 - 1.0 / (0.3 * _numberOfMetaOperatorUsage[op.ID] + 0.7);
-
 
             //relevancy *= (1 + (1.0 / (op.Name.Length + op.Namespace.Length)) * 0.05);
 
             // boost operators that match currently selected operator
-            if (SelectedType != FunctionType.Generic 
+            if (SelectedType != FunctionType.Generic
                 && op.Inputs.Count > 0
                 && op.Inputs.First().OpPart.Type == this.SelectedType)
             {
@@ -251,7 +246,6 @@ namespace Framefield.Tooll
             {
                 relevancy *= 1.9;
             }
-            
             else if (!IsCompositionOperatorAProjectOperator && op.Namespace.StartsWith(@"projects.") && op.Namespace.Split('.').Length == 2)
             {
                 relevancy *= 1.9;
@@ -294,7 +288,8 @@ namespace Framefield.Tooll
         }
 
         private bool _showingPreview = false;
-        private List<ISelectable> _selectionBeforePreview; 
+        private List<ISelectable> _selectionBeforePreview;
+        private MetaOperator _exampleMetaOp;
 
         public void ShowOpDescription(MetaOperator metaOperator)
         {
@@ -303,17 +298,21 @@ namespace Framefield.Tooll
                 XName.Text = "";
                 XNamespace.Text = "";
                 XDescription.Text = "";
+                XShowExampleButton.Visibility = Visibility.Hidden;
+                return;
             }
-            else
-            {
-                XName.Text = metaOperator.Name;
-                XNamespace.Text =metaOperator.Namespace;
-                XDescription.Text = metaOperator.Description;                
-            }
+
+            _exampleMetaOp = Utils.OpUtils.FindExampleOperator(metaOperator);
+            XShowExampleButton.Visibility = _exampleMetaOp != null
+                                          ? Visibility.Visible : Visibility.Hidden;
+
+            XName.Text = metaOperator.Name;
+            XNamespace.Text = metaOperator.Namespace;
+            XDescription.Text = metaOperator.Description;
 
             // Show preview
             if (XPreviewCheckbox.IsChecked.Value)
-            {                
+            {
                 _showingPreview = true;
                 App.Current.MainWindow.XParameterView.PreventUIUpdate = true;
                 var compoGraphView = App.Current.MainWindow.CompositionView.CompositionGraphView;
@@ -322,7 +321,7 @@ namespace Framefield.Tooll
             }
         }
 
-        public void EndShowOpDescription(MetaOperator metaOperator)
+        public void EndShowOpPreview(MetaOperator metaOperator)
         {
             // Undo preview
             if (_showingPreview)
@@ -348,7 +347,7 @@ namespace Framefield.Tooll
             }
             else
             {
-                compoGraphView.AddOperatorAtPosition(metaOperator,RelavantPositionOnWorkspace);
+                compoGraphView.AddOperatorAtPosition(metaOperator, RelavantPositionOnWorkspace);
             }
 
             // Don't close window when ALT is pressed
@@ -365,13 +364,12 @@ namespace Framefield.Tooll
                 _showingPreview = false;
                 var newElement = compoGraphView.SelectionHandler.SelectedElements.ToList();
                 compoGraphView.SelectionHandler.Clear();    // To trigger an update we have to clear the list first
-                compoGraphView.SelectionHandler.SetElements(newElement);                
+                compoGraphView.SelectionHandler.SetElements(newElement);
             }
 
             Close();
-            compoGraphView.Focus();            
+            compoGraphView.Focus();
         }
-
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)
         {
@@ -383,23 +381,25 @@ namespace Framefield.Tooll
                     e.Handled = true;
                     SelectedMetaOp = null;
                     break;
+
                 case Key.Down:
                     if (XResultList.SelectedIndex < XResultList.Items.Count)
                         XResultList.SelectedIndex++;
                     e.Handled = true;
                     SelectedMetaOp = null;
                     break;
+
                 case Key.Return:
-                {
-                    var button = XResultList.SelectedItem as OperatorTypeButton;
-                    if (button != null)
                     {
-                        SelectedMetaOp = button.MetaOp;
+                        var button = XResultList.SelectedItem as OperatorTypeButton;
+                        if (button != null)
+                        {
+                            SelectedMetaOp = button.MetaOp;
+                        }
+                        e.Handled = true;
+                        Close();
+                        break;
                     }
-                    e.Handled = true;
-                    Close();
-                    break;
-                }
                 case Key.Escape:
                     e.Handled = true;
                     Close();
@@ -409,20 +409,30 @@ namespace Framefield.Tooll
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            EndShowOpDescription(null);
+            EndShowOpPreview(null);
 
-            var listView = sender as ListView;
-            if (listView != null)
+            if (sender is ListView listView)
             {
                 listView.ScrollIntoView(listView.SelectedItem);
             }
 
-            var button = XResultList.SelectedItem as OperatorTypeButton;
-            if (button != null)
+            if (XResultList.SelectedItem is OperatorTypeButton button)
             {
                 var selectedMetaOp = button.MetaOp;
                 ShowOpDescription(button.MetaOp);
             }
+        }
+
+        private void XShowExampleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_exampleMetaOp == null)
+            {
+                Logger.Info("Boooh No example found");
+                return;
+            }
+
+            SelectedMetaOp = _exampleMetaOp;
+            Close();
         }
     }
 }

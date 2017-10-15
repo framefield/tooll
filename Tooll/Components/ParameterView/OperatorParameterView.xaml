@@ -47,7 +47,7 @@
                                   Watermark="Click to set name"
                                   Grid.Row="1" Grid.Column="0" Text=""
                                   ToolTip="Operator name" />
-            <Button x:Name="XExampleButton" Grid.Row="1" Grid.Column="1"  Foreground="#FFC3C3C3" FontStretch="Normal"
+            <Button x:Name="XExampleButton" Grid.Row="1" Grid.Column="1"  Foreground="#FF2B2B2B" FontStretch="Normal"
                     ToolTip="Operator Preset. Ctrl-Click to save"
                     Click="ShowExample_Clicked"
                     >Show Example</Button>
