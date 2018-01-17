@@ -17,6 +17,7 @@ namespace Framefield.Core
         public static readonly string PBR_MATERIAL_ID = "Core.EvaluationContext.PbrMaterial";
         public static readonly string PBR_IMAGE_BASED_LIGHTING_ID = "Core.EvaluationContext.PbrImageBasedLighting";
         public static readonly string PBR_POINT_LIGHT_CONTAINER_ID = "Core.Context.PbrPointLightContainer";
+        public static readonly string PBR_SPHERE_LIGHT_CONTAINER_ID = "Core.Context.PbrSphereLightContainer";
         public static readonly string FOG_SETTINGS_ID = "Core.EvaluationContext.FogSettings";
         public static readonly string TESTS_EVALUATOR_ID = "Core.Testing.TestsEvaluator";
         public static readonly string UI_EVENT_ID = "Core.UI.Event";
@@ -100,6 +101,7 @@ namespace Framefield.Core
             _objects[PBR_MATERIAL_ID] = new DefaultPbrMaterial();
             _objects[PBR_IMAGE_BASED_LIGHTING_ID] = new DefaultPbrImageBasedLightingSetup();
             _objects[PBR_POINT_LIGHT_CONTAINER_ID] = new List<IPbrPointLight>();
+            _objects[PBR_SPHERE_LIGHT_CONTAINER_ID] = new List<IPbrSphereLight>();
             _objects[FOG_SETTINGS_ID] = new DefaultFogSettings();
         }
 

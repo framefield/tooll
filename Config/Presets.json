@@ -10210,6 +10210,85 @@
       "Id": "7a01fc34-9f7f-48d1-beb1-365de2f1d9bb"
     }
   ],
+  "70ead714-19b8-4197-bf03-f6b431138f48": [
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 0.97024,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 9.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 10.7439995,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": 0.0
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "8cb17a0c-22d6-41b9-a78a-b99b38d30d26"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 2.62333345,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 4.733334,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 24.130003,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": -0.188000008
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "307b580a-09cb-43a7-a924-a51f18ce31d4"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 1.0,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 9.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 10.0,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": 0.207000017
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "732a71a2-2170-46a6-8c05-93790c53f4d6"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 1.0,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 9.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 10.0,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": 0.0
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "b528996f-8306-4506-8338-c3ead461a08e"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 2.11600018,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 1.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 22.1,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": -0.70600003
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "b608a4af-0537-40c6-8108-cd3b377ebf87"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 1.0,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 29.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 4.79999971,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": 0.0
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "31c1caa4-3cf7-435b-a341-45fc752ef5dd"
+    },
+    {
+      "ValuesByParameterID": {
+        "40e65f14-e8c0-4758-a745-d9a8919b0160": 1.0,
+        "72ece42f-8576-4739-b274-27ab65f8b1b8": 9.0,
+        "e9126429-7b80-44d0-b696-c69cf31f67df": 10.0,
+        "f1a50671-97a8-4774-b9c6-698e7cde98c5": 0.0
+      },
+      "MetaOperatorID": "70ead714-19b8-4197-bf03-f6b431138f48",
+      "Name": null,
+      "Id": "6abdac35-0620-4f09-9146-1d4c74107d04"
+    }
+  ],
   "73e5c1b9-ffd7-4cad-bc75-1c39dbdd8510": [
     {
       "ValuesByParameterID": {
@@ -17328,6 +17407,64 @@
       "MetaOperatorID": "c05ae528-6671-43c6-8012-7e905075fd4b",
       "Name": null,
       "Id": "d721bb91-ca04-466c-a4ca-89511bac1dd3"
+    }
+  ],
+  "c0611349-f5cd-4fb9-a606-13cab1d643cd": [
+    {
+      "ValuesByParameterID": {
+        "2040a431-4635-43ef-a175-1645e04d71a5": 1.0,
+        "37d23971-8af8-4d51-b40d-a87fb2bd2c14": -2199.8,
+        "3bb167b7-eb41-40e5-bf3b-e495c0437cec": 1.0,
+        "4a3a1061-a088-4cd9-af86-5c52d28ffb95": 2.2,
+        "a1d97a45-ab7c-40d8-8bc4-27fc58ff1147": -604.0,
+        "bc8f6d8a-b3ca-4728-9365-3e69dcefa11f": -4312.8,
+        "d64bc17d-d7e3-48c9-a06d-7e2ec4b83e47": 1.0
+      },
+      "MetaOperatorID": "c0611349-f5cd-4fb9-a606-13cab1d643cd",
+      "Name": null,
+      "Id": "a80815bd-9adc-46ea-9bbb-d936c5bd9557"
+    },
+    {
+      "ValuesByParameterID": {
+        "2040a431-4635-43ef-a175-1645e04d71a5": 1.0,
+        "37d23971-8af8-4d51-b40d-a87fb2bd2c14": -23.3,
+        "3bb167b7-eb41-40e5-bf3b-e495c0437cec": 1.0,
+        "4a3a1061-a088-4cd9-af86-5c52d28ffb95": 3.2,
+        "a1d97a45-ab7c-40d8-8bc4-27fc58ff1147": 7.499999,
+        "bc8f6d8a-b3ca-4728-9365-3e69dcefa11f": 3.25,
+        "d64bc17d-d7e3-48c9-a06d-7e2ec4b83e47": 1.0
+      },
+      "MetaOperatorID": "c0611349-f5cd-4fb9-a606-13cab1d643cd",
+      "Name": null,
+      "Id": "a9367307-54dc-478e-a9a6-ec70f5e2eea0"
+    },
+    {
+      "ValuesByParameterID": {
+        "2040a431-4635-43ef-a175-1645e04d71a5": 1.0,
+        "37d23971-8af8-4d51-b40d-a87fb2bd2c14": -4.199999,
+        "3bb167b7-eb41-40e5-bf3b-e495c0437cec": 1.0,
+        "4a3a1061-a088-4cd9-af86-5c52d28ffb95": 3.2,
+        "a1d97a45-ab7c-40d8-8bc4-27fc58ff1147": 7.499999,
+        "bc8f6d8a-b3ca-4728-9365-3e69dcefa11f": -5.25,
+        "d64bc17d-d7e3-48c9-a06d-7e2ec4b83e47": 1.0
+      },
+      "MetaOperatorID": "c0611349-f5cd-4fb9-a606-13cab1d643cd",
+      "Name": null,
+      "Id": "08c04b91-8b01-4773-8ebb-b6e0ba9cf0d6"
+    },
+    {
+      "ValuesByParameterID": {
+        "2040a431-4635-43ef-a175-1645e04d71a5": 1.0,
+        "37d23971-8af8-4d51-b40d-a87fb2bd2c14": -14.6,
+        "3bb167b7-eb41-40e5-bf3b-e495c0437cec": 1.0,
+        "4a3a1061-a088-4cd9-af86-5c52d28ffb95": 1.0,
+        "a1d97a45-ab7c-40d8-8bc4-27fc58ff1147": 28.9333344,
+        "bc8f6d8a-b3ca-4728-9365-3e69dcefa11f": 6.6,
+        "d64bc17d-d7e3-48c9-a06d-7e2ec4b83e47": 1.0
+      },
+      "MetaOperatorID": "c0611349-f5cd-4fb9-a606-13cab1d643cd",
+      "Name": null,
+      "Id": "f7fcd532-9e2a-4765-94dc-3bfe3f7d1cc1"
     }
   ],
   "c1aec4c2-b323-429b-b0cf-d68e1cfe0885": [

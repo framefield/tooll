@@ -265,6 +265,22 @@ namespace Framefield.Core.Rendering
             }
         }
 
+        protected void SetupPbrSphereLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer sphereLightsBuffer, ref ShaderResourceView sphereLightsSRV)
+        {
+            var sphereLights = (List<IPbrSphereLight>)context.Objects[OperatorPartContext.PBR_SPHERE_LIGHT_CONTAINER_ID];
+            bool success = SetupStructuredBuffer(context.D3DDevice, sphereLights.ToArray(), pl => new PbrSphereLightBufferLayout(pl),
+                                                 ref sphereLightsBuffer, ref sphereLightsSRV);
+            var sphereLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
+            if (sphereLightVariable != null)
+            {
+                sphereLightVariable.SetResource(success ? sphereLightsSRV : null);
+            }
+            else
+            {
+                Logger.Warn("Found no PBR sphere light effect variable '{0}'.", effectVariableName);
+            }
+        }
+
         protected void SetupFogSettingsConstBuffer(OperatorPartContext context)
         {
             var fogSettings = (IFogSettings) context.Objects[OperatorPartContext.FOG_SETTINGS_ID];
