@@ -48,7 +48,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 
         #region Construction and Clean-Up
 
-        public CameraInteraction(ShowSceneControl showSceneControl)
+        public CameraInteraction(ShowContentControl showSceneControl)
         {
             MaxMoveVelocity = (float) App.Current.ProjectSettings.GetOrSetDefault("Tooll.SelectionView.Camera.MaxVelocity", MAX_MOVE_VELOCITY_DEFAULT);
             _cameraAcceleration = (float)App.Current.ProjectSettings.GetOrSetDefault("Tooll.SelectionView.Camera.Acceleration", CAMERA_ACCELERATION_DEFAULT);
@@ -623,7 +623,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private const float CAMERA_ACCELERATION_DEFAULT = 1f;
 
         private Operator _cameraOperator;
-        private readonly ShowSceneControl _showSceneControl;
+        private readonly ShowContentControl _showSceneControl;
 
         private bool _isTransitionActive;
         private bool _manipulatedByMouseWheel;

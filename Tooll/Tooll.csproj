@@ -366,6 +366,7 @@
     <Compile Include="Components\ParameterView\SceneParameterValue.xaml.cs">
       <DependentUpon>SceneParameterValue.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\SelectionView\ContentRenderer.cs" />
     <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
       <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
     </Compile>
@@ -549,8 +550,8 @@
     <Compile Include="Components\Dialogs\UserNameDialog.xaml.cs">
       <DependentUpon>UserNameDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SelectionView\ShowSceneControl.xaml.cs">
-      <DependentUpon>ShowSceneControl.xaml</DependentUpon>
+    <Compile Include="Components\SelectionView\ShowContentControl.xaml.cs">
+      <DependentUpon>ShowContentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ParameterView\VectorNParameterValue.xaml.cs">
       <DependentUpon>VectorNParameterValue.xaml</DependentUpon>
@@ -905,7 +906,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\SelectionView\ShowSceneControl.xaml">
+    <Page Include="Components\SelectionView\ShowContentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
