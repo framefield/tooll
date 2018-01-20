@@ -54,7 +54,7 @@ namespace Framefield.Tooll
     {
         public SpaceMouseWPFHandler SpaceMouseHandlerWpf { get; set; }    // will be initialized in MainWindow loaded
 
-        public MainWindow() 
+        public MainWindow()
         {
             InitializeComponent();
             _importFbxScene = new ImportFbxScene();
@@ -117,18 +117,23 @@ namespace Framefield.Tooll
             }
         }
 
-        void MainWindow_Closed(object sender, EventArgs e) {
+        void MainWindow_Closed(object sender, EventArgs e)
+        {
+            // With expect the CleanUp to be implicitly called when closing the UI-element */
+
             // FIXME: Of course we have to clean up all renderviews, not just the two default ones!
-            XRenderView.XShowSceneControl.CleanUp();
-            XRenderView2.XShowSceneControl.CleanUp();
+            //XRenderView.XShowContentControl.CleanUp();
+            //XRenderView2.XShowContentControl.CleanUp();
         }
 
-        private void SetupLayoutHandler() {
-            int functionKeyBase = (int) Key.F1;
-            for (int i = 0; i < 12; ++i) {
+        private void SetupLayoutHandler()
+        {
+            int functionKeyBase = (int)Key.F1;
+            for (int i = 0; i < 12; ++i)
+            {
                 var cmd = new RoutedCommand();
                 LayoutFilterCommands.Add(cmd);
-                cmd.InputGestures.Add(new KeyGesture((Key) (functionKeyBase + i)));
+                cmd.InputGestures.Add(new KeyGesture((Key)(functionKeyBase + i)));
                 var loadLayoutBinding = new CommandBinding();
                 loadLayoutBinding.Command = cmd;
                 loadLayoutBinding.CanExecute += (o, e) => e.CanExecute = true;
@@ -141,14 +146,14 @@ namespace Framefield.Tooll
         private ModifierKeys _modifiersWhileKeyDown;
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
-        {            
+        {
             var source = e.InputSource;
             var ctrlPressed = (e.KeyboardDevice.Modifiers & ModifierKeys.Control) > 0;
             var altPressed = (e.KeyboardDevice.Modifiers & ModifierKeys.Alt) > 0;
             var shiftPressed = (e.KeyboardDevice.Modifiers & ModifierKeys.Shift) > 0;
             var windowsPressed = (e.KeyboardDevice.Modifiers & ModifierKeys.Windows) > 0;
             _modifiersWhileKeyDown = Keyboard.Modifiers;
-            
+
             if (!(e.OriginalSource is TextBox ||
                   e.OriginalSource is TextArea ||
                   e.OriginalSource is MenuItem))
@@ -173,30 +178,32 @@ namespace Framefield.Tooll
                             break;
 
                         case Key.Home:
-                            CustomCommands.MoveToBeginningCommand.Execute(null, this);                            
+                            CustomCommands.MoveToBeginningCommand.Execute(null, this);
                             e.Handled = true;
                             break;
 
                     }
                 }
-            }            
+            }
         }
 
-        void MainWindow_KeyUp(object sender, KeyEventArgs e) {
+        void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        {
             var source = e.InputSource;
             var ctrlPressed = (_modifiersWhileKeyDown & ModifierKeys.Control) > 0;
             var altPressed = (_modifiersWhileKeyDown & ModifierKeys.Alt) > 0;
             var shiftPressed = (_modifiersWhileKeyDown & ModifierKeys.Shift) > 0;
             var windowsPressed = (_modifiersWhileKeyDown & ModifierKeys.Windows) > 0;
 
-            if (!(e.OriginalSource is TextBox || 
+            if (!(e.OriginalSource is TextBox ||
                   e.OriginalSource is TextArea ||
-                  e.OriginalSource is MenuItem)) 
+                  e.OriginalSource is MenuItem))
             {
                 // handle all key stuff that has no modifier key
                 if ((_modifiersWhileKeyDown & ModifierKeys.Control) == ModifierKeys.None)
                 {
-                    switch (e.Key) {
+                    switch (e.Key)
+                    {
                         case Key.Space:
                             CustomCommands.TogglePlaybackCommand.Execute(null, this);
                             e.Handled = true;
@@ -238,13 +245,15 @@ namespace Framefield.Tooll
 
 
                         case Key.Back:
-                            if (!(e.OriginalSource is CurveEditor)) {
+                            if (!(e.OriginalSource is CurveEditor))
+                            {
                                 CustomCommands.DeleteSelectedElementsCommand.Execute(null, this);
                                 e.Handled = true;
                             }
                             break;
                         case Key.Delete:
-                            if (!(e.OriginalSource is CurveEditor)) {
+                            if (!(e.OriginalSource is CurveEditor))
+                            {
                                 CustomCommands.DeleteSelectedElementsCommand.Execute(null, this);
                                 e.Handled = true;
                             }
@@ -254,7 +263,8 @@ namespace Framefield.Tooll
                             e.Handled = true;
                             break;
                         case Key.S:
-                            if (Keyboard.Modifiers == ModifierKeys.Shift) {
+                            if (Keyboard.Modifiers == ModifierKeys.Shift)
+                            {
                                 CustomCommands.StickySelectedElementCommand.Execute(null, this);
                             }
                             e.Handled = true;
@@ -292,25 +302,29 @@ namespace Framefield.Tooll
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 
-        public void AddInput(MetaInput input) {
+        public void AddInput(MetaInput input)
+        {
             CompositionView.CompositionGraphView.CompositionOperator.Definition.AddInput(input);
         }
 
-        public void AddOutput(MetaOutput output) {
+        public void AddOutput(MetaOutput output)
+        {
             CompositionView.CompositionGraphView.CompositionOperator.Definition.AddOutput(output);
         }
 
-        public void RemoveOutput(OperatorPart opPart) {
+        public void RemoveOutput(OperatorPart opPart)
+        {
             CompositionView.CompositionGraphView.CompositionOperator.RemoveOutput(opPart);
         }
 
-        private void NewHandler(object sender, RoutedEventArgs e) {
+        private void NewHandler(object sender, RoutedEventArgs e)
+        {
             App.Current.Model.Clear();
         }
 
         private void SaveHandler(object sender, RoutedEventArgs e)
         {
-            SaveOperators(enterCommitMessage:false);
+            SaveOperators(enterCommitMessage: false);
         }
 
         private void CloseHandler(object sender, ExecutedRoutedEventArgs e)
@@ -318,12 +332,14 @@ namespace Framefield.Tooll
             Close();
         }
 
-        private void NewPanelHandler(object sender, RoutedEventArgs e) {
+        private void NewPanelHandler(object sender, RoutedEventArgs e)
+        {
             var documentContent = new DocumentContent();
             documentContent.Title = "MyNewContent";
             var newRenderView = new SelectionView();
             CompositionView.CompositionGraphView.SelectionHandler.FirstSelectedChanged += newRenderView.UpdateViewToCurrentSelectionHandler;
-            if (App.Current.MainWindow.CompositionView.CompositionGraphView.SelectedElements.Count > 0) {
+            if (App.Current.MainWindow.CompositionView.CompositionGraphView.SelectedElements.Count > 0)
+            {
                 var ow = App.Current.MainWindow.CompositionView.CompositionGraphView.SelectedElements[0] as OperatorWidget;
                 newRenderView.SetOperatorWidget(ow);
             }
@@ -331,7 +347,8 @@ namespace Framefield.Tooll
             documentContent.Show(dockManager, true);
         }
 
-        private void ShowLibraryHandler(object sender, RoutedEventArgs e) {
+        private void ShowLibraryHandler(object sender, RoutedEventArgs e)
+        {
             var libraryView = new LibraryView();
             libraryView.Show(dockManager, true);
         }
@@ -350,18 +367,20 @@ namespace Framefield.Tooll
             App.Current.UndoRedoStack.AddAndExecute(command);
         }
 
-        private void InitHomeOperator() 
-        {            
+        private void InitHomeOperator()
+        {
             if (!App.Current.UserSettings.Contains("User.Name"))
             {
                 var userNameDialog = new UserNameDialog();
                 userNameDialog.ShowDialog();
 
-                if (userNameDialog.DialogResult == true) {
+                if (userNameDialog.DialogResult == true)
+                {
                     App.Current.UserSettings["User.Name"] = userNameDialog.XUserName.Text;
                     App.Current.UserSettings["User.Email"] = userNameDialog.XUserEmail.Text;
                 }
-                else {
+                else
+                {
                     App.Current.UserSettings["User.Name"] = "Unknown";
                 }
             }
@@ -369,12 +388,14 @@ namespace Framefield.Tooll
             CompositionView.CompositionGraphView.CompositionOperator = App.Current.Model.HomeOperator;
         }
 
-        private void UndoHandler(object sender, RoutedEventArgs e) {
+        private void UndoHandler(object sender, RoutedEventArgs e)
+        {
             App.Current.UndoRedoStack.Undo();
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 
-        private void RedoHandler(object sender, RoutedEventArgs e) {
+        private void RedoHandler(object sender, RoutedEventArgs e)
+        {
             App.Current.UndoRedoStack.Redo();
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
@@ -387,7 +408,7 @@ namespace Framefield.Tooll
             documentContent.Show(dockManager, true);
         }
 
-        class Layout 
+        class Layout
         {
             public string Name { get; set; }
             public string Data { get; set; }
@@ -395,7 +416,8 @@ namespace Framefield.Tooll
 
         private List<Layout> _layouts = new List<MainWindow.Layout>();
         private const string _layoutFileName = @"Config/Layouts.xml";
-        private void SaveLayoutHandler(object sender, RoutedEventArgs e) {
+        private void SaveLayoutHandler(object sender, RoutedEventArgs e)
+        {
             var name = "layout" + (_layouts.Count + 1).ToString();
 
             var popup = new TextInputWindow();
@@ -411,17 +433,20 @@ namespace Framefield.Tooll
 
             name = popup.XTextBox.Text;
 
-            using (var writer = new StringWriter()) {
+            using (var writer = new StringWriter())
+            {
                 dockManager.SaveLayout(writer);
                 var layout = new MainWindow.Layout() { Name = name, Data = writer.ToString() };
                 AddLayout(layout);
             }
 
-            using (var xmlWriter = new XmlTextWriter(_layoutFileName, Encoding.UTF8)) {
+            using (var xmlWriter = new XmlTextWriter(_layoutFileName, Encoding.UTF8))
+            {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteStartDocument();
                 xmlWriter.WriteStartElement("Layouts");
-                foreach (var layout in _layouts) {
+                foreach (var layout in _layouts)
+                {
                     xmlWriter.WriteStartElement("Layout");
                     xmlWriter.WriteAttributeString("Name", layout.Name);
                     xmlWriter.WriteRaw(layout.Data);
@@ -432,12 +457,14 @@ namespace Framefield.Tooll
             }
         }
 
-        private void LoadLayouts() {
+        private void LoadLayouts()
+        {
             if (!File.Exists(_layoutFileName))
                 return;
 
             var doc = XDocument.Load(_layoutFileName);
-            foreach (XElement x in doc.Element("Layouts").Elements("Layout")) {
+            foreach (XElement x in doc.Element("Layouts").Elements("Layout"))
+            {
                 var name = x.Attribute("Name").Value;
                 var data = x.Elements().First();
                 var layout = new MainWindow.Layout() { Name = name, Data = data.ToString() };
@@ -447,7 +474,8 @@ namespace Framefield.Tooll
 
         public static List<RoutedCommand> LayoutFilterCommands = new List<RoutedCommand>();
 
-        private void AddLayout(MainWindow.Layout layout) {
+        private void AddLayout(MainWindow.Layout layout)
+        {
             _layouts.Add(layout);
             var newMenuEntry = new MenuItem() { Header = layout.Name };
             int layoutIdx = _layouts.Count - 1;
@@ -455,25 +483,30 @@ namespace Framefield.Tooll
             XLayoutMenuItem.Items.Add(newMenuEntry);
         }
 
-        private void SetLayout(int layoutIndex) {
+        private void SetLayout(int layoutIndex)
+        {
             if (layoutIndex >= _layouts.Count)
                 return;
 
-            using (var reader = new StringReader(_layouts[layoutIndex].Data)) {
+            using (var reader = new StringReader(_layouts[layoutIndex].Data))
+            {
                 dockManager.RestoreLayout(reader);
             }
         }
 
-        private void DeleteLayoutHandler(object sender, RoutedEventArgs e) {
+        private void DeleteLayoutHandler(object sender, RoutedEventArgs e)
+        {
             XLayoutMenuItem.Items.RemoveAt(XLayoutMenuItem.Items.Count - 1);
             _layouts.RemoveAt(_layouts.Count - 1);
         }
 
-        private void ShowParameterViewHandler(object sender, RoutedEventArgs e) {
+        private void ShowParameterViewHandler(object sender, RoutedEventArgs e)
+        {
             parameterViewDock.Show(dockManager, true);
         }
 
-        private void ShowMeasureViewHandler(object sender, RoutedEventArgs e) {
+        private void ShowMeasureViewHandler(object sender, RoutedEventArgs e)
+        {
             var documentContent = new DocumentContent();
             documentContent.Title = "MeasureView";
             var newView = new TimeLogView();
@@ -493,7 +526,7 @@ namespace Framefield.Tooll
         {
             try
             {
-                UpdateOperators(enterCommitMessage:false);
+                UpdateOperators(enterCommitMessage: false);
             }
             catch
             {
@@ -516,7 +549,7 @@ namespace Framefield.Tooll
                 namesOfChangedOps.Add("Home");
             }
 
-            Logger.Info("Saving {0} operators: {1}", namesOfChangedOps.Count(), String.Join(", ",namesOfChangedOps));           
+            Logger.Info("Saving {0} operators: {1}", namesOfChangedOps.Count(), String.Join(", ", namesOfChangedOps));
 
             App.Current.Model.Save();
 
@@ -538,8 +571,8 @@ namespace Framefield.Tooll
             // add all new mop files
             var status = repository.Git.Status().Call();
             var newMetaOps = from untrackedFile in status.GetUntracked()
-                where untrackedFile.EndsWith(".mop")
-                select untrackedFile;
+                             where untrackedFile.EndsWith(".mop")
+                             select untrackedFile;
             foreach (var newMetaOp in newMetaOps)
             {
                 git.Add()
@@ -548,8 +581,8 @@ namespace Framefield.Tooll
             }
 
             var modifiedMetaOps = from modifiedFile in status.GetModified()
-                where modifiedFile.EndsWith(".mop")
-                select modifiedFile;
+                                  where modifiedFile.EndsWith(".mop")
+                                  select modifiedFile;
             foreach (var modifiedMetaOp in modifiedMetaOps)
             {
                 git.Add()
@@ -602,10 +635,10 @@ namespace Framefield.Tooll
             if (enterCommitMessage)
             {
                 var messageDialog = new TextInputWindow
-                                        {
-                                            XText = { Text = "Please enter change description:" },
-                                            XTextBox = { Text = string.Empty }
-                                        };
+                {
+                    XText = { Text = "Please enter change description:" },
+                    XTextBox = { Text = string.Empty }
+                };
                 messageDialog.XTextBox.SelectAll();
                 messageDialog.XTextBox.Focus();
                 messageDialog.ShowDialog();
@@ -727,7 +760,7 @@ namespace Framefield.Tooll
             window.Owner = this;
             window.Show();
         }
-        
+
         private void SearchForOperatorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -809,12 +842,12 @@ namespace Framefield.Tooll
             }
 
             var bookmark = new Bookmark(CompositionView.CompositionGraphView.CompositionOperator)
-                           {
-                               Name = bookmarkName,
-                               SelectedOps = selectedWidgetIDs.ToList(),
-                               ViewMatrix = CompositionView.CompositionGraphView.XViewTransform.Matrix,
-                               ShortCutValue = shortCut
-                           };
+            {
+                Name = bookmarkName,
+                SelectedOps = selectedWidgetIDs.ToList(),
+                ViewMatrix = CompositionView.CompositionGraphView.XViewTransform.Matrix,
+                ShortCutValue = shortCut
+            };
             _bookmarks.Add(bookmark);
 
             SetBookmarkMenuEntry(bookmark, shortCut);
@@ -857,10 +890,10 @@ namespace Framefield.Tooll
         private void UpdateDeleteBookmarkMenu(int indexOfBookmark, MenuItem bookmarkMenuItem)
         {
             var deleteItemToAdd = new MenuItem
-                                  {
-                                      Header = bookmarkMenuItem.Header,
-                                      InputGestureText = bookmarkMenuItem.InputGestureText
-                                  };
+            {
+                Header = bookmarkMenuItem.Header,
+                InputGestureText = bookmarkMenuItem.InputGestureText
+            };
             var bookmarkToDelete = _bookmarks.ElementAt(indexOfBookmark);
             deleteItemToAdd.Click += (o, ev) => DeleteBookmark(bookmarkToDelete);
             XDeleteBookmarkMenu.Items.Insert(indexOfBookmark + 1, deleteItemToAdd);
@@ -923,8 +956,8 @@ namespace Framefield.Tooll
                 if (bookmark.SelectedOps != null)
                 {
                     List<ISelectable> list = (from widget in App.Current.MainWindow.CompositionView.CompositionGraphView.XOperatorCanvas.Children.OfType<OperatorWidget>()
-                                                     where bookmark.SelectedOps.Contains(widget.Operator.ID)
-                                                     select widget as ISelectable).ToList();
+                                              where bookmark.SelectedOps.Contains(widget.Operator.ID)
+                                              select widget as ISelectable).ToList();
                     CompositionView.CompositionGraphView.SelectedElements = list;
                 }
                 CompositionView.XCompositionToolBar.XBreadCrumbsView.Clear();
@@ -989,53 +1022,65 @@ namespace Framefield.Tooll
             {
                 SetBookmarkMenuEntry(bm, bm.ShortCutValue);
             }
-        } 
+        }
         #endregion
 
-        private void StartPlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void StartPlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = Math.Abs(App.Current.MainWindow.CompositionView.PlaySpeed) == 0.0;
         }
 
-        private void StartPlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void StartPlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             StartPlayback();
         }
 
 
-        private void StopPlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void StopPlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = Math.Abs(App.Current.MainWindow.CompositionView.PlaySpeed) > 0.0;
         }
 
-        private void StopPlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void StopPlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             StopPlayback();
         }
 
 
-        private void TogglePlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void TogglePlaybackCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
 
-        private void TogglePlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
-            if (Math.Abs(App.Current.MainWindow.CompositionView.PlaySpeed) > 0.0) {
+        private void TogglePlaybackCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (Math.Abs(App.Current.MainWindow.CompositionView.PlaySpeed) > 0.0)
+            {
                 StopPlayback();
             }
-            else {
+            else
+            {
                 StartPlayback();
             }
         }
 
 
-        private void PlayFasterForwardCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void PlayFasterForwardCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void PlayFasterForwardCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void PlayFasterForwardCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             PlayFasterForward();
         }
 
 
-        private void PlayFasterBackwardCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void PlayFasterBackwardCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void PlayFasterBackwardCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void PlayFasterBackwardCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             PlayBackward();
         }
 
@@ -1048,11 +1093,13 @@ namespace Framefield.Tooll
             RewindPlayback();
         }
 
-        private void ToggleAudioVolumeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void ToggleAudioVolumeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
 
-        private void ToggleAudioVolumeCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void ToggleAudioVolumeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             ToggleMutePlayback();
         }
 
@@ -1066,59 +1113,73 @@ namespace Framefield.Tooll
             ConnectRemoteClient();
         }
 
-        private void ShowShadowOpsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void ShowShadowOpsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void ShowShadowOpsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void ShowShadowOpsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.CompositionGraphView.ShowShadowOps();
         }
 
 
-        private void HideShadowOpsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void HideShadowOpsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void HideShadowOpsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void HideShadowOpsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.CompositionGraphView.HideShadowOps();
         }
 
 
 
-        private void SetStartTimeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void SetStartTimeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void SetStartTimeCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
-            App.Current.MainWindow.CompositionView.XTimeView.StartTime= App.Current.Model.GlobalTime;
+        private void SetStartTimeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.StartTime = App.Current.Model.GlobalTime;
         }
 
 
-        private void SetEndTimeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void SetEndTimeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void SetEndTimeCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
-            App.Current.MainWindow.CompositionView.XTimeView.EndTime= App.Current.Model.GlobalTime;
+        private void SetEndTimeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.EndTime = App.Current.Model.GlobalTime;
         }
 
 
-        private void FitCurveValueRangeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void FitCurveValueRangeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void FitCurveValueRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void FitCurveValueRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.FitValueRange();
         }
 
 
-        private void JumpToNextKeyCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void JumpToNextKeyCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void JumpToNextKeyCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void JumpToNextKeyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.JumpToNextKey();
         }
 
 
-        private void JumpToPreviousKeyCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void JumpToPreviousKeyCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void JumpToPreviousKeyCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void JumpToPreviousKeyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.JumpToPreviousKey();
         }
 
@@ -1139,7 +1200,7 @@ namespace Framefield.Tooll
         private void PreviousFrameCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var moveFast = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
-            App.Current.Model.GlobalTime -= moveFast ? 1 : 1 / 30.0;            
+            App.Current.Model.GlobalTime -= moveFast ? 1 : 1 / 30.0;
         }
 
         private void NextFrameCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1147,67 +1208,78 @@ namespace Framefield.Tooll
             e.CanExecute = true;
         }
         private void NextFrameCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {   
-            var moveFast = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ;
-            App.Current.Model.GlobalTime +=  moveFast  ? 1 :  1 / 30.0;
+        {
+            var moveFast = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
+            App.Current.Model.GlobalTime += moveFast ? 1 : 1 / 30.0;
         }
 
 
 
-        private void AddMarkerCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void AddMarkerCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
 
         private static Guid MARKER_OP_META_ID = Guid.Parse("{3a680e24-4ac1-4e95-8784-efa048af24a8}");
 
-        private void AddMarkerCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void AddMarkerCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             var currentTime = App.Current.Model.GlobalTime;
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
 
             bool isPlaying = App.Current.MainWindow.CompositionView.PlaySpeed != 0;
-            
-            if(isPlaying)
+
+            if (isPlaying)
                 cgv.SelectionChangeEnabled = false;
 
             var command = new AddTimeMarkerCommand(cgv.CompositionOperator, MARKER_OP_META_ID, currentTime, 100, 100, 100, true);
             App.Current.UndoRedoStack.AddAndExecute(command);
 
-            if(isPlaying)
+            if (isPlaying)
                 cgv.SelectionChangeEnabled = true;
 
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 
-        private void DeleteSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void DeleteSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void DeleteSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void DeleteSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.CompositionGraphView.RemoveSelectedElements();
         }
 
-        private void CenterSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void CenterSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void CenterSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void CenterSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.CompositionGraphView.CenterAllOrSelectedElements();
         }
 
-        private void StickySelectedElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void StickySelectedElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             //var focusedElement = FocusManager.GetFocusedElement(this);
             //if (!(focusedElement is ShowSceneControl)) {
-                e.CanExecute = true;
+            e.CanExecute = true;
             //}
         }
-        private void StickySelectedElementCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void StickySelectedElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             App.Current.MainWindow.CompositionView.CompositionGraphView.StickySelectedElement();
         }
 
-        private void DuplicatedSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void DuplicatedSelectedElementsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             e.CanExecute = true;
         }
-        private void DuplicatedSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void DuplicatedSelectedElementsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             var focusedElement = FocusManager.GetFocusedElement(this);
-            if (focusedElement is CurveEditor) {
+            if (focusedElement is CurveEditor)
+            {
                 var editor = focusedElement as CurveEditor;
                 editor.DuplicateKeyframes();
             }
@@ -1215,12 +1287,14 @@ namespace Framefield.Tooll
                 App.Current.MainWindow.CompositionView.CompositionGraphView.CopySelectionToClipboard();
         }
 
-        private void SelectAndAddOperatorAtCursorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void SelectAndAddOperatorAtCursorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
             e.CanExecute = cgv.IsMouseOver;
         }
 
-        private void SelectAndAddOperatorAtCursorCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void SelectAndAddOperatorAtCursorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
 
             // We have to capture the mouse position before opening the dialog.
@@ -1228,13 +1302,16 @@ namespace Framefield.Tooll
 
             FunctionType preferredType = FunctionType.Generic;
 
-            if(cgv.SelectedElements.Count ==1) {
+            if (cgv.SelectedElements.Count == 1)
+            {
                 var opWidget = cgv.SelectedElements[0] as OperatorWidget;
-                if (opWidget != null) {
-                    var op= opWidget.Operator;
-                    if (op != null && op.Outputs.Count > 0) {
+                if (opWidget != null)
+                {
+                    var op = opWidget.Operator;
+                    if (op != null && op.Outputs.Count > 0)
+                    {
                         preferredType = op.Outputs[0].Type;
-                    }            
+                    }
                 }
             }
 
@@ -1248,30 +1325,38 @@ namespace Framefield.Tooll
 
             createWindow.ShowDialog();
 
-            App.Current.UserSettings["UI.QuickCreateWindowPositionTop"]= createWindow.Top;
+            App.Current.UserSettings["UI.QuickCreateWindowPositionTop"] = createWindow.Top;
             App.Current.UserSettings["UI.QuickCreateWindowPositionLeft"] = createWindow.Left;
 
-            if (createWindow.SelectedMetaOp != null) {
+            if (createWindow.SelectedMetaOp != null)
+            {
                 cgv.AddOperatorAtPosition(createWindow.SelectedMetaOp, mousePos);
             }
         }
 
-        
 
-        private void FindMissingPaths(Operator op) {
-            foreach (var childOp in op.InternalOps) {
+
+        private void FindMissingPaths(Operator op)
+        {
+            foreach (var childOp in op.InternalOps)
+            {
                 FindMissingPaths(childOp);
             }
 
-            foreach (var parameter in op.Inputs) {
-                if (parameter.Name.EndsWith("Path")) {
-                    if(parameter.Connections.Count==0) {
+            foreach (var parameter in op.Inputs)
+            {
+                if (parameter.Name.EndsWith("Path"))
+                {
+                    if (parameter.Connections.Count == 0)
+                    {
                         var context = new OperatorPartContext();
                         string path = parameter.Eval(context).Text;
-                        if (!File.Exists(path)) {
+                        if (!File.Exists(path))
+                        {
                             Logger.Warn("Missing File: {0}", path);
                             string basename = path.Split('/').Last();
-                            if (_assetFiles.ContainsKey(basename)) {
+                            if (_assetFiles.ContainsKey(basename))
+                            {
                                 Logger.Info("  -> fixed with: {0}", _assetFiles[basename]);
                                 parameter.Func = Utilities.CreateValueFunction(new Text(_assetFiles[basename]));
 
@@ -1280,8 +1365,8 @@ namespace Framefield.Tooll
                                 op.Name = "modified";
                                 op.Name = tmpName;
                             }
-                        }                        
-                    } 
+                        }
+                    }
                 }
             }
         }
@@ -1297,44 +1382,52 @@ namespace Framefield.Tooll
             }
             catch (DirectoryNotFoundException)
             {
-                Logger.Warn( String.Format("unable to access directory '{0}'. \nThis could be due to a broken file-link.",path));
+                Logger.Warn(String.Format("unable to access directory '{0}'. \nThis could be due to a broken file-link.", path));
                 return;
             }
 
-            foreach (var filename in files) {
+            foreach (var filename in files)
+            {
                 var basename = filename.Split('\\').Last();
-                if (_assetFiles.ContainsKey(basename)) {
+                if (_assetFiles.ContainsKey(basename))
+                {
                     Logger.Info("Ignoring reappearing instance of file: {0}", path + "/" + basename);
                 }
-                else {
+                else
+                {
                     _assetFiles.Add(basename, path + "/" + basename);
-                }                
+                }
             }
-            foreach (var dir in Directory.GetDirectories(path)) {
-                var dirname= dir.Split('\\').Last();
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                var dirname = dir.Split('\\').Last();
                 ScanAssetDirectory(path + "/" + dirname);
             }
         }
 
 
-        private void FixOperatorFilepathsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void FixOperatorFilepathsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
             e.CanExecute = cgv.SelectedElements.Count > 0;
         }
-        private void FixOperatorFilepathsCommand_Executed(object sender, ExecutedRoutedEventArgs e) {
+        private void FixOperatorFilepathsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
             var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
             _assetFiles.Clear();
             ScanAssetDirectory(".");
 
-            foreach (var c in cgv.SelectedElements) {
+            foreach (var c in cgv.SelectedElements)
+            {
                 var op = c as OperatorWidget;
-                if (op != null) {
-                    FindMissingPaths( op.Operator);
+                if (op != null)
+                {
+                    FindMissingPaths(op.Operator);
                 }
             }
         }
 
-        
+
         #region Find Operator Usages
         private void FindOperatorUsages_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -1350,7 +1443,7 @@ namespace Framefield.Tooll
                 MessageBox.Show("Please select exactly one Operator in Workspace.");
                 return;
             }
-                
+
 
             var opWidget = cgv.SelectedElements.First() as OperatorWidget;
             if (opWidget == null)
@@ -1362,7 +1455,7 @@ namespace Framefield.Tooll
             ListMetaOpUsages(opWidget.Operator.Definition);
         }
 
-        public  void ListMetaOpUsages(MetaOperator opDefinition)
+        public void ListMetaOpUsages(MetaOperator opDefinition)
         {
             Logger.Info("Usages of {0}.{1} :", opDefinition.Namespace, opDefinition.Name);
 
@@ -1392,7 +1485,7 @@ namespace Framefield.Tooll
                     if (internalId == opDefinition.ID)
                     {
                         usedHere = true;
-                        break;                        
+                        break;
                     }
                 }
                 if (usedHere)
@@ -1401,7 +1494,7 @@ namespace Framefield.Tooll
                 }
             }
             return result.OrderBy(x => x.Namespace);
-        } 
+        }
         #endregion
 
 
@@ -1458,13 +1551,13 @@ namespace Framefield.Tooll
         {
             if (!_metaOpDependencyCount.ContainsKey(metaOperator))
             {
-                _metaOpDependencyCount[metaOperator]=1;
+                _metaOpDependencyCount[metaOperator] = 1;
             }
             else
             {
-                _metaOpDependencyCount[metaOperator]++;                
+                _metaOpDependencyCount[metaOperator]++;
             }
-                
+
             foreach (var metaChildOpId in metaOperator.InternalOperatorsMetaOpId)
             {
                 UpdateMetaOpDependencyCount(App.Current.Model.MetaOpManager.MetaOperators[metaChildOpId]);
@@ -1506,10 +1599,10 @@ namespace Framefield.Tooll
                         if (result.Success)
                         {
                             Logger.Info("Starttime found: {0}", line);
-                            startTime = float.Parse(result.Groups[1].Value)*60*60f +
-                                        float.Parse(result.Groups[2].Value)*60f +
-                                        float.Parse(result.Groups[3].Value)*1f +
-                                        float.Parse(result.Groups[4].Value)/1000.0f;
+                            startTime = float.Parse(result.Groups[1].Value) * 60 * 60f +
+                                        float.Parse(result.Groups[2].Value) * 60f +
+                                        float.Parse(result.Groups[3].Value) * 1f +
+                                        float.Parse(result.Groups[4].Value) / 1000.0f;
 
                         }
                     }
@@ -1520,12 +1613,12 @@ namespace Framefield.Tooll
                         var result = Regex.Match(line, @"(\d+):(\d*):(\d*).(\d*) \(DBG\): fps: (\d+)[,.]?(\d*)");
                         if (result.Success)
                         {
-                            float localTime = float.Parse(result.Groups[1].Value)*60*60f +
-                                              float.Parse(result.Groups[2].Value)*60f +
-                                              float.Parse(result.Groups[3].Value)*1f +
-                                              float.Parse(result.Groups[4].Value)/1000.0f -
+                            float localTime = float.Parse(result.Groups[1].Value) * 60 * 60f +
+                                              float.Parse(result.Groups[2].Value) * 60f +
+                                              float.Parse(result.Groups[3].Value) * 1f +
+                                              float.Parse(result.Groups[4].Value) / 1000.0f -
                                               startTime;
-                            float framerateFraction = result.Groups[6].Value != String.Empty ? float.Parse(result.Groups[6].Value)/100.0f : 0.0f;
+                            float framerateFraction = result.Groups[6].Value != String.Empty ? float.Parse(result.Groups[6].Value) / 100.0f : 0.0f;
                             float framerate = float.Parse(result.Groups[5].Value) + framerateFraction;
                             frameratesOverTime.Add(new KeyValuePair<double, float>(localTime, framerate));
                             Logger.Info("Framerate {0} -> {1} fps", localTime, framerate);
@@ -1537,7 +1630,7 @@ namespace Framefield.Tooll
             if (frameratesOverTime.Count > 0)
             {
                 var CurveEditor = App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor;
-                CurveEditor.AddKeyframesToFirstCurve(frameratesOverTime);                    
+                CurveEditor.AddKeyframesToFirstCurve(frameratesOverTime);
             }
         }
 
@@ -1546,7 +1639,7 @@ namespace Framefield.Tooll
         #region view commands
         private void ShowConsoleViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;            
+            e.CanExecute = true;
         }
         private void ShowConsoleViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -1568,38 +1661,46 @@ namespace Framefield.Tooll
 
         #region playback control
         const double SLOW_PLAYBACK = 0.3;
-        private void StartPlayback() {
+        private void StartPlayback()
+        {
             CompositionView cv = App.Current.MainWindow.CompositionView;
-            if (cv.PlaySpeed <= 0.0) {
-                cv.PlaySpeed = (Keyboard.Modifiers == ModifierKeys.Shift) ? SLOW_PLAYBACK :  1.0;
+            if (cv.PlaySpeed <= 0.0)
+            {
+                cv.PlaySpeed = (Keyboard.Modifiers == ModifierKeys.Shift) ? SLOW_PLAYBACK : 1.0;
                 App.Current.PlayStream(cv.PlaySpeed);
             }
         }
 
-        private void StopPlayback() {
+        private void StopPlayback()
+        {
             CompositionView cv = App.Current.MainWindow.CompositionView;
             cv.PlaySpeed = 0.0;
             App.Current.StopStream();
         }
 
-        private void PlayFasterForward() {
+        private void PlayFasterForward()
+        {
             CompositionView cv = App.Current.MainWindow.CompositionView;
-            if (cv.PlaySpeed <= 0.0) {
-                cv.PlaySpeed = (Keyboard.Modifiers == ModifierKeys.Shift) ? SLOW_PLAYBACK :  1.0;
+            if (cv.PlaySpeed <= 0.0)
+            {
+                cv.PlaySpeed = (Keyboard.Modifiers == ModifierKeys.Shift) ? SLOW_PLAYBACK : 1.0;
             }
-            else {
-                if (Keyboard.Modifiers == ModifierKeys.Shift) {
+            else
+            {
+                if (Keyboard.Modifiers == ModifierKeys.Shift)
+                {
                     cv.PlaySpeed *= 0.5;
                 }
                 else if (cv.PlaySpeed < MAX_PLAYBACK_SPEED)
                 {
-                    cv.PlaySpeed *= 2.0;                    
+                    cv.PlaySpeed *= 2.0;
                 }
             }
             App.Current.PlayStream(cv.PlaySpeed);
         }
 
-        private void PlayBackward() {
+        private void PlayBackward()
+        {
             CompositionView cv = App.Current.MainWindow.CompositionView;
             if (cv.PlaySpeed > -1.0)
             {
@@ -1608,20 +1709,21 @@ namespace Framefield.Tooll
             else if (cv.PlaySpeed > -MAX_PLAYBACK_SPEED)
             {
                 cv.PlaySpeed *= 2.0;
-            }                
+            }
         }
 
-        const  double MAX_PLAYBACK_SPEED = 8;
+        const double MAX_PLAYBACK_SPEED = 8;
 
         private void RewindPlayback()
         {
             CompositionView cv = App.Current.MainWindow.CompositionView;
-            App.Current.Model.GlobalTime = App.Current.Model.GlobalTime -  cv.XTimeView.XBeatMarker.BPM / 16 / 4;
+            App.Current.Model.GlobalTime = App.Current.Model.GlobalTime - cv.XTimeView.XBeatMarker.BPM / 16 / 4;
             App.Current.UpdateRequiredAfterUserInteraction = true;
             App.Current.SetStreamToTime(App.Current.Model.GlobalTime);
         }
 
-        private void ToggleMutePlayback() {
+        private void ToggleMutePlayback()
+        {
             App.Current.ToggleMutePlayback();
         }
 
@@ -1650,7 +1752,7 @@ namespace Framefield.Tooll
             }
 #endif
         }
-        
+
         #endregion
 
 
@@ -1666,12 +1768,12 @@ namespace Framefield.Tooll
                 else
                 {
                     WindowState = WindowState.Maximized;
-                }                
+                }
             }
             else
             {
                 DragMove();
-            }                 
+            }
         }
 
 

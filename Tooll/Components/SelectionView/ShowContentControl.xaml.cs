@@ -8,26 +8,36 @@ using Framefield.Core;
 using Framefield.Core.OperatorPartTraits;
 using Framefield.Core.Profiling;
 using Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction;
+using Framefield.Tooll.Rendering;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
+
+
+
+    /** A UserControl that handles rendering and interacting with different Scene, Mesh and Image-Content */
     public partial class ShowContentControl
     {
-
         public ShowContentControl()
         {
-            ShowGridAndGizmos = true;
-
             Loaded += OnLoadedHandler;
             Unloaded += OnUnloadedHandler;
             InitializeComponent();
+
+            RenderConfiguration = new ContentRendererConfiguration()
+            {
+                ShowGridAndGizmos = true
+            };
         }
 
 
         private void OnLoadedHandler(object sender, RoutedEventArgs e)
         {
             App.Current.MainWindow.GotFocus += MainWindow_GotFocusHandler;
+
+            // Not sure why this callback is required. Probably to prevent some render update after comming back from full-screen?
             App.Current.MainWindow.ContentRendered += MainWindow_ContentRendered_Handler;
+
             App.Current.UpdateAfterUserInteractionEvent += App_UpdateAfterUserInteractionHandler;
 
             KeyDown += KeyDown_Handler;
@@ -37,10 +47,8 @@ namespace Framefield.Tooll.Components.SelectionView
             App.Current.CompositionTargertRenderingEvent += App_CompositionTargertRenderingHandler;
             App.Current.UpdateRequiredAfterUserInteraction = true;
 
-            if (_D3DImageContainer == null)
-                _D3DImageContainer = new D3DImageSharpDX();
-
-            SetupRendering();
+            _contentRenderer = new ContentRenderer(RenderConfiguration);
+            SetupRenderer();
 
             CameraInteraction = new CameraInteraction(this);     // Note: This requires ShowSceneControl to have been loaded
         }
@@ -63,13 +71,14 @@ namespace Framefield.Tooll.Components.SelectionView
 
                 CameraInteraction.Discard();
             }
-            CleanUp();
+            _contentRenderer.CleanUp();
         }
+
 
         #region Event-Handlers
         private void MainWindow_GotFocusHandler(object sender, RoutedEventArgs e)
         {
-            ReinitializeWindow();
+            _contentRenderer.Reinitialize();
         }
 
 
@@ -110,7 +119,7 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
-        public void KeyDown_Handler(object sender, System.Windows.Input.KeyEventArgs e)
+        private void KeyDown_Handler(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (!e.IsRepeat)
             {
@@ -119,9 +128,9 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
-        public void KeyUp_Handler(object sender, System.Windows.Input.KeyEventArgs e)
+        private void KeyUp_Handler(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (_operator == null)
+            if (RenderConfiguration.Operator == null)
                 return;
 
             if (e.Key == Key.Return || Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
@@ -134,13 +143,18 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MainWindow_ContentRendered_Handler(object sender, EventArgs e)
         {
-            ReinitializeWindow();
+            _contentRenderer.Reinitialize();
         }
 
 
         private void SizeChanged_Handler(object sender, SizeChangedEventArgs e)
         {
-            ReinitializeWindow();
+
+            if (_contentRenderer != null)
+            {
+                SetRendererSizeFromWindow();
+                _contentRenderer.Reinitialize();
+            }
         }
 
 
@@ -155,8 +169,7 @@ namespace Framefield.Tooll.Components.SelectionView
             if (CameraInteraction == null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
                 return;
 
-            // Check wether this is a basic op and works as a Camera
-            if (_operator != null && _operator.InternalParts.Count > 0 && _operator.InternalParts[0].Func is ICameraProvider)
+            if (CurrentOpIsACamera)
             {
                 App.Current.UpdateRequiredAfterUserInteraction = true;
             }
@@ -166,7 +179,19 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
+
+        private bool CurrentOpIsACamera
+        {
+            get
+            {
+                return
+                    RenderConfiguration.Operator != null
+                    && RenderConfiguration.Operator.InternalParts.Count > 0
+                    && RenderConfiguration.Operator.InternalParts[0].Func is ICameraProvider;
+            }
+        }
         #endregion
+
 
 
         public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0)
@@ -174,8 +199,9 @@ namespace Framefield.Tooll.Components.SelectionView
             if (op == null || op.Outputs.Count < outputIndex + 1)
                 return;
 
-            _shownOutputIndex = outputIndex;
-            _operator = op;
+            RenderConfiguration.ShownOutputIndex = outputIndex;
+            RenderConfiguration.Operator = op;
+            //_operator = op;
             RenderContent();
         }
 
@@ -183,164 +209,65 @@ namespace Framefield.Tooll.Components.SelectionView
         #region Rendering
         private void SwitchToFullscreenMode()
         {
-            var fsView = new FullScreenView(RenderSetup);
+            var fsView = new FullScreenView(_contentRenderer.RenderSetup);
         }
-
-        private void ReinitializeWindow()
-        {
-            if (_renderSetup == null)
-                return;
-
-            _renderSetup.Resize((int)XGrid.ActualWidth, (int)XGrid.ActualHeight);
-            _D3DImageContainer.SetBackBufferSharpDX(_renderSetup.SharedTexture);
-
-            var contextSettings = new ContextSettings();
-            contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
-            {
-                Width = _renderSetup.WindowWidth,
-                Height = _renderSetup.WindowHeight,
-                RefreshRate = 60,
-                Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
-            };
-            contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
-
-            _defaultContext = OperatorPartContext.createDefault(contextSettings);
-
-            if (_operator != null && _operator.Outputs.Count > 0)
-            {
-                var invalidator = new OperatorPart.InvalidateVariableAccessors("AspectRatio");
-                _operator.Outputs[0].TraverseWithFunction(null, invalidator);
-            }
-
-            RenderContent();
-        }
-
-
-        private void SetupRendering()
-        {
-            XSceneImage.Source = _D3DImageContainer;
-            _renderSetup = new D3DRenderSetup((int)XGrid.ActualWidth, (int)XGrid.ActualHeight);
-            _D3DImageContainer.SetBackBufferSharpDX(_renderSetup.SharedTexture);
-
-            var contextSettings = new ContextSettings();
-            contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
-            {
-                Width = _renderSetup.WindowWidth,
-                Height = _renderSetup.WindowHeight,
-                RefreshRate = 60,
-                Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
-            };
-            contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
-            _defaultContext = OperatorPartContext.createDefault(contextSettings);
-        }
-
 
         private void RenderContent()
         {
             if (!IsVisible)
                 return;
 
-            if (_operator == null || _operator.Outputs.Count <= 0)
-                return;
-
             if (TimeLoggingSourceEnabled)
                 TimeLogger.BeginFrame(App.Current.Model.GlobalTime);
 
-            D3DDevice.BeginFrame();
-
-            try
-            {
-                var context = new OperatorPartContext(_defaultContext, (float)App.Current.Model.GlobalTime);
-
-                var invalidator = new OperatorPart.InvalidateInvalidatables();
-                _operator.Outputs[_shownOutputIndex].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
-
-                _renderSetup.RenderedOperator = _operator;
-
-                var evaluationType = _operator.Outputs[_shownOutputIndex].Type;
-
-                switch (evaluationType)
-                {
-                    case FunctionType.Scene:
-                        Action<OperatorPartContext, int> lambdaForScenes = (OperatorPartContext context2, int outputIdx) =>
-                                                                  {
-                                                                      _operator.Outputs[outputIdx].Eval(context);
-                                                                  };
-                        _renderSetup.RenderGeometry(context, lambdaForScenes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
-
-                        break;
-
-                    case FunctionType.Mesh:
-                        {
-                            Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
-                                                                      {
-                                                                          var mesh = _operator.Outputs[outputIdx].Eval(context2).Mesh;
-                                                                          context2.Renderer.SetupEffect(context2);
-                                                                          context2.Renderer.Render(mesh, context2);
-                                                                      };
-                            _renderSetup.RenderGeometry(context, lambdaForMeshes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
-                            break;
-                        }
-
-                    case FunctionType.Image:
-                        _renderSetup.SetupContextForRenderingImage(context, RenderWithGammaCorrection);
-
-                        var image = _operator.Outputs[_shownOutputIndex].Eval(new OperatorPartContext(context)).Image;
-                        if (image == null)
-                            break;
-
-                        RenderedImageIsACubemap = image.Description.ArraySize > 1;
-                        var cubeMapSide = RenderedImageIsACubemap ? PreferredCubeMapSideIndex : -1;
-                        if (cubeMapSide == 6)
-                        {
-                            _renderSetup.RenderCubemapAsSphere(image, context, RenderWithGammaCorrection);
-                        }
-                        else
-                        {
-                            _renderSetup.RenderImage(image, context, RenderWithGammaCorrection, cubeMapSide);
-                        }
-                        break;
-                }
-                _D3DImageContainer.InvalidateD3DImage();
-
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(exception.ToString());
-            }
+            _contentRenderer.RenderContent();
 
             D3DDevice.EndFrame();
             if (TimeLoggingSourceEnabled)
                 TimeLogger.EndFrame();
         }
 
-        public bool RenderedImageIsACubemap;
-        public int PreferredCubeMapSideIndex { get; set; }
 
+        private void SetupRenderer()
+        {
+            SetRendererSizeFromWindow();
+            _contentRenderer.SetupRendering();
+            XSceneImage.Source = _contentRenderer.D3DImageContainer;
+        }
+
+        private void SetRendererSizeFromWindow()
+        {
+            RenderConfiguration.Width = (int)XGrid.ActualWidth;
+            RenderConfiguration.Height = (int)XGrid.ActualHeight;
+        }
+
+
+        //public bool ShowGridAndGizmos { get; set; }
+        //public bool RenderWithGammaCorrection { get; set; }
+        //public int PreferredCubeMapSideIndex { get; set; }
+
+        /** After rendering a image this flag can be used to display UI-elements relevant for CubeMaps */
+        public bool RenderedImageIsACubemap
+        {
+            get
+            {
+                return _contentRenderer.RenderedImageIsACubemap;
+            }
+        }
+
+        //public Render
+
+        ContentRenderer _contentRenderer;
 
 
         #endregion
 
+        //private Operator _operator;
+        public D3DRenderSetup RenderSetup { get { return _contentRenderer.RenderSetup; } }
+        public ContentRendererConfiguration RenderConfiguration;
 
-        public void CleanUp()
-        {
-            Utilities.DisposeObj(ref _D3DImageContainer);
-            Utilities.DisposeObj(ref _renderSetup);
-        }
-
-        public bool ShowGridAndGizmos { get; set; }
-        public bool RenderWithGammaCorrection { get; set; }
         public bool TimeLoggingSourceEnabled { get; set; }
-        public D3DRenderSetup RenderSetup { get { return _renderSetup; } set { _renderSetup = value; } }  // make D3DRenderSetup available for Fullscreen-View
 
-
-        private D3DImageSharpDX _D3DImageContainer;
-        private D3DRenderSetup _renderSetup;
-        private OperatorPartContext _defaultContext;
-
-        private Operator _operator;
-        private int _shownOutputIndex;
         public CameraInteraction CameraInteraction { get; set; }
-
     }
 }
