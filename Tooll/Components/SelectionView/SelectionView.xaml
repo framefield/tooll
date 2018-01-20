@@ -25,12 +25,12 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Text="Nothing Selected" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
         <SelectionView:ShowCurveControl x:Name="XShowCurveControl" Visibility="Hidden"/>
-        <SelectionView:ShowContentControl x:Name="XShowSceneControl" Visibility="Hidden" Focusable="True"/>
+        <SelectionView:ShowContentControl x:Name="XShowContentControl" Visibility="Hidden" Focusable="True"/>
         <SelectionView:ShowAsTextControl x:Name="XShowAsTextControl" Visibility="Hidden" Focusable="True"/>
 
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Left" Background="#50000000" VerticalAlignment="Top">
-            
+
             <CheckBox  x:Name="XStickyCheckbox"
                        Margin="5" 
                        Foreground="White" Content="Lock to..."

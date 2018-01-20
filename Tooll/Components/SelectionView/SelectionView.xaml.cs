@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2016 Framefield. All rights reserved.
 // Released under the MIT license. (see LICENSE.txt)
 
-﻿using Framefield.Core.Curve;
+using Framefield.Core.Curve;
 using Framefield.Core;
 using System.Linq;
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -47,21 +47,21 @@ namespace Framefield.Tooll.Components.SelectionView
                 // Add sub menu for cube-map image selection
                 if (output.Type == FunctionType.Image)
                 {
-                    if (XShowSceneControl.RenderedImageIsACubemap)
+                    if (XShowContentControl.RenderedImageIsACubemap)
                     {
                         for (var cubeMapSideIndex = 0; cubeMapSideIndex < 6; ++cubeMapSideIndex)
                         {
                             var cubeMapSelectionItem = new MenuItem()
                             {
                                 Header = "Cube Map Side " + (cubeMapSideIndex + 1),
-                                IsChecked = XShowSceneControl.PreferredCubeMapSideIndex == cubeMapSideIndex
+                                IsChecked = XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex == cubeMapSideIndex
                             };
                             var cubeMapSideIndexClosure = cubeMapSideIndex;
                             menuItem.Items.Add(cubeMapSelectionItem);
                             cubeMapSelectionItem.Click +=
                                 (o, args) =>
                                 {
-                                    XShowSceneControl.PreferredCubeMapSideIndex = cubeMapSideIndexClosure;
+                                    XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex = cubeMapSideIndexClosure;
                                 };
                         }
 
@@ -69,27 +69,27 @@ namespace Framefield.Tooll.Components.SelectionView
                         var cubeMapAsSphereItem = new MenuItem()
                         {
                             Header = "Cube Map as Sphere ",
-                            IsChecked = XShowSceneControl.PreferredCubeMapSideIndex == CUBE_MAP_AS_SPHERE_SIDE
+                            IsChecked = XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex == CUBE_MAP_AS_SPHERE_SIDE
                         };
                         menuItem.Items.Add(cubeMapAsSphereItem);
                         cubeMapAsSphereItem.Click +=
                             (o, args) =>
                             {
-                                XShowSceneControl.PreferredCubeMapSideIndex = CUBE_MAP_AS_SPHERE_SIDE;
+                                XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex = CUBE_MAP_AS_SPHERE_SIDE;
                             };
                     }
                 }
                 outputIdx++;
             }
-            ContextMenu.IsOpen = true;            
+            ContextMenu.IsOpen = true;
         }
 
         private const int CUBE_MAP_AS_SPHERE_SIDE = 6;
 
         public bool TimeLoggingSourceEnabled
         {
-            get { return XShowSceneControl.TimeLoggingSourceEnabled; }
-            set { XShowSceneControl.TimeLoggingSourceEnabled = value; }
+            get { return XShowContentControl.TimeLoggingSourceEnabled; }
+            set { XShowContentControl.TimeLoggingSourceEnabled = value; }
         }
 
 
@@ -122,7 +122,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 var needsUpdate = (value != _displayMode);
                 _displayMode = value;
 
-                if(needsUpdate)
+                if (needsUpdate)
                     UpdateControlVisibility();
             }
         }
@@ -137,7 +137,7 @@ namespace Framefield.Tooll.Components.SelectionView
             switch (DisplayMode)
             {
                 case DisplayAs.Curve:
-                    visibilityOfCurve = Visibility.Visible;                    
+                    visibilityOfCurve = Visibility.Visible;
                     break;
                 case DisplayAs.Scene:
                     visibilityOfScene = Visibility.Visible;
@@ -151,7 +151,7 @@ namespace Framefield.Tooll.Components.SelectionView
             }
 
             XShowCurveControl.Visibility = visibilityOfCurve;
-            XShowSceneControl.Visibility = visibilityOfScene;
+            XShowContentControl.Visibility = visibilityOfScene;
             XShowAsTextControl.Visibility = visibilityOfText;
             //XShowImageControl.Visibility = visibilityImage;
         }
@@ -170,21 +170,21 @@ namespace Framefield.Tooll.Components.SelectionView
 
             XShowCurveControl.Curve = null;
             XShowAsTextControl.SetOperatorAndOutput(null);
-            XShowSceneControl.SetOperatorAndOutputIndex(null);
+            XShowContentControl.SetOperatorAndOutputIndex(null);
         }
 
         public Operator Operator
-        {   
+        {
             get
             {
-                return _shownOperatorWidget == null ? null 
+                return _shownOperatorWidget == null ? null
                                                     : _shownOperatorWidget.Operator;
             }
         }
 
         private int _shownOutputIndex = 0;
 
-        public void SetOperatorWidget(OperatorWidget opWidget) 
+        public void SetOperatorWidget(OperatorWidget opWidget)
         {
             if (opWidget == null || opWidget == _shownOperatorWidget)
                 return;
@@ -194,7 +194,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 return;
 
             if (XStickyCheckbox.IsChecked == true)
-                return;    
+                return;
 
             // Remove handler from old op?
             if (_shownOperatorWidget != null)
@@ -208,7 +208,7 @@ namespace Framefield.Tooll.Components.SelectionView
             XSelectedOperatorName.Text = op.Definition.Name + "   " + op.Name;
 
             _shownOutputIndex = 0;
-            
+
             UpdateShowControls();
         }
 
@@ -232,7 +232,7 @@ namespace Framefield.Tooll.Components.SelectionView
             else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh)
             {
                 newDisplayMode = DisplayAs.Scene;
-                XShowSceneControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex);
+                XShowContentControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex);
             }
             else if (output.Type == FunctionType.Float || output.Type == FunctionType.Generic ||
                      output.Type == FunctionType.Text)
@@ -296,7 +296,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void XGizmoButton_Click(object sender, RoutedEventArgs e)
         {
-            XShowSceneControl.ShowGridAndGizmos = (XGizmoButton.IsChecked == true);
+            XShowContentControl.RenderConfiguration.ShowGridAndGizmos = (XGizmoButton.IsChecked == true);
 
             if (_shownOperatorWidget == null)
                 return;
@@ -307,9 +307,11 @@ namespace Framefield.Tooll.Components.SelectionView
 
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
+
+
         private void XLinearButton_Click(object sender, RoutedEventArgs e)
         {
-            XShowSceneControl.RenderWithGammaCorrection = (XLinearButton.IsChecked == true);
+            XShowContentControl.RenderConfiguration.RenderWithGammaCorrection = (XLinearButton.IsChecked == true);
 
             if (_shownOperatorWidget == null)
                 return;
@@ -333,5 +335,8 @@ namespace Framefield.Tooll.Components.SelectionView
                 cgv.CenterAllOrSelectedElements();
             }
         }
+
+        public int PreferredCubeMapSideIndex { get; set; }
+
     }
 }

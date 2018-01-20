@@ -19,11 +19,11 @@ namespace Framefield.Tooll
 {
     public class D3DRenderSetup : IDisposable
     {
-
+        /** Implements the rendering of content within tooll. Also provides multiple properties to access the used Camera. */
         public D3DRenderSetup(int width, int height)
         {
-            WindowWidth = width;
-            WindowHeight = height;
+            Width = width;
+            Height = height;
             ResetCamera();
             InitRenderTargets();
             _renderer = OperatorPartContext.DefaultRenderer;
@@ -46,14 +46,14 @@ namespace Framefield.Tooll
         public TransformGizmo TransformGizmo { get; set; }
         public OperatorPartContext LastContext { get; set; }
 
-        public int WindowWidth
+        public int Width
         {
             get { return _windowWidth; }
             private set { _windowWidth = Math.Max(1, value); }
         }
         private int _windowWidth = 1;
 
-        public int WindowHeight
+        public int Height
         {
             get { return _windowHeight; }
             private set { _windowHeight = Math.Max(1, value); }
@@ -147,8 +147,8 @@ namespace Framefield.Tooll
         public void Resize(int width, int height)
         {
             DisposeTargets();
-            WindowWidth = width;
-            WindowHeight = height;
+            Width = width;
+            Height = height;
             InitRenderTargets();
         }
 
@@ -182,8 +182,8 @@ namespace Framefield.Tooll
                 var selectedOps = (from selectable in App.Current.MainWindow.CompositionView.CompositionGraphView.SelectionHandler.SelectedElements
                                    select selectable as OperatorWidget
                                        into opWidget
-                                       where opWidget != null && opWidget.Operator.Outputs.Any()
-                                       select opWidget.Operator).ToArray();
+                                   where opWidget != null && opWidget.Operator.Outputs.Any()
+                                   select opWidget.Operator).ToArray();
 
                 TransformGizmo.SetupEvalCallbackForSelectedTransformOperators(selectedOps, context);
 
@@ -215,7 +215,7 @@ namespace Framefield.Tooll
 
             // With gamma correction we need an additional pass gamma correcting the RT Texture to the shared texture
             if (renderWithGammaCorrection)
-            {                
+            {
                 SetupContextForRenderingImage(context, withGammaCorrection: true);
                 _renderer.RenderToScreen(_sceneRenderTargetTexture, context);
             }
@@ -233,11 +233,11 @@ namespace Framefield.Tooll
 
             // Find a nice balance between small and large objects (probably skyspheres)
             var zoomLength = (CameraPosition - CameraTarget).Length();
-            var farClipping = (zoomLength*2) + 5000;
-            var nearClipping = zoomLength/100;
+            var farClipping = (zoomLength * 2) + 5000;
+            var nearClipping = zoomLength / 100;
 
-            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float) nearClipping,
-                (float) farClipping);
+            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float)nearClipping,
+                (float)farClipping);
         }
 
 
@@ -258,7 +258,7 @@ namespace Framefield.Tooll
 
 
         #region rendering images
-        public void RenderImage( Texture2D image,  OperatorPartContext context, bool withGammaCorrection, int cubemapSide = -1)
+        public void RenderImage(Texture2D image, OperatorPartContext context, bool withGammaCorrection, int cubemapSide = -1)
         {
             Vector3 viewDir, sideDir, upDir;
             GetViewDirections(out viewDir, out sideDir, out upDir);
@@ -295,7 +295,7 @@ namespace Framefield.Tooll
             {
                 _cubemapSphereOperator.Outputs[0].Eval(context);
             };
-            
+
             RenderGeometry(context, lambdaForMeshes, withGammaCorrection, 0);
         }
         #endregion
@@ -313,7 +313,7 @@ namespace Framefield.Tooll
             viewDir = camTarget - camPos;
 
             var worldUp = Vector3.UnitY;
-            var roll = (float) camRoll;
+            var roll = (float)camRoll;
             var rolledUp = Vector3.Transform(worldUp, Matrix.RotationAxis(viewDir, roll));
             rolledUp.Normalize();
 
@@ -337,8 +337,8 @@ namespace Framefield.Tooll
                 {
                     BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                     Format = Format.B8G8R8A8_UNorm,
-                    Width = WindowWidth,
-                    Height = WindowHeight,
+                    Width = Width,
+                    Height = Height,
                     MipLevels = 1,
                     SampleDescription = new SampleDescription(1, 0),
                     Usage = ResourceUsage.Default,
@@ -351,8 +351,8 @@ namespace Framefield.Tooll
                 {
                     BindFlags = BindFlags.DepthStencil,
                     Format = Format.D32_Float_S8X24_UInt,
-                    Width = WindowWidth,
-                    Height = WindowHeight,
+                    Width = Width,
+                    Height = Height,
                     MipLevels = 1,
                     SampleDescription = new SampleDescription(1, 0),
                     Usage = ResourceUsage.Default,
@@ -433,7 +433,7 @@ namespace Framefield.Tooll
             context.BlendFactor = _renderer.DefaultBlendFactor;
             context.RasterizerState = _renderer.DefaultRasterizerState;
             context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = new Viewport(0, 0, WindowWidth, WindowHeight, 0.0f, 1.0f);
+            context.Viewport = new Viewport(0, 0, Width, Height, 0.0f, 1.0f);
             context.Texture0 = _texture;
         }
 
@@ -449,7 +449,7 @@ namespace Framefield.Tooll
             context.BlendFactor = _renderer.DefaultBlendFactor;
             context.RasterizerState = _renderer.DefaultRasterizerState;
             context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = new Viewport(0, 0, WindowWidth, WindowHeight, 0.0f, 1.0f);
+            context.Viewport = new Viewport(0, 0, Width, Height, 0.0f, 1.0f);
             context.Texture0 = _texture;
         }
 
