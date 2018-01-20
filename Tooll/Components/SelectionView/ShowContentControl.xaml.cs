@@ -11,10 +11,10 @@ using Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
-    public partial class ShowSceneControl
+    public partial class ShowContentControl
     {
 
-        public ShowSceneControl()
+        public ShowContentControl()
         {
             ShowGridAndGizmos = true;
 
@@ -85,14 +85,14 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MouseUp_Handler(object sender, MouseButtonEventArgs e)
         {
-            var wasRightMouseClick= CameraInteraction.HandleMouseUp(e.ChangedButton);
+            var wasRightMouseClick = CameraInteraction.HandleMouseUp(e.ChangedButton);
 
 
             // Release captured mouse
             if (!CameraInteraction.AnyMouseButtonPressed())
                 Mouse.Capture(null);
 
-            if(!wasRightMouseClick)
+            if (!wasRightMouseClick)
                 e.Handled = true;
         }
 
@@ -152,11 +152,11 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void App_CompositionTargertRenderingHandler(object source, EventArgs e)
         {
-            if (CameraInteraction== null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
+            if (CameraInteraction == null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
                 return;
 
             // Check wether this is a basic op and works as a Camera
-            if (_operator!= null && _operator.InternalParts.Count > 0 && _operator.InternalParts[0].Func is ICameraProvider)
+            if (_operator != null && _operator.InternalParts.Count > 0 && _operator.InternalParts[0].Func is ICameraProvider)
             {
                 App.Current.UpdateRequiredAfterUserInteraction = true;
             }
@@ -176,7 +176,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             _shownOutputIndex = outputIndex;
             _operator = op;
-            RenderContent();            
+            RenderContent();
         }
 
 
@@ -188,7 +188,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void ReinitializeWindow()
         {
-            if (_renderSetup == null) 
+            if (_renderSetup == null)
                 return;
 
             _renderSetup.Resize((int)XGrid.ActualWidth, (int)XGrid.ActualHeight);
@@ -196,12 +196,12 @@ namespace Framefield.Tooll.Components.SelectionView
 
             var contextSettings = new ContextSettings();
             contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
-                                              {
-                                                  Width = _renderSetup.WindowWidth,
-                                                  Height = _renderSetup.WindowHeight,
-                                                  RefreshRate = 60,
-                                                  Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
-                                              };
+            {
+                Width = _renderSetup.WindowWidth,
+                Height = _renderSetup.WindowHeight,
+                RefreshRate = 60,
+                Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
+            };
             contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
 
             _defaultContext = OperatorPartContext.createDefault(contextSettings);
@@ -271,16 +271,16 @@ namespace Framefield.Tooll.Components.SelectionView
                         break;
 
                     case FunctionType.Mesh:
-                    {
-                        Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
-                                                                  {
-                                                                      var mesh = _operator.Outputs[outputIdx].Eval(context2).Mesh;
-                                                                      context2.Renderer.SetupEffect(context2);
-                                                                      context2.Renderer.Render(mesh, context2);
-                                                                  };
-                        _renderSetup.RenderGeometry(context, lambdaForMeshes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
-                        break;
-                    }
+                        {
+                            Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
+                                                                      {
+                                                                          var mesh = _operator.Outputs[outputIdx].Eval(context2).Mesh;
+                                                                          context2.Renderer.SetupEffect(context2);
+                                                                          context2.Renderer.Render(mesh, context2);
+                                                                      };
+                            _renderSetup.RenderGeometry(context, lambdaForMeshes, RenderWithGammaCorrection, _shownOutputIndex, ShowGridAndGizmos);
+                            break;
+                        }
 
                     case FunctionType.Image:
                         _renderSetup.SetupContextForRenderingImage(context, RenderWithGammaCorrection);
@@ -295,9 +295,10 @@ namespace Framefield.Tooll.Components.SelectionView
                         {
                             _renderSetup.RenderCubemapAsSphere(image, context, RenderWithGammaCorrection);
                         }
-                        else {
+                        else
+                        {
                             _renderSetup.RenderImage(image, context, RenderWithGammaCorrection, cubeMapSide);
-                        }                        
+                        }
                         break;
                 }
                 _D3DImageContainer.InvalidateD3DImage();

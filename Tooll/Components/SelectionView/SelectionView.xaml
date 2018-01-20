@@ -25,7 +25,7 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Text="Nothing Selected" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
         <SelectionView:ShowCurveControl x:Name="XShowCurveControl" Visibility="Hidden"/>
-        <SelectionView:ShowSceneControl x:Name="XShowSceneControl" Visibility="Hidden" Focusable="True"/>
+        <SelectionView:ShowContentControl x:Name="XShowSceneControl" Visibility="Hidden" Focusable="True"/>
         <SelectionView:ShowAsTextControl x:Name="XShowAsTextControl" Visibility="Hidden" Focusable="True"/>
 
         <StackPanel Orientation="Horizontal" 

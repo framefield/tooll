@@ -18,13 +18,13 @@ namespace Framefield.Tooll
     {
         public OperatorPreset()
         {
-            Id = Guid.NewGuid();    
+            Id = Guid.NewGuid();
         }
 
-        public bool IsSelected { get { return (bool) GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value); } }
+        public bool IsSelected { get { return (bool)GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value); } }
         public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(OperatorPreset),
-            new UIPropertyMetadata() { DefaultValue=false });
-        
+            new UIPropertyMetadata() { DefaultValue = false });
+
         [JsonProperty]
         public Guid MetaOperatorID { get; set; }
 
@@ -40,8 +40,10 @@ namespace Framefield.Tooll
         #region notifier
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void NotifyPropertyChanged(string propName) {
-            if (PropertyChanged != null) {
+        protected void NotifyPropertyChanged(string propName)
+        {
+            if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
             }
         }
@@ -51,7 +53,7 @@ namespace Framefield.Tooll
             var imagePath = App.Current.OperatorPresetManager.LivePreviewEnabled
                             ? "Temp/preset-preview-thumbs/" + Id + ".png"
                             : "assets-common/preset-thumbs/" + Id + ".png";
-                    
+
             return imagePath;
         }
 
