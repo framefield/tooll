@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using System.Windows.Navigation;
 using Framefield.Core;
 using Framefield.Core.OperatorPartTraits;
 using Framefield.Core.Rendering;
@@ -15,15 +14,16 @@ using SharpDX.DXGI;
 using Device = SharpDX.Direct3D11.Device;
 using Utilities = Framefield.Core.Utilities;
 
-namespace Framefield.Tooll
+
+namespace Framefield.Tooll.Rendering
 {
+    /** Implements the rendering of content within tooll. Also provides multiple properties to access the used Camera. */
     public class D3DRenderSetup : IDisposable
     {
-        /** Implements the rendering of content within tooll. Also provides multiple properties to access the used Camera. */
-        public D3DRenderSetup(int width, int height)
+        public D3DRenderSetup(ContentRendererConfiguration renderConfiguration)
         {
-            Width = width;
-            Height = height;
+            _renderConfig = renderConfiguration;
+
             ResetCamera();
             InitRenderTargets();
             _renderer = OperatorPartContext.DefaultRenderer;
@@ -46,19 +46,7 @@ namespace Framefield.Tooll
         public TransformGizmo TransformGizmo { get; set; }
         public OperatorPartContext LastContext { get; set; }
 
-        public int Width
-        {
-            get { return _windowWidth; }
-            private set { _windowWidth = Math.Max(1, value); }
-        }
-        private int _windowWidth = 1;
 
-        public int Height
-        {
-            get { return _windowHeight; }
-            private set { _windowHeight = Math.Max(1, value); }
-        }
-        private int _windowHeight = 1;
 
         public Operator CurrentCameraOp
         {
@@ -144,11 +132,13 @@ namespace Framefield.Tooll
         #endregion
 
 
+        private ContentRendererConfiguration _renderConfig;
+
         public void Resize(int width, int height)
         {
             DisposeTargets();
-            Width = width;
-            Height = height;
+            _renderConfig.Width = width;
+            _renderConfig.Height = height;
             InitRenderTargets();
         }
 
@@ -169,14 +159,13 @@ namespace Framefield.Tooll
         #region rendering geometry
 
 
-        public void RenderGeometry(OperatorPartContext context, Action<OperatorPartContext, int> evaluateMeshOrScene, bool renderWithGammaCorrection, int outputIdx = 0,
-            bool showGizmos = false)
+        public void RenderGeometry(OperatorPartContext context, Action<OperatorPartContext, int> evaluateMeshOrScene)
         {
-            SetupContextForGeometry(context, renderWithGammaCorrection);
+            SetupContextForGeometry(context);
 
             LastContext = context;  // Make context accessible to read last camera position
 
-            if (showGizmos)
+            if (_renderConfig.ShowGridAndGizmos)
             {
                 // Check the selected operators for attributes that can be show as Gizmo
                 var selectedOps = (from selectable in App.Current.MainWindow.CompositionView.CompositionGraphView.SelectionHandler.SelectedElements
@@ -192,7 +181,7 @@ namespace Framefield.Tooll
                 context.Variables[OperatorPartContext.DEBUG_VARIABLE_NAME] = 1;
                 context.Variables[GIZMO_PART_VARIBALE_NAME] = IndexOfGizmoPartBelowMouse;
 
-                evaluateMeshOrScene(context, outputIdx);
+                evaluateMeshOrScene(context, _renderConfig.ShownOutputIndex);
 
                 // Render Grid and Gizmos
                 _sceneGridOperator.Outputs[0].Eval(context);
@@ -210,11 +199,11 @@ namespace Framefield.Tooll
             }
             else
             {
-                evaluateMeshOrScene(context, outputIdx);
+                evaluateMeshOrScene(context, _renderConfig.ShownOutputIndex);
             }
 
             // With gamma correction we need an additional pass gamma correcting the RT Texture to the shared texture
-            if (renderWithGammaCorrection)
+            if (_renderConfig.RenderWithGammaCorrection)
             {
                 SetupContextForRenderingImage(context, withGammaCorrection: true);
                 _renderer.RenderToScreen(_sceneRenderTargetTexture, context);
@@ -223,9 +212,9 @@ namespace Framefield.Tooll
         }
 
 
-        private void SetupContextForGeometry(OperatorPartContext context, bool renderWithGammaCorrection)
+        private void SetupContextForGeometry(OperatorPartContext context)
         {
-            SetupContextForRenderingGeometry(context, renderWithGammaCorrection);
+            SetupContextForRenderingGeometry(context, _renderConfig.RenderWithGammaCorrection);
 
             Vector3 viewDir, sideDir, upDir;
             GetViewDirections(out viewDir, out sideDir, out upDir);
@@ -258,7 +247,7 @@ namespace Framefield.Tooll
 
 
         #region rendering images
-        public void RenderImage(Texture2D image, OperatorPartContext context, bool withGammaCorrection, int cubemapSide = -1)
+        public void RenderImage(Texture2D image, OperatorPartContext context)
         {
             Vector3 viewDir, sideDir, upDir;
             GetViewDirections(out viewDir, out sideDir, out upDir);
@@ -269,9 +258,9 @@ namespace Framefield.Tooll
             _imageBackgroundOperator.Outputs[0].Eval(context);
             context.Image = null;
 
-            if (cubemapSide > -1)
+            if (_renderConfig.PreferredCubeMapSideIndex > -1)
             {
-                context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = cubemapSide;
+                context.Variables[OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX] = _renderConfig.PreferredCubeMapSideIndex;
                 context.Effect = _renderer.ScreenQuadCubeMapSideEffect;
             }
 
@@ -282,7 +271,7 @@ namespace Framefield.Tooll
         }
 
 
-        public void RenderCubemapAsSphere(Texture2D cubeMapImage, OperatorPartContext context, bool withGammaCorrection)
+        public void RenderCubemapAsSphere(Texture2D cubeMapImage, OperatorPartContext context)
         {
             // Set cubemap to context
             var texture = new ShaderResourceView(context.D3DDevice, cubeMapImage);
@@ -296,7 +285,7 @@ namespace Framefield.Tooll
                 _cubemapSphereOperator.Outputs[0].Eval(context);
             };
 
-            RenderGeometry(context, lambdaForMeshes, withGammaCorrection, 0);
+            RenderGeometry(context, lambdaForMeshes);
         }
         #endregion
 
@@ -337,8 +326,8 @@ namespace Framefield.Tooll
                 {
                     BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                     Format = Format.B8G8R8A8_UNorm,
-                    Width = Width,
-                    Height = Height,
+                    Width = _renderConfig.Width,
+                    Height = _renderConfig.Height,
                     MipLevels = 1,
                     SampleDescription = new SampleDescription(1, 0),
                     Usage = ResourceUsage.Default,
@@ -351,8 +340,8 @@ namespace Framefield.Tooll
                 {
                     BindFlags = BindFlags.DepthStencil,
                     Format = Format.D32_Float_S8X24_UInt,
-                    Width = Width,
-                    Height = Height,
+                    Width = _renderConfig.Width,
+                    Height = _renderConfig.Height,
                     MipLevels = 1,
                     SampleDescription = new SampleDescription(1, 0),
                     Usage = ResourceUsage.Default,
@@ -419,12 +408,12 @@ namespace Framefield.Tooll
             }
         }
 
-        private void SetupContextForRenderingGeometry(OperatorPartContext context, bool renderWithGammaCorrection)
+        private void SetupContextForRenderingGeometry(OperatorPartContext context, bool withGammaCorrection)
         {
             context.D3DDevice = D3DDevice;
             context.Effect = _renderer.SceneDefaultEffect;
             context.InputLayout = _renderer.SceneDefaultInputLayout;
-            context.RenderTargetView = renderWithGammaCorrection
+            context.RenderTargetView = withGammaCorrection
                 ? _sceneRenderTargetTextureRenderView
                 : _sharedTextureRenderView;
             context.DepthStencilView = _renderTargetDepthView;
@@ -433,13 +422,15 @@ namespace Framefield.Tooll
             context.BlendFactor = _renderer.DefaultBlendFactor;
             context.RasterizerState = _renderer.DefaultRasterizerState;
             context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = new Viewport(0, 0, Width, Height, 0.0f, 1.0f);
+            context.Viewport = new Viewport(0, 0, _renderConfig.Width, _renderConfig.Height, 0.0f, 1.0f);
             context.Texture0 = _texture;
         }
 
         public void SetupContextForRenderingImage(OperatorPartContext context, bool withGammaCorrection)
         {
-            context.Effect = withGammaCorrection ? _renderer.ScreenRenderGammaCorrectionEffect : _renderer.ScreenRenderEffect;
+            context.Effect = withGammaCorrection
+                ? _renderer.ScreenRenderGammaCorrectionEffect
+                : _renderer.ScreenRenderEffect;
             context.D3DDevice = D3DDevice;
             context.InputLayout = _renderer.ScreenQuadInputLayout;
             context.RenderTargetView = _sharedTextureRenderView;
@@ -449,7 +440,7 @@ namespace Framefield.Tooll
             context.BlendFactor = _renderer.DefaultBlendFactor;
             context.RasterizerState = _renderer.DefaultRasterizerState;
             context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = new Viewport(0, 0, Width, Height, 0.0f, 1.0f);
+            context.Viewport = new Viewport(0, 0, _renderConfig.Width, _renderConfig.Height, 0.0f, 1.0f);
             context.Texture0 = _texture;
         }
 

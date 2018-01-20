@@ -18,7 +18,7 @@ using SharpDX.Windows;
 
 using Point = System.Windows.Point;
 using Utilities = Framefield.Core.Utilities;
-
+using Framefield.Tooll.Rendering;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
@@ -32,7 +32,7 @@ namespace Framefield.Tooll.Components.SelectionView
         {
             get
             {
-                double elapsed = (double) _globalTime.ElapsedTicks/Stopwatch.Frequency*PlaySpeed;
+                double elapsed = (double)_globalTime.ElapsedTicks / Stopwatch.Frequency * PlaySpeed;
                 _globalTime.Restart();
                 _currentTime += elapsed;
                 return _currentTime;
@@ -63,7 +63,7 @@ namespace Framefield.Tooll.Components.SelectionView
             var settings = new ContextSettings();
             settings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
             {
-                Width = (int)App.Current.ProjectSettings.GetOrSetDefault("Tooll.FullScreen.Resolution.Width",1920),
+                Width = (int)App.Current.ProjectSettings.GetOrSetDefault("Tooll.FullScreen.Resolution.Width", 1920),
                 Height = (int)App.Current.ProjectSettings.GetOrSetDefault("Tooll.FullScreen.Resolution.Height", 1080),
                 RefreshRate = 60,
                 Format = SharpDX.Direct3D9.Format.A8R8G8B8
@@ -82,7 +82,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             App.Current.Model.GlobalTime = CurrentTime;
             App.Current.MainWindow.CompositionView.PlaySpeed = PlaySpeed;
-            
+
             App.Current.MainWindow.Show();
             App.Current.MainWindow.Activate();
             App.Current.MainWindow.InvalidateVisual();
@@ -104,17 +104,17 @@ namespace Framefield.Tooll.Components.SelectionView
             _defaultContext = OperatorPartContext.createDefault(settings);
 
             var desc = new SwapChainDescription()
-                       {
-                           BufferCount = 3,
-                           ModeDescription = new ModeDescription(ClientSize.Width, ClientSize.Height,
+            {
+                BufferCount = 3,
+                ModeDescription = new ModeDescription(ClientSize.Width, ClientSize.Height,
                                                                  new Rational(settings.DisplayMode.RefreshRate, 1), Format.R8G8B8A8_UNorm),
-                           IsWindowed = false,
-                           OutputHandle = Handle,
-                           SampleDescription = new SampleDescription(1, 0),
-                           SwapEffect = SwapEffect.Discard,
-                           Usage = Usage.RenderTargetOutput,
-                           Flags = SwapChainFlags.AllowModeSwitch
-                       };
+                IsWindowed = false,
+                OutputHandle = Handle,
+                SampleDescription = new SampleDescription(1, 0),
+                SwapEffect = SwapEffect.Discard,
+                Usage = Usage.RenderTargetOutput,
+                Flags = SwapChainFlags.AllowModeSwitch
+            };
 
             var dxgiDevice = D3DDevice.Device.QueryInterface<SharpDX.DXGI.Device>();
             var factory = dxgiDevice.Adapter.GetParent<Factory>();
@@ -127,18 +127,18 @@ namespace Framefield.Tooll.Components.SelectionView
                 _renderTargetView = new RenderTargetView(D3DDevice.Device, texture);
 
             var depthdesc = new Texture2DDescription
-                            {
-                                BindFlags = BindFlags.DepthStencil,
-                                Format = Format.D32_Float_S8X24_UInt,
-                                Width = ClientSize.Width,
-                                Height = ClientSize.Height,
-                                MipLevels = 1,
-                                SampleDescription = new SampleDescription(1, 0),
-                                Usage = ResourceUsage.Default,
-                                OptionFlags = ResourceOptionFlags.None,
-                                CpuAccessFlags = CpuAccessFlags.None,
-                                ArraySize = 1
-                            };
+            {
+                BindFlags = BindFlags.DepthStencil,
+                Format = Format.D32_Float_S8X24_UInt,
+                Width = ClientSize.Width,
+                Height = ClientSize.Height,
+                MipLevels = 1,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                OptionFlags = ResourceOptionFlags.None,
+                CpuAccessFlags = CpuAccessFlags.None,
+                ArraySize = 1
+            };
 
             _depthTex = new Texture2D(D3DDevice.Device, depthdesc);
             _depthStencilView = new DepthStencilView(D3DDevice.Device, _depthTex);
@@ -189,7 +189,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             try
             {
-                var context = new OperatorPartContext(_defaultContext, (float) CurrentTime);
+                var context = new OperatorPartContext(_defaultContext, (float)CurrentTime);
 
                 if (Math.Abs(context.Time - _previousTime) > Constants.Epsilon)
                 {
@@ -338,22 +338,22 @@ namespace Framefield.Tooll.Components.SelectionView
                 switch (key)
                 {
                     case Keys.A:
-                        _moveVelocity -= sideDir*(KEY_ACCELERATION + initialVelocity);
+                        _moveVelocity -= sideDir * (KEY_ACCELERATION + initialVelocity);
                         break;
                     case Keys.D:
-                        _moveVelocity += sideDir*(KEY_ACCELERATION + initialVelocity);
+                        _moveVelocity += sideDir * (KEY_ACCELERATION + initialVelocity);
                         break;
                     case Keys.W:
-                        _moveVelocity += viewDir*(KEY_ACCELERATION + initialVelocity)/viewDirLength;
+                        _moveVelocity += viewDir * (KEY_ACCELERATION + initialVelocity) / viewDirLength;
                         break;
                     case Keys.S:
-                        _moveVelocity -= viewDir*(KEY_ACCELERATION + initialVelocity)/viewDirLength;
+                        _moveVelocity -= viewDir * (KEY_ACCELERATION + initialVelocity) / viewDirLength;
                         break;
                     case Keys.E:
-                        _moveVelocity += upDir*(KEY_ACCELERATION + initialVelocity);
+                        _moveVelocity += upDir * (KEY_ACCELERATION + initialVelocity);
                         break;
                     case Keys.X:
-                        _moveVelocity -= upDir*(KEY_ACCELERATION + initialVelocity);
+                        _moveVelocity -= upDir * (KEY_ACCELERATION + initialVelocity);
                         break;
                     case Keys.F:
                         _moveVelocity = new SharpDX.Vector3(0, 0, 0);
@@ -377,7 +377,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 if (_moveVelocity.Length() > MAX_MOVE_VELOCITY)
                 {
                     var speed = _moveVelocity.Length();
-                    _moveVelocity *= MAX_MOVE_VELOCITY/speed;
+                    _moveVelocity *= MAX_MOVE_VELOCITY / speed;
                 }
 
                 d3DScene.CameraPosition += _moveVelocity;
@@ -472,7 +472,7 @@ namespace Framefield.Tooll.Components.SelectionView
             viewDir.Normalize();
             viewDir *= 0.001f;
 
-            _moveVelocity += viewDir*e.Delta;
+            _moveVelocity += viewDir * e.Delta;
         }
 
         #endregion
@@ -492,8 +492,8 @@ namespace Framefield.Tooll.Components.SelectionView
             viewDir /= viewDirLength;
 
             var diff = _currentMousePos - _lastMousePos;
-            var factorX = (float) (diff.X/Height*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
-            var factorY = (float) (diff.Y/Height*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
+            var factorX = (float)(diff.X / Height * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
+            var factorY = (float)(diff.Y / Height * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
 
             var rotAroundX = Matrix.RotationAxis(sideDir, factorY);
             var rotAroundY = Matrix.RotationAxis(upDir, factorX);
@@ -501,7 +501,7 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            d3DScene.CameraTarget = d3DScene.CameraPosition + newViewDir.ToVector3()*viewDirLength;
+            d3DScene.CameraTarget = d3DScene.CameraPosition + newViewDir.ToVector3() * viewDirLength;
         }
 
 
@@ -518,8 +518,8 @@ namespace Framefield.Tooll.Components.SelectionView
             viewDir /= viewDirLength;
 
             var diff = _currentMousePos - _lastMousePos;
-            var factorX = (float) (diff.X/Height*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
-            var factorY = (float) (diff.Y/Height*ROTATE_MOUSE_SENSIVITY*Math.PI/180.0);
+            var factorX = (float)(diff.X / Height * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
+            var factorY = (float)(diff.Y / Height * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
 
             var rotAroundX = Matrix.RotationAxis(sideDir, factorY);
             var rotAroundY = Matrix.RotationAxis(upDir, factorX);
@@ -527,7 +527,7 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            d3DScene.CameraPosition = d3DScene.CameraTarget - newViewDir.ToVector3()*viewDirLength;
+            d3DScene.CameraPosition = d3DScene.CameraTarget - newViewDir.ToVector3() * viewDirLength;
         }
 
         private void Pan()
@@ -540,8 +540,8 @@ namespace Framefield.Tooll.Components.SelectionView
             d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
-            var factorX = (float) (-diff.X/Height*10.0);
-            var factorY = (float) (diff.Y/Height*10.0);
+            var factorX = (float)(-diff.X / Height * 10.0);
+            var factorY = (float)(diff.Y / Height * 10.0);
 
             sideDir *= factorX;
             upDir *= factorY;
@@ -560,7 +560,7 @@ namespace Framefield.Tooll.Components.SelectionView
             d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
-            var velocity = (float) (-diff.Y/Height*5.0);
+            var velocity = (float)(-diff.Y / Height * 5.0);
 
             viewDir.Normalize();
             viewDir *= velocity;

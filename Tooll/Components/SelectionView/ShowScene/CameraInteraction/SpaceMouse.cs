@@ -3,6 +3,7 @@
 
 using Framefield.Core;
 using Framefield.Core.Inputs;
+using Framefield.Tooll.Rendering;
 using SharpDX;
 
 namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction

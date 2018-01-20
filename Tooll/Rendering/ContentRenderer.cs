@@ -20,14 +20,14 @@ namespace Framefield.Tooll.Rendering
             if (_D3DImageContainer == null)
                 _D3DImageContainer = new D3DImageSharpDX();
 
-            _renderSetup = new D3DRenderSetup(_renderConfiguration.Width, _renderConfiguration.Height);
+            _renderSetup = new D3DRenderSetup(_renderConfiguration);
             _D3DImageContainer.SetBackBufferSharpDX(_renderSetup.SharedTexture);
 
             var contextSettings = new ContextSettings();
             contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
             {
-                Width = _renderSetup.Width,
-                Height = _renderSetup.Height,
+                Width = _renderConfiguration.Width,
+                Height = _renderConfiguration.Height,
                 RefreshRate = 60,
                 Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
             };
@@ -46,8 +46,8 @@ namespace Framefield.Tooll.Rendering
             var contextSettings = new ContextSettings();
             contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
             {
-                Width = _renderSetup.Width,
-                Height = _renderSetup.Height,
+                Width = _renderConfiguration.Width,
+                Height = _renderConfiguration.Height,
                 RefreshRate = 60,
                 Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
             };
@@ -91,10 +91,7 @@ namespace Framefield.Tooll.Rendering
                         };
                         _renderSetup.RenderGeometry(
                             context,
-                            lambdaForScenes,
-                            _renderConfiguration.RenderWithGammaCorrection,
-                            _renderConfiguration.ShownOutputIndex,
-                            _renderConfiguration.ShowGridAndGizmos);
+                            lambdaForScenes);
 
                         break;
 
@@ -108,11 +105,7 @@ namespace Framefield.Tooll.Rendering
                             };
                             _renderSetup.RenderGeometry(
                                 context,
-                                lambdaForMeshes,
-                                _renderConfiguration.RenderWithGammaCorrection,
-                                _renderConfiguration.ShownOutputIndex,
-                                _renderConfiguration.ShowGridAndGizmos
-                                );
+                                lambdaForMeshes);
                             break;
                         }
 
@@ -129,11 +122,11 @@ namespace Framefield.Tooll.Rendering
                         var cubeMapSide = RenderedImageIsACubemap ? _renderConfiguration.PreferredCubeMapSideIndex : -1;
                         if (cubeMapSide == 6)
                         {
-                            _renderSetup.RenderCubemapAsSphere(image, context, _renderConfiguration.RenderWithGammaCorrection);
+                            _renderSetup.RenderCubemapAsSphere(image, context);
                         }
                         else
                         {
-                            _renderSetup.RenderImage(image, context, _renderConfiguration.RenderWithGammaCorrection, cubeMapSide);
+                            _renderSetup.RenderImage(image, context);
                         }
                         break;
                 }
