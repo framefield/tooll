@@ -14,21 +14,28 @@ using Framefield.Core;
 using Framefield.Core.Commands;
 using Framefield.Core.Rendering;
 using Framefield.Tooll.Rendering;
-//using SharpDX.Direct3D11;
-using SharpDX.Direct3D9;
+using SharpDX.Direct3D11;
 
-namespace Framefield.Tooll
+namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     [JsonObject(MemberSerialization.OptIn)]
+    /**
+     * The preset manager handles the creation, display and application of operator presets
+     * in the ParamaterView. It users the following components:
+     * 
+     * OperatorPreset - Model of a preset, gets serialized into a long list serialized to Config folder
+     * PresetImageManager - Loads and saves preset-images to disks
+     * PresetThumb - UserControl that handles rendering of a preset and forwards interaction to Manager
+     * 
+    */
     public class OperatorPresetManager : DependencyObject, INotifyPropertyChanged
     {
-        private static readonly string PRESETS_FILENAME = @"Config/Presets.json";
 
-        public ObservableCollection<OperatorPreset> CurrentOperatorPresets { get; private set; }
 
         public OperatorPresetManager()
         {
             CurrentOperatorPresets = new ObservableCollection<OperatorPreset>();
+
             if (File.Exists(PRESETS_FILENAME))
             {
                 using (var reader = new StreamReader(PRESETS_FILENAME))
@@ -45,6 +52,7 @@ namespace Framefield.Tooll
 
         public bool LivePreviewEnabled { get; set; }
 
+
         private OperatorPreset CreatePresetFromCurrentOperator()
         {
             var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
@@ -53,10 +61,11 @@ namespace Framefield.Tooll
             return CreatePresetFromOperator(op);
         }
 
+
         public void SavePresetFromCurrentlyShownOperator()
         {
             var newPreset = CreatePresetFromCurrentOperator();
-            RenderAndSaveThumbnail(newPreset);
+            PresetImageManager.RenderAndSaveThumbnail(newPreset);
 
             if (newPreset.ValuesByParameterID.Count > 0)
             {
@@ -66,6 +75,7 @@ namespace Framefield.Tooll
             }
         }
 
+
         public void UpdateAllThumbnails()
         {
             var keepList = CurrentOperatorPresets.ToArray();
@@ -74,116 +84,12 @@ namespace Framefield.Tooll
             foreach (var preset in keepList)
             {
                 PreviewPreset(preset);
-                RenderAndSaveThumbnail(preset);
+                PresetImageManager.RenderAndSaveThumbnail(preset);
                 RestorePreviewPreset();
                 CurrentOperatorPresets.Add(preset);
             }
         }
 
-        private const int THUMB_WIDTH = 133;
-        private const int THUMB_HEIGHT = (int)(THUMB_WIDTH * 9.0 / 16.0);
-
-
-        public void RenderAndSaveThumbnail(OperatorPreset preset)
-        {
-            var showContentControl = App.Current.MainWindow.XRenderView.XShowContentControl;
-            var renderConfig = showContentControl.RenderConfiguration;
-            var renderSetup = App.Current.MainWindow.XRenderView.XShowContentControl.RenderSetup;
-
-            var orgWidth = renderConfig.Width;
-            var orgHeight = renderConfig.Height;
-            renderSetup.Resize(THUMB_WIDTH, THUMB_HEIGHT);
-            showContentControl.ContentRenderer.Reinitialize();
-
-            var filePath = preset.BuildImagePath();
-            Logger.Info("Saving preset for:" + preset.Name + " to " + filePath + " orgWidth:" + orgWidth);
-            try
-            {
-                Texture.ToFile(showContentControl.ContentRenderer.D3DImageContainer.SharedTexture, filePath, ImageFileFormat.Jpg);
-
-            }
-            catch (SharpDX.SharpDXException e)
-            {
-                Logger.Info("Failed to create thumbnail. Exception thrown:" + e);
-            }
-
-            renderConfig.Width = orgWidth;
-            renderConfig.Height = orgHeight;
-            renderSetup.Resize(renderConfig.Width, renderConfig.Height);
-            showContentControl.ContentRenderer.Reinitialize();
-
-        }
-
-
-
-        //public void RenderAndSaveThumbnail(OperatorPreset preset)
-        //{
-        //    var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
-        //    if (op == null || !op.Outputs.Any())
-        //        return;
-
-        //    var output = op.Outputs.First();
-        //    if (LivePreviewEnabled)
-        //    {
-        //        if (App.Current.MainWindow.XRenderView.Operator != null && App.Current.MainWindow.XRenderView.Operator.Outputs.Any())
-        //        {
-        //            output = App.Current.MainWindow.XRenderView.Operator.Outputs[0];
-        //            op = App.Current.MainWindow.XRenderView.Operator;
-        //        }
-        //    }
-
-        //    var _contentRenderer = new ContentRenderer(new ContentRendererConfiguration()
-        //    {
-        //        Operator = op,
-        //        Height = THUMB_HEIGHT,
-        //        Width = THUMB_WIDTH,
-        //    });
-        //    _contentRenderer.SetupRendering();
-        //    _contentRenderer.RenderContent();
-
-
-        //    var filePath = preset.BuildImagePath();
-        //    Texture.ToFile(_contentRenderer.D3DImageContainer.SharedTexture, filePath, ImageFileFormat.Jpg);
-        //}
-
-
-        public void RenderAndSaveThumbnail2(OperatorPreset preset)
-        {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
-            if (op == null || !op.Outputs.Any())
-                return;
-
-            var output = op.Outputs.First();
-            if (LivePreviewEnabled)
-            {
-                if (App.Current.MainWindow.XRenderView.Operator != null && App.Current.MainWindow.XRenderView.Operator.Outputs.Any())
-                    output = App.Current.MainWindow.XRenderView.Operator.Outputs[0];
-            }
-
-            var currentTime = App.Current.Model.GlobalTime;
-            var filePath = preset.BuildImagePath();
-            var result = Regex.Match(filePath, @"(.*)/(.*)\.png");
-            if (result == null)
-                throw new Exception("Invalid filepath format for thumbnails:" + filePath);
-
-            var directory = result.Groups[1].Value;
-            var filename = result.Groups[2].Value;
-
-            using (var sequenceCreator = new SequenceCreator())
-            {
-                sequenceCreator.Setup(output,
-                                      height: THUMB_HEIGHT,
-                                      width: THUMB_WIDTH,
-                                      startTime: currentTime,
-                                      endTime: currentTime,
-                                      frameRate: 10000,
-                                      fileExtension: "png",
-                                      skipExistingFiles: false,
-                                      directory: directory,
-                                      filenameFormat: filename);
-                sequenceCreator.RenderFrame();
-            }
-        }
 
         private void AddPreset(OperatorPreset newPreset, int idx)
         {
@@ -193,6 +99,7 @@ namespace Framefield.Tooll
             }
             _operatorPresetsByMetaOpID[newPreset.MetaOperatorID].Insert(idx, newPreset);
         }
+
 
         public void CopyPresetsOfOpToAnother(MetaOperator source, MetaOperator target)
         {
@@ -440,12 +347,15 @@ namespace Framefield.Tooll
 
         protected void NotifyPropertyChanged(string propName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
-
         #endregion
+
+
+
+        public ObservableCollection<OperatorPreset> CurrentOperatorPresets { get; private set; }
+        internal PresetImageManager PresetImageManager = new PresetImageManager();
+
+        private static readonly string PRESETS_FILENAME = @"Config/Presets.json";
     }
 }

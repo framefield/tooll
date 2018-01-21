@@ -316,6 +316,7 @@
     <Compile Include="Components\ParameterView\OperatorPresets\PresetGrid.xaml.cs">
       <DependentUpon>PresetGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\ParameterView\OperatorPresets\PresetImageManager.cs" />
     <Compile Include="Components\ParameterView\OperatorPresets\PresetThumb.xaml.cs">
       <DependentUpon>PresetThumb.xaml</DependentUpon>
     </Compile>

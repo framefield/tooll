@@ -30,6 +30,7 @@ using Framefield.Core;
 using Framefield.Core.Profiling;
 using Framefield.Shared;
 using System.Windows.Forms.VisualStyles;
+using Framefield.Tooll.Components.ParameterView.OperatorPresets;
 
 namespace Framefield.Tooll
 {
@@ -106,10 +107,10 @@ namespace Framefield.Tooll
             Logger.Info(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP + DateTime.Now);
             Logger.Info("Version: {0}", Core.Utilities.GetCompleteVersionString());
 
-            
+
             SetupOperatorGitRepository();
 
-            D3DDevice.Device = new Device(DriverType.Hardware, DeviceCreationFlags.Debug |  DeviceCreationFlags.BgraSupport);
+            D3DDevice.Device = new Device(DriverType.Hardware, DeviceCreationFlags.Debug | DeviceCreationFlags.BgraSupport);
             if (D3DDevice.Device.CreationFlags.HasFlag(DeviceCreationFlags.Debug))
             {
                 D3DDevice.DebugDevice = new DeviceDebug(D3DDevice.Device);
@@ -150,7 +151,7 @@ namespace Framefield.Tooll
             }
             else
             {
-                var matrices = (JObject) UserSettings["View.WorkspaceMatrices"];
+                var matrices = (JObject)UserSettings["View.WorkspaceMatrices"];
                 UserSettings["View.WorkspaceMatrices"] = JsonConvert.DeserializeObject<Dictionary<Guid, Matrix>>(matrices.ToString());
             }
 
@@ -159,10 +160,10 @@ namespace Framefield.Tooll
             OperatorPresetManager = new OperatorPresetManager();
 
             AutoBackup = new AutoBackup();
-            AutoBackup.SecondsBetweenSaves = (int)UserSettings.GetOrSetDefault("Tooll.AutoBackupPeriodInSeconds", 60*5);
+            AutoBackup.SecondsBetweenSaves = (int)UserSettings.GetOrSetDefault("Tooll.AutoBackupPeriodInSeconds", 60 * 5);
             AutoBackup.Enabled = UserSettings.GetOrSetDefault("Tooll.AutoBackupEnabled", true);
 
-            if(AutoBackup.Enabled)
+            if (AutoBackup.Enabled)
                 AutoBackup.ReduceNumberOfBackups();
 
 
@@ -181,7 +182,7 @@ namespace Framefield.Tooll
 
         private void TryToRecoverFromBackupAfterCrash()
         {
-            if (!Directory.Exists(TOOLL_LOG_DIRECTORY)) 
+            if (!Directory.Exists(TOOLL_LOG_DIRECTORY))
                 return;
 
             // Check log-file for insuccessful shutdown
@@ -195,11 +196,12 @@ namespace Framefield.Tooll
             {
                 completeText = File.ReadAllText(lastFile.FullName);
             }
-            catch(Exception e) {
+            catch (Exception e)
+            {
                 throw new ShutDownException("Couldn't open last log-file. Is tooll.exe still running? Please check Task-Manager:" + e);
             }
-            
-            if (!completeText.Contains(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP) || completeText.Contains(SHUT_DOWN_IDENTIFIER))                 
+
+            if (!completeText.Contains(STARTUP_IDENTIFIER_PRECEDING_TIMESTAMP) || completeText.Contains(SHUT_DOWN_IDENTIFIER))
                 return;
 
             // Get last startup time from Log
@@ -208,7 +210,7 @@ namespace Framefield.Tooll
                 return;
 
             var timestamp = result.Groups[1].Value;
-            DateTime? lastStartupTime=null;
+            DateTime? lastStartupTime = null;
             try
             {
                 lastStartupTime = DateTime.Parse(timestamp);
@@ -217,7 +219,7 @@ namespace Framefield.Tooll
             {
                 return;
             }
-            
+
             // Check if backups
             var lastBackupTime = AutoBackup.GetTimeOfLastBackup();
             double secondsSinceLastBackup = 0;
@@ -273,10 +275,10 @@ namespace Framefield.Tooll
                     // https://streber.framefield.com/1636#1__operatorrepositoryremoteurl_definiert_aber_operators_fehlt
                     // fetch operators from url
                     var progressDialog = new CloneRepositoryProgressDialog(OperatorRepository)
-                                             {
-                                                 LocalPath = OperatorRepository.LocalPath,
-                                                 RemotePath = OperatorRepository.RemotePath
-                                             };
+                    {
+                        LocalPath = OperatorRepository.LocalPath,
+                        RemotePath = OperatorRepository.RemotePath
+                    };
                     progressDialog.ShowDialog();
 
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -331,10 +333,11 @@ namespace Framefield.Tooll
         private void ComponentDispatcher_ThreadFilterMessage(ref MSG msg, ref bool handled)
         {
             if (msg.message == 0x00FF) //WM_INPUT
-                SharpDX.RawInput.Device.HandleMessage((IntPtr) msg.lParam);
+                SharpDX.RawInput.Device.HandleMessage((IntPtr)msg.lParam);
         }
 
-        void Model_GlobalTimeChangedHandler(object sender, EventArgs e) {
+        void Model_GlobalTimeChangedHandler(object sender, EventArgs e)
+        {
             UpdateRequiredAfterUserInteraction = true;
         }
 
@@ -345,7 +348,7 @@ namespace Framefield.Tooll
 
             AutoBackup.Dispose();
             SavePresets();
-            
+
             OperatorPartContext.DefaultRenderer.Dispose();
             DefaultRenderer.DefaultEffect.Dispose();
             Model.Dispose();
@@ -354,7 +357,7 @@ namespace Framefield.Tooll
             D3DDevice.DX10_1Device.Dispose();
             D3DDevice.Direct2DFactory.Dispose();
             D3DDevice.DirectWriteFactory.Dispose();
-            
+
             Logger.Info(SHUT_DOWN_IDENTIFIER);
             Logger.Dispose();
 
@@ -384,9 +387,9 @@ namespace Framefield.Tooll
         {
             ((DispatcherFrame)f).Continue = false;
             return null;
-        }  
+        }
 
-        
+
 
         #region preset manager and serialization
 
@@ -401,8 +404,8 @@ namespace Framefield.Tooll
 
         /**
          *  Primary WPF-handler called before updateing the user interface
-         */ 
-        void CompositionTarget_RenderingHandler(object sender, EventArgs e) 
+         */
+        void CompositionTarget_RenderingHandler(object sender, EventArgs e)
         {
             UpdateTimeSinceLastFrame();
 
@@ -542,7 +545,7 @@ namespace Framefield.Tooll
         {
             var delta = (double)_stopwatch.ElapsedTicks / Stopwatch.Frequency;
             if (delta < 0.016)
-            {                
+            {
                 //Logger.Warn("Clamping invalid time frame update {0}", delta);
                 delta = 0.016;
             }
@@ -585,7 +588,7 @@ namespace Framefield.Tooll
         {
             if (speed > 0.001)
             {
-                Bass.BASS_ChannelSetAttribute(m_SoundStream, BASSAttribute.BASS_ATTRIB_FREQ, m_OriginalFrequency*(float) speed);
+                Bass.BASS_ChannelSetAttribute(m_SoundStream, BASSAttribute.BASS_ATTRIB_FREQ, m_OriginalFrequency * (float)speed);
                 if (Bass.BASS_ChannelIsActive(m_SoundStream) != BASSActive.BASS_ACTIVE_PLAYING)
                     Bass.BASS_ChannelPlay(m_SoundStream, false);
             }
@@ -616,7 +619,7 @@ namespace Framefield.Tooll
         {
             return MainWindow.CompositionView.PlaySpeed > 0.001;
         }
-        
+
         private void SetupSoundSystemWithSoundtrack()
         {
 
@@ -624,13 +627,13 @@ namespace Framefield.Tooll
             var registrationKey = ProjectSettings.TryGet("Tooll.Sound.BassNetLicense.Key", "");
             if (!String.IsNullOrEmpty(registrationEmail) && !String.IsNullOrEmpty(registrationKey))
             {
-                BassNet.Registration(registrationEmail, registrationKey);                
+                BassNet.Registration(registrationEmail, registrationKey);
             }
 
             Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_LATENCY, IntPtr.Zero);
 
             while (!ProjectSettings.Contains("Soundtrack.Path") ||
-                   !File.Exists((string) ProjectSettings["Soundtrack.Path"]))
+                   !File.Exists((string)ProjectSettings["Soundtrack.Path"]))
             {
                 ProjectSettings["Soundtrack.Path"] = UIHelper.PickFileWithDialog(".", ProjectSettings.TryGet("Soundtrack.Path", "."), "Select Soundtrack");
             }
@@ -640,7 +643,7 @@ namespace Framefield.Tooll
                 ProjectSettings["Soundtrack.ImagePath"] = UIHelper.PickFileWithDialog(".", ProjectSettings.TryGet("Soundtrack.Path", "."), "Select optional frequency image for soundtrack");
             }
 
-            var soundFilePath = (string) ProjectSettings["Soundtrack.Path"];
+            var soundFilePath = (string)ProjectSettings["Soundtrack.Path"];
             SetProjectSoundFile(soundFilePath);
         }
 
