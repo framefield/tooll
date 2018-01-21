@@ -395,6 +395,7 @@ namespace Framefield.Tooll
 
         public OperatorPresetManager OperatorPresetManager { get; private set; }
 
+        /** Invoked when exiting the application */
         private void SavePresets()
         {
             OperatorPresetManager.SaveAllPresets();

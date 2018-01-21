@@ -36,18 +36,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         {
             CurrentOperatorPresets = new ObservableCollection<OperatorPreset>();
 
-            if (File.Exists(PRESETS_FILENAME))
-            {
-                using (var reader = new StreamReader(PRESETS_FILENAME))
-                {
-                    var json = reader.ReadToEnd();
-                    _operatorPresetsByMetaOpID = JsonConvert.DeserializeObject<SortedDictionary<Guid, List<OperatorPreset>>>(json);
-                }
-            }
-            else
-            {
-                _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
-            }
+            LoadPresetsFromDisk();
         }
 
 
@@ -108,7 +97,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
-
+        /** Invoked after mouse leaves the thumbnail */
         public void RerenderCurrentThumbnails()
         {
             var keepList = CurrentOperatorPresets.ToArray();
@@ -197,18 +186,94 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             SaveAllPresets();
         }
 
-        public void SaveAllPresets()
+
+        #region serialization to disk
+
+
+        private void LoadPresetsFromDisk()
         {
-            SavePresetsAs(PRESETS_FILENAME);
+            var localPresets = DeserializePresetDict(LOCAL_PRESETS_FILEPATH);
+            var globalPresets = DeserializePresetDict(PRESETS_FILEPATH);
+
+            // merge into united dict
+            _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
+            SortPresetsFromAIntoB(localPresets, _operatorPresetsByMetaOpID);
+            SortPresetsFromAIntoB(globalPresets, _operatorPresetsByMetaOpID);
         }
 
-        public void SavePresetsAs(string filePath)
+
+        private SortedDictionary<Guid, List<OperatorPreset>> DeserializePresetDict(string filePath)
         {
-            var serializedPresets = JsonConvert.SerializeObject(_operatorPresetsByMetaOpID, Formatting.Indented);
+            var dict = new SortedDictionary<Guid, List<OperatorPreset>>();
+            if (File.Exists(filePath))
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    var json = reader.ReadToEnd();
+                    dict = JsonConvert.DeserializeObject<SortedDictionary<Guid, List<OperatorPreset>>>(json);
+                }
+            }
+            return dict;
+        }
+
+        private void SortPresetsFromAIntoB(SortedDictionary<Guid, List<OperatorPreset>> set, SortedDictionary<Guid, List<OperatorPreset>> combinedDict)
+        {
+            foreach (var list in set.Values)
+            {
+                foreach (var preset in list)
+                {
+                    SortPresetIntoDict(preset, combinedDict);
+                }
+            }
+        }
+
+
+        /** Serialize all preset into two files (local and global). This avoid later merge conflicts */
+        public void SaveAllPresets()
+        {
+            var localPresets = new SortedDictionary<Guid, List<OperatorPreset>>();
+            var globalPresets = new SortedDictionary<Guid, List<OperatorPreset>>();
+
+            foreach (var list in _operatorPresetsByMetaOpID.Values)
+            {
+                foreach (var preset in list)
+                {
+                    SortPresetIntoDict(preset, preset.IsInstancePreset ? localPresets
+                                                                       : globalPresets);
+                }
+            }
+
+            SerializePresetDict(localPresets, LOCAL_PRESETS_FILEPATH);
+            SerializePresetDict(globalPresets, PRESETS_FILEPATH);
+        }
+
+        private void SortPresetIntoDict(OperatorPreset preset, SortedDictionary<Guid, List<OperatorPreset>> sortedDict)
+        {
+            if (!sortedDict.ContainsKey(preset.MetaOperatorID))
+            {
+                sortedDict[preset.MetaOperatorID] = new List<OperatorPreset>();
+            }
+            sortedDict[preset.MetaOperatorID].Add(preset);
+        }
+
+
+        private void SerializePresetDict(SortedDictionary<Guid, List<OperatorPreset>> dict, string filePath)
+        {
+            var serializedPresets = JsonConvert.SerializeObject(dict, Formatting.Indented);
             using (var sw = new StreamWriter(filePath))
             {
                 sw.Write(serializedPresets);
             }
+        }
+
+
+
+
+        #endregion
+
+
+        public void SavePresetsAs(string filePath)
+        {
         }
 
 
@@ -274,14 +339,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
-        private SetValueGroupCommand _setValueGroupCommand;
-        private OperatorPreset _tempOperatorPresetBeforePreview;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="preset"></param>
-        /// <returns>false if preview was refused</returns>
+        /** Returns false if preview was refused */
         public bool PreviewPreset(OperatorPreset preset)
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
@@ -312,6 +370,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             return true;
         }
 
+
         public void RestorePreviewPreset()
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
@@ -326,6 +385,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 App.Current.UpdateRequiredAfterUserInteraction = true;
             }
         }
+
 
         public void DeletePreset(OperatorPreset preset)
         {
@@ -344,6 +404,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 }
             }
         }
+
 
         public void SelectActivePreset()
         {
@@ -366,9 +427,6 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-
-        [JsonProperty]
-        private SortedDictionary<Guid, List<OperatorPreset>> _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
 
         private OperatorPreset CreatePresetFromOperator(Operator op)
         {
@@ -396,11 +454,19 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
         #endregion
 
-
-
         public ObservableCollection<OperatorPreset> CurrentOperatorPresets { get; private set; }
+
+        [JsonProperty]
+        private SortedDictionary<Guid, List<OperatorPreset>> _operatorPresetsByMetaOpID
+            = new SortedDictionary<Guid, List<OperatorPreset>>();
+
+
+        private SetValueGroupCommand _setValueGroupCommand;
+        private OperatorPreset _tempOperatorPresetBeforePreview;
+
         internal PresetImageManager PresetImageManager = new PresetImageManager();
 
-        private static readonly string PRESETS_FILENAME = @"Config/Presets.json";
+        private static readonly string PRESETS_FILEPATH = @"Config/Presets.json";
+        private static readonly string LOCAL_PRESETS_FILEPATH = @"Config/UserPresets.json";
     }
 }
