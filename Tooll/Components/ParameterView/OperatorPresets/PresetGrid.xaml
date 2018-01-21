@@ -29,7 +29,7 @@
                 Save Preset
             </Button>
             <Button x:Name="XSaveButtonForType" Click="SaveForTypeClicked_Handler" Grid.Column="1">
-                ...globally
+                ...as global
             </Button>
             <Button Grid.Column="3" Click="RebuildAllButton_OnClick" >
                 Refresh
@@ -43,7 +43,9 @@
              >
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Margin="0" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=ActualWidth}"
+                    <WrapPanel 
+                        Margin="0" 
+                        MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=ActualWidth}"
                                 />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
