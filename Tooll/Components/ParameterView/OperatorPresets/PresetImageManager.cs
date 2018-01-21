@@ -25,7 +25,6 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
             if (File.Exists(imagePath))
             {
-                Logger.Info("Loading thumbnail: " + imagePath);
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
                 bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
@@ -57,8 +56,16 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             var filePath = BuildImagePath(preset);
             if (File.Exists(filePath))
             {
-                File.Delete(filePath);
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch (Exception e)
+                {
+                    Logger.Info("Failed to delete thumbnail. Exception thrown:" + e);
+                }
             }
+
             try
             {
                 SharpDX.Direct3D9.Texture.ToFile(
