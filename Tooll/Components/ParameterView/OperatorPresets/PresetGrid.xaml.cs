@@ -30,7 +30,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            XPreviewButton.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
+            //XPreviewButton.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
 
             var binding = new Binding()
             {
@@ -41,24 +41,23 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             BindingOperations.SetBinding(XPresetGrid, ItemsControl.ItemsSourceProperty, binding);
         }
 
+
         private void SaveClicked_Handler(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperator();
+            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperatorInstance();
         }
 
-        private void XPreviewButton_OnChecked(object sender, RoutedEventArgs e)
+
+        private void SaveForTypeClicked_Handler(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.LivePreviewEnabled = true;
+            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperatorType();
         }
 
-        private void XPreviewButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            App.Current.OperatorPresetManager.LivePreviewEnabled = false;
-        }
+
 
         private void RebuildAllButton_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.UpdateAllThumbnails();
+            App.Current.OperatorPresetManager.RerenderCurrentThumbnails();
         }
     }
 }

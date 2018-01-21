@@ -227,7 +227,7 @@ namespace Framefield.Tooll
             XParameterStackPanel.Children.Add(descriptionBox);
 
             XParameterScrollViewer.Content = XParameterStackPanel;
-            App.Current.OperatorPresetManager.FilterPresetsForSelectedOperator();
+            App.Current.OperatorPresetManager.FilterCurrentPresetsForSelection();
 
             watch.Stop();
         }

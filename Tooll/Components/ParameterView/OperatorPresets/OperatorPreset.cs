@@ -26,7 +26,13 @@ namespace Framefield.Tooll
             new UIPropertyMetadata() { DefaultValue = false });
 
         [JsonProperty]
+        public Guid OperatorInstanceID { get; set; }
+
+        [JsonProperty]
         public Guid MetaOperatorID { get; set; }
+
+        [JsonProperty]
+        public bool IsInstancePreset { get; set; }
 
         [JsonProperty]
         public String Name { get; set; }

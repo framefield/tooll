@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             
             
              mc:Ignorable="d" 
              Width="80" Height="50" 
@@ -44,6 +43,13 @@
                 </ControlTemplate>
             </Thumb.Template>
         </Thumb>
+        <TextBlock x:Name="XForInstanceText"                   
+            TextAlignment="Center" 
+                   VerticalAlignment="Bottom"  
+                   Background="#33000000" 
+                   Foreground="White" 
+                   FontSize="9" 
+                   FontFamily="Segoe UI Light" HorizontalAlignment="Left">LOCAL</TextBlock>
         <TextBlock x:Name="XBlendInfoText"
                    Visibility="Collapsed"
             TextAlignment="Center" VerticalAlignment="Bottom"  Background="#99000000" Foreground="White" FontSize="24" FontFamily="Segoe UI Light">asdf</TextBlock>

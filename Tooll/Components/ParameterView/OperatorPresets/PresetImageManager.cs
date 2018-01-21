@@ -125,9 +125,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         public string BuildImagePath(OperatorPreset preset)
         {
-            var imagePath = App.Current.OperatorPresetManager.LivePreviewEnabled
-                            ? "Temp/preset-preview-thumbs/" + preset.Id + ".png"
-                            : "assets-common/preset-thumbs/" + preset.Id + ".png";
+            var imagePath = "assets-common/preset-thumbs/" + preset.Id + ".png";
 
             return imagePath;
         }

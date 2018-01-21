@@ -50,33 +50,66 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-        public bool LivePreviewEnabled { get; set; }
 
-
-        private OperatorPreset CreatePresetFromCurrentOperator()
+        /** This is called from Parameter-View on selection change */
+        public void FilterCurrentPresetsForSelection()
         {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
-            if (op == null)
-                return null;
-            return CreatePresetFromOperator(op);
-        }
+            var op = App.Current.MainWindow.XParameterView.ShownOperator;
+            if (op == null || op.Definition == null || _operatorPresetsByMetaOpID == null)
+                return;
 
-
-        public void SavePresetFromCurrentlyShownOperator()
-        {
-            var newPreset = CreatePresetFromCurrentOperator();
-            PresetImageManager.RenderAndSaveThumbnail(newPreset);
-
-            if (newPreset.ValuesByParameterID.Count > 0)
+            if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
             {
-                AddPreset(newPreset, 0);
-                FilterPresetsForSelectedOperator();
-                SavePresets();
+                CurrentOperatorPresets.Clear();
+                foreach (var p in _operatorPresetsByMetaOpID[op.Definition.ID])
+                {
+                    if (p.IsInstancePreset && p.OperatorInstanceID != op.ID)
+                    {
+                        continue;
+                    }
+                    CurrentOperatorPresets.Add(p); // FIXME: This triggers update events for each preset. Needs refactoring to new custom observable collection that enables range setting
+                }
+                SelectActivePreset();
+            }
+            else
+            {
+                CurrentOperatorPresets.Clear();
             }
         }
 
 
-        public void UpdateAllThumbnails()
+
+        public void SavePresetFromCurrentlyShownOperatorType()
+        {
+            var newPreset = TryToCreatePresetFromCurrentOperator();
+            if (newPreset == null)
+                return;
+
+            InsertAndSavePreset(newPreset);
+        }
+
+
+        public void SavePresetFromCurrentlyShownOperatorInstance()
+        {
+            var newPreset = TryToCreatePresetFromCurrentOperator();
+            if (newPreset == null)
+                return;
+
+            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
+            if (op == null)
+                return;
+
+            newPreset.IsInstancePreset = true;
+            newPreset.OperatorInstanceID = op.ID;
+
+            PresetImageManager.RenderAndSaveThumbnail(newPreset);
+
+            InsertAndSavePreset(newPreset);
+        }
+
+
+
+        public void RerenderCurrentThumbnails()
         {
             var keepList = CurrentOperatorPresets.ToArray();
             CurrentOperatorPresets.Clear(); // We rebuild the list to trigger update notification of the observable collection
@@ -88,6 +121,37 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 RestorePreviewPreset();
                 CurrentOperatorPresets.Add(preset);
             }
+        }
+
+
+
+
+
+        /** Tries to create a new preset from the current selection.
+         * will return NULL if selection is not valid or preset would be empty
+         * because the Operators does not include any floats */
+        private OperatorPreset TryToCreatePresetFromCurrentOperator()
+        {
+            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
+            if (op == null)
+                return null;
+
+            var newPreset = CreatePresetFromOperator(op);
+            var hasParameters = newPreset.ValuesByParameterID.Count > 0;
+            if (!hasParameters)
+                return null;
+
+            return newPreset;
+        }
+
+
+        private void InsertAndSavePreset(OperatorPreset newPreset)
+        {
+            PresetImageManager.RenderAndSaveThumbnail(newPreset);
+
+            AddPreset(newPreset, 0);
+            FilterCurrentPresetsForSelection();
+            SaveAllPresets();
         }
 
 
@@ -129,11 +193,11 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                         Logger.Debug("Skipped a preset without any matching parameters");
                 }
             }
-            FilterPresetsForSelectedOperator();
-            SavePresets();
+            FilterCurrentPresetsForSelection();
+            SaveAllPresets();
         }
 
-        public void SavePresets()
+        public void SaveAllPresets()
         {
             SavePresetsAs(PRESETS_FILENAME);
         }
@@ -147,26 +211,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-        public void FilterPresetsForSelectedOperator()
-        {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator;
-            if (op == null || op.Definition == null || _operatorPresetsByMetaOpID == null)
-                return;
 
-            if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
-            {
-                CurrentOperatorPresets.Clear();
-                foreach (var p in _operatorPresetsByMetaOpID[op.Definition.ID])
-                {
-                    CurrentOperatorPresets.Add(p); // FIXME: This triggers update events for each preset. Needs refactoring to new custom observable collection that enables range setting
-                }
-                SelectActivePreset();
-            }
-            else
-            {
-                CurrentOperatorPresets.Clear();
-            }
-        }
 
         // Called after click
         public void ApplyPreset(OperatorPreset preset)
@@ -293,8 +338,8 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
                 {
                     _operatorPresetsByMetaOpID[op.Definition.ID].Remove(preset);
-                    FilterPresetsForSelectedOperator();
-                    SavePresets();
+                    FilterCurrentPresetsForSelection();
+                    SaveAllPresets();
                     App.Current.UpdateRequiredAfterUserInteraction = true;
                 }
             }
@@ -302,7 +347,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         public void SelectActivePreset()
         {
-            var preset = CreatePresetFromCurrentOperator();
+            var preset = TryToCreatePresetFromCurrentOperator();
             foreach (var p in CurrentOperatorPresets)
             {
                 bool matching = true;
