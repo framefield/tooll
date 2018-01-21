@@ -93,7 +93,6 @@ namespace Framefield.Tooll.Components.SelectionView
         {
             var wasRightMouseClick = CameraInteraction.HandleMouseUp(e.ChangedButton);
 
-
             // Release captured mouse
             if (!CameraInteraction.AnyMouseButtonPressed())
                 Mouse.Capture(null);
@@ -146,7 +145,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void SizeChanged_Handler(object sender, SizeChangedEventArgs e)
         {
-
             if (_contentRenderer != null)
             {
                 SetRendererSizeFromWindow();
@@ -198,7 +196,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
             RenderConfiguration.ShownOutputIndex = outputIndex;
             RenderConfiguration.Operator = op;
-            //_operator = op;
             RenderContent();
         }
 
@@ -208,6 +205,7 @@ namespace Framefield.Tooll.Components.SelectionView
         {
             var fsView = new FullScreenView(_contentRenderer.RenderSetup);
         }
+
 
         private void RenderContent()
         {
@@ -238,11 +236,6 @@ namespace Framefield.Tooll.Components.SelectionView
             RenderConfiguration.Height = (int)XGrid.ActualHeight;
         }
 
-
-        //public bool ShowGridAndGizmos { get; set; }
-        //public bool RenderWithGammaCorrection { get; set; }
-        //public int PreferredCubeMapSideIndex { get; set; }
-
         /** After rendering a image this flag can be used to display UI-elements relevant for CubeMaps */
         public bool RenderedImageIsACubemap
         {
@@ -252,20 +245,15 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
-        //public Render
-
         public ContentRenderer ContentRenderer { get { return _contentRenderer; } }
         ContentRenderer _contentRenderer;
-
-
         #endregion
 
-        //private Operator _operator;
         public D3DRenderSetup RenderSetup { get { return _contentRenderer.RenderSetup; } }
         public ContentRendererConfiguration RenderConfiguration;
+        public CameraInteraction CameraInteraction { get; set; }
 
         public bool TimeLoggingSourceEnabled { get; set; }
 
-        public CameraInteraction CameraInteraction { get; set; }
     }
 }

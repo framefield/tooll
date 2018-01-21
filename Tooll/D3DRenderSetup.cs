@@ -17,7 +17,7 @@ using Utilities = Framefield.Core.Utilities;
 
 namespace Framefield.Tooll.Rendering
 {
-    /** Implements the rendering of content within tooll. Also provides multiple properties to access the used Camera. */
+    /** Implements the rendering of content within Tooll. Also provides multiple properties to access the used Camera. */
     public class D3DRenderSetup : IDisposable
     {
         public D3DRenderSetup(ContentRendererConfiguration renderConfiguration)
@@ -47,7 +47,7 @@ namespace Framefield.Tooll.Rendering
         public OperatorPartContext LastContext { get; set; }
 
 
-
+        /** Provides access to the current camera for CameraInteraction */
         public Operator CurrentCameraOp
         {
             get

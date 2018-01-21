@@ -20,12 +20,12 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
     /// The steps for a mouse-klick to a camera-interaction could be like this...
     /// 
     /// - WPF triggers MouseDown-event, which...
-    /// - gets handled by MouseDown-Handler in ShowSceneControl, which...
+    /// - gets handled by MouseDown-Handler in ShowContentControl, which...
     /// - calls HandleMouseDown
     /// - set _XXXmouseButtonPressed members
     /// 
     /// - on each frame WPF emits RenderCompositionTarget...
-    /// - which gets handled by ShowSceneControl.App_CompositionTargertRenderingHandler
+    /// - which gets handled by ShowContentControl.App_CompositionTargertRenderingHandler
     /// - which calls UpdateAndCheckIfRedrawRequired()
     /// - checks if we need to render because...
     ///   
@@ -45,41 +45,35 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
     /// </summary>
     public class CameraInteraction
     {
-
-        #region Construction and Clean-Up
-
-        public CameraInteraction(ShowContentControl showSceneControl)
+        public CameraInteraction(ShowContentControl showContentControl)
         {
             MaxMoveVelocity = (float)App.Current.ProjectSettings.GetOrSetDefault("Tooll.SelectionView.Camera.MaxVelocity", MAX_MOVE_VELOCITY_DEFAULT);
             _cameraAcceleration = (float)App.Current.ProjectSettings.GetOrSetDefault("Tooll.SelectionView.Camera.Acceleration", CAMERA_ACCELERATION_DEFAULT);
             _frictionKeyboardManipulation = (float)App.Current.ProjectSettings.GetOrSetDefault("Tooll.SelectionView.Camera.Friction", 0.3f);
-            _showSceneControl = showSceneControl;
+            _showContentControl = showContentControl;
 
-            _spaceMouse = new SpaceMouse(this, showSceneControl.RenderSetup);
+            _spaceMouse = new SpaceMouse(this, showContentControl.RenderSetup);
             GizmoPartHitIndex = -1;
 
         }
 
-        // Clean up Event handlers
         public void Discard()
         {
             _spaceMouse.Discard();
         }
 
-        #endregion
-
 
         public bool UpdateAndCheckIfRedrawRequired()
         {
-            if (_showSceneControl.RenderSetup == null)
+            if (_showContentControl.RenderSetup == null)
                 return false;
 
             // Stop all transitions when switching between camera-ops
-            if (_showSceneControl.RenderSetup.CurrentCameraOp != _cameraOperator)
+            if (_showContentControl.RenderSetup.CurrentCameraOp != _cameraOperator)
             {
-                _cameraOperator = _showSceneControl.RenderSetup.CurrentCameraOp;
-                _cameraPositionGoal = _showSceneControl.RenderSetup.CameraPosition;
-                _cameraTargetGoal = _showSceneControl.RenderSetup.CameraTarget;
+                _cameraOperator = _showContentControl.RenderSetup.CurrentCameraOp;
+                _cameraPositionGoal = _showContentControl.RenderSetup.CameraPosition;
+                _cameraTargetGoal = _showContentControl.RenderSetup.CameraTarget;
                 MoveVelocity = Vector3.Zero;
                 _isTransitionActive = false;
             }
@@ -88,8 +82,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             // outside (e.g. by another view, parameters or animation)
             if (!_isTransitionActive && (PositionDistance.Length() > STOP_DISTANCE_THRESHOLD || TargetDistance.Length() > STOP_DISTANCE_THRESHOLD))
             {
-                _cameraPositionGoal = _showSceneControl.RenderSetup.CameraPosition;
-                _cameraTargetGoal = _showSceneControl.RenderSetup.CameraTarget;
+                _cameraPositionGoal = _showContentControl.RenderSetup.CameraPosition;
+                _cameraTargetGoal = _showContentControl.RenderSetup.CameraTarget;
                 return true;
             }
 
@@ -104,7 +98,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             // Manipulation...
             redrawRequired |= ManipulateGizmos();
 
-            if (_showSceneControl.RenderSetup.TransformGizmo.State != TransformGizmo.TransformGizmo.GizmoStates.Dragged)
+            if (_showContentControl.RenderSetup.TransformGizmo.State != TransformGizmo.TransformGizmo.GizmoStates.Dragged)
             {
                 ManipulateCameraByMouse();
             }
@@ -182,7 +176,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             var transitionActive = PositionDistance.Length() > STOP_DISTANCE_THRESHOLD || TargetDistance.Length() > STOP_DISTANCE_THRESHOLD;
 
             var viewDirection = transitionActive ? _cameraPositionGoal - _cameraTargetGoal
-                                                 : _showSceneControl.RenderSetup.CameraPosition - _showSceneControl.RenderSetup.CameraTarget;
+                                                 : _showContentControl.RenderSetup.CameraPosition - _showContentControl.RenderSetup.CameraTarget;
 
             var frameDurationFactor = (float)(App.Current.TimeSinceLastFrame) / FRAME_DURATION_AT_60_FPS;
 
@@ -197,7 +191,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
                 viewDirection /= zoomFactorForCurrentFramerate;
             }
 
-            _showSceneControl.RenderSetup.CameraPosition = _cameraPositionGoal = _cameraTargetGoal + viewDirection;
+            _showContentControl.RenderSetup.CameraPosition = _cameraPositionGoal = _cameraTargetGoal + viewDirection;
             _manipulatedByMouseWheel = true;
         }
 
@@ -207,7 +201,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             switch (changedButton)
             {
                 case MouseButton.Left:
-                    _showSceneControl.RenderSetup.TransformGizmo.HandleLeftMouseDown();
+                    _showContentControl.RenderSetup.TransformGizmo.HandleLeftMouseDown();
                     _leftMouseButtonPressed = true;
                     break;
                 case MouseButton.Middle:
@@ -233,7 +227,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             switch (changedButton)
             {
                 case MouseButton.Left:
-                    _showSceneControl.RenderSetup.TransformGizmo.HandleLeftMouseUp();
+                    _showContentControl.RenderSetup.TransformGizmo.HandleLeftMouseUp();
                     _leftMouseButtonPressed = false;
                     break;
 
@@ -298,27 +292,27 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             if (!(_mouseMoveDelta.Length > MOUSE_MOVE_THRESHOLD))
                 return false;
 
-            if (_showSceneControl.RenderSetup.LastContext == null)
+            if (_showContentControl.RenderSetup.LastContext == null)
                 return false;
 
-            var rayInWorld = ComputeMouseViewRayInWorld(_showSceneControl.RenderSetup);
-            var hitIndex = _showSceneControl.RenderSetup.TransformGizmo.CheckForManipulationByRay(rayInWorld);
+            var rayInWorld = ComputeMouseViewRayInWorld(_showContentControl.RenderSetup);
+            var hitIndex = _showContentControl.RenderSetup.TransformGizmo.CheckForManipulationByRay(rayInWorld);
 
             if (hitIndex == GizmoPartHitIndex)
                 return false;
 
             GizmoPartHitIndex = hitIndex;
-            _showSceneControl.RenderSetup.IndexOfGizmoPartBelowMouse = hitIndex; // Ugly hack so scene can set context-variable for hover
+            _showContentControl.RenderSetup.IndexOfGizmoPartBelowMouse = hitIndex; // Ugly hack so scene can set context-variable for hover
             return true;
         }
 
 
         private Ray ComputeMouseViewRayInWorld(D3DRenderSetup renderSetup)
         {
-            var windowPos = _showSceneControl.PointFromScreen(_mousePos);
+            var windowPos = _showContentControl.PointFromScreen(_mousePos);
 
-            var x = (float)(2.0 * windowPos.X / _showSceneControl.ActualWidth - 1);
-            var y = (float)-(2.0 * windowPos.Y / _showSceneControl.ActualHeight - 1);
+            var x = (float)(2.0 * windowPos.X / _showContentControl.ActualWidth - 1);
+            var y = (float)-(2.0 * windowPos.Y / _showContentControl.ActualHeight - 1);
 
             var rayNds = new Vector3(x, y, 1.0f); // Normalized Device coordinates
             var rayClip = new Vector4(rayNds.X, rayNds.Y, -1, 1);
@@ -379,10 +373,10 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private void LookAround()
         {
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _showContentControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
-            var factorX = (float)(_mouseDragDelta.X / _showSceneControl.ActualHeight * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
-            var factorY = (float)(_mouseDragDelta.Y / _showSceneControl.ActualHeight * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
+            var factorX = (float)(_mouseDragDelta.X / _showContentControl.ActualHeight * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
+            var factorY = (float)(_mouseDragDelta.Y / _showContentControl.ActualHeight * ROTATE_MOUSE_SENSIVITY * Math.PI / 180.0);
 
             Matrix rotAroundX = Matrix.RotationAxis(sideDir, factorY);
             Matrix rotAroundY = Matrix.RotationAxis(upDir, factorX);
@@ -398,15 +392,15 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 
         private void DragOrbit()
         {
-            _orbitDelta = new Vector2((float)(_mouseDragDelta.X / _showSceneControl.ActualHeight * ORBIT_SENSIVITY * Math.PI / 180.0),
-                                      (float)(_mouseDragDelta.Y / _showSceneControl.ActualHeight * ORBIT_SENSIVITY * Math.PI / 180.0));
+            _orbitDelta = new Vector2((float)(_mouseDragDelta.X / _showContentControl.ActualHeight * ORBIT_SENSIVITY * Math.PI / 180.0),
+                                      (float)(_mouseDragDelta.Y / _showContentControl.ActualHeight * ORBIT_SENSIVITY * Math.PI / 180.0));
         }
 
 
         private void OrbitByAngle(Vector2 rotationSpeed)
         {
             Vector3 viewDir, sideDir, upDir;
-            var currentTarget = _showSceneControl.RenderSetup.CameraTarget;
+            var currentTarget = _showContentControl.RenderSetup.CameraTarget;
 
             D3DRenderSetup.GetViewDirections(currentTarget, _cameraPositionGoal, 0, out viewDir, out sideDir, out upDir);
 
@@ -420,17 +414,17 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             newViewDir.Normalize();
 
             // Set new position and freeze cam-target transitions
-            _showSceneControl.RenderSetup.CameraPosition = _cameraPositionGoal = _showSceneControl.RenderSetup.CameraTarget - newViewDir.ToVector3() * viewDirLength;
+            _showContentControl.RenderSetup.CameraPosition = _cameraPositionGoal = _showContentControl.RenderSetup.CameraTarget - newViewDir.ToVector3() * viewDirLength;
             _cameraTargetGoal = currentTarget;
         }
 
         private void Pan()
         {
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _showContentControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
-            var factorX = (float)(-_mouseDragDelta.X / _showSceneControl.ActualHeight);
-            var factorY = (float)(_mouseDragDelta.Y / _showSceneControl.ActualHeight);
+            var factorX = (float)(-_mouseDragDelta.X / _showContentControl.ActualHeight);
+            var factorY = (float)(_mouseDragDelta.Y / _showContentControl.ActualHeight);
 
             var length = (_cameraTargetGoal - _cameraPositionGoal).Length();
             sideDir *= factorX * length;
@@ -447,8 +441,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 
         void StopTransitionOfPositionTarget()
         {
-            _cameraTargetGoal = _showSceneControl.RenderSetup.CameraTarget;
-            _cameraPositionGoal = _showSceneControl.RenderSetup.CameraPosition;
+            _cameraTargetGoal = _showContentControl.RenderSetup.CameraTarget;
+            _cameraPositionGoal = _showContentControl.RenderSetup.CameraPosition;
         }
 
         private bool ManipulateCameraByKeyboard()
@@ -456,7 +450,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             var frameDurationFactor = (float)(App.Current.TimeSinceLastFrame);
 
             Vector3 viewDir, sideDir, upDir;
-            _showSceneControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _showContentControl.RenderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             var initialVelocity = MoveVelocity.Length() < STOP_DISTANCE_THRESHOLD ? INITIAL_MOVE_VELOCITY : 0;
@@ -505,8 +499,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
                         break;
                     // Center Camera
                     case Key.C:
-                        var delta = _showSceneControl.RenderSetup.TransformGizmo.IsGizmoActive
-                            ? _showSceneControl.RenderSetup.TransformGizmo.GizmoToWorld.TranslationVector - _cameraTargetGoal
+                        var delta = _showContentControl.RenderSetup.TransformGizmo.IsGizmoActive
+                            ? _showContentControl.RenderSetup.TransformGizmo.GizmoToWorld.TranslationVector - _cameraTargetGoal
                             : -_cameraTargetGoal;
 
                         _cameraTargetGoal += delta;
@@ -561,7 +555,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             var middleMousePressed = Convert.ToInt32(Win32RawInput.GetAsyncKeyState(MIDDLE_BUTTON_VIRTUAL_KEY_CODE)) != 0;
             var mousePressed = leftMousePressed || rightMousePressed || middleMousePressed;
 
-            if (_showSceneControl.IsFocused && mousePressed)
+            if (_showContentControl.IsFocused && mousePressed)
             {
                 if (_mouseWasReleased)
                 {
@@ -594,15 +588,15 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private Vector3 _cameraTargetGoal = Vector3.Zero;
         Vector3 TargetDistance
         {
-            get { return _cameraTargetGoal - _showSceneControl.RenderSetup.CameraTarget; }
-            set { _showSceneControl.RenderSetup.CameraTarget = _cameraTargetGoal - value; }
+            get { return _cameraTargetGoal - _showContentControl.RenderSetup.CameraTarget; }
+            set { _showContentControl.RenderSetup.CameraTarget = _cameraTargetGoal - value; }
         }
 
         private Vector3 _cameraPositionGoal = new Vector3(0, 0, CameraInteraction.DEFAULT_CAMERA_POSITION_Z);
         Vector3 PositionDistance
         {
-            get { return _cameraPositionGoal - _showSceneControl.RenderSetup.CameraPosition; }
-            set { _showSceneControl.RenderSetup.CameraPosition = _cameraPositionGoal - value; }
+            get { return _cameraPositionGoal - _showContentControl.RenderSetup.CameraPosition; }
+            set { _showContentControl.RenderSetup.CameraPosition = _cameraPositionGoal - value; }
         }
 
         private Vector3 _lookingAroundDelta = Vector3.Zero;
@@ -624,7 +618,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private const float CAMERA_ACCELERATION_DEFAULT = 1f;
 
         private Operator _cameraOperator;
-        private readonly ShowContentControl _showSceneControl;
+        private readonly ShowContentControl _showContentControl;
 
         private bool _isTransitionActive;
         private bool _manipulatedByMouseWheel;
