@@ -21,6 +21,31 @@ namespace Framefield.Tooll.Rendering
                 _D3DImageContainer = new D3DImageSharpDX();
 
             _renderSetup = new D3DRenderSetup(_renderConfiguration);
+
+            CreateContextSettingsWithAspectRatio();
+        }
+
+
+        public void Reinitialize()
+        {
+            if (_renderSetup == null)
+                return;
+
+            _renderSetup.Resize(_renderConfiguration.Width, _renderConfiguration.Height);
+
+            CreateContextSettingsWithAspectRatio();
+
+            if (_renderConfiguration.Operator != null && _renderConfiguration.Operator.Outputs.Count > 0)
+            {
+                var invalidator = new OperatorPart.InvalidateVariableAccessors("AspectRatio");
+                _renderConfiguration.Operator.Outputs[0].TraverseWithFunction(null, invalidator);
+            }
+            RenderContent();
+        }
+
+
+        private void CreateContextSettingsWithAspectRatio()
+        {
             _D3DImageContainer.SetBackBufferSharpDX(_renderSetup.SharedTexture);
 
             var contextSettings = new ContextSettings();
@@ -34,35 +59,6 @@ namespace Framefield.Tooll.Rendering
             contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
             _defaultContext = OperatorPartContext.createDefault(contextSettings);
         }
-
-
-        public void Reinitialize()
-        {
-            if (_renderSetup == null)
-                return;
-
-            _renderSetup.Resize(_renderConfiguration.Width, _renderConfiguration.Height);
-            _D3DImageContainer.SetBackBufferSharpDX(_renderSetup.SharedTexture);
-
-            var contextSettings = new ContextSettings();
-            contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
-            {
-                Width = _renderConfiguration.Width,
-                Height = _renderConfiguration.Height,
-                RefreshRate = 60,
-                Format = D3DImageSharpDX.TranslateFormat(_renderSetup.SharedTexture)
-            };
-            contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
-
-            if (_renderConfiguration.Operator != null && _renderConfiguration.Operator.Outputs.Count > 0)
-            {
-                var invalidator = new OperatorPart.InvalidateVariableAccessors("AspectRatio");
-                _renderConfiguration.Operator.Outputs[0].TraverseWithFunction(null, invalidator);
-            }
-
-            RenderContent();
-        }
-
 
 
         public void RenderContent()
@@ -147,7 +143,7 @@ namespace Framefield.Tooll.Rendering
             Utilities.DisposeObj(ref _renderSetup);
         }
 
-        /** After rendering a image this flag can be used to display UI-elements relevant for CubeMaps */
+        /** After rendering an image this flag can be used to display UI-elements relevant for CubeMaps */
         public bool RenderedImageIsACubemap { get; private set; }
 
         private ContentRendererConfiguration _renderConfiguration;
