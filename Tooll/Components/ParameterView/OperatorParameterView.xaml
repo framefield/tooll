@@ -4,6 +4,7 @@
              xmlns:core="clr-namespace:Framefield.Core;assembly=Core"
              xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
              xmlns:local="clr-namespace:Framefield.Tooll"
+             xmlns:local1="clr-namespace:Framefield.Tooll.Components.ParameterView.OperatorPresets"
              xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -65,6 +66,6 @@
                       ResizeDirection="Rows"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Bottom" Background="Transparent"></GridSplitter>
-        <local:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local:PresetGrid>
+        <local1:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local1:PresetGrid>
     </Grid>
 </UserControl>

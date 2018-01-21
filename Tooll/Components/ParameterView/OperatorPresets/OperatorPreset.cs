@@ -48,14 +48,7 @@ namespace Framefield.Tooll
             }
         }
 
-        public string BuildImagePath()
-        {
-            var imagePath = App.Current.OperatorPresetManager.LivePreviewEnabled
-                            ? "Temp/preset-preview-thumbs/" + Id + ".png"
-                            : "assets-common/preset-thumbs/" + Id + ".png";
 
-            return imagePath;
-        }
 
         #endregion
     }

@@ -20,20 +20,21 @@ using Framefield.Core;
 using Framefield.Tooll.Components.CompositionView;
 using System.Windows.Controls.Primitives;
 
-namespace Framefield.Tooll
+
+namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
-    /// <summary>
-    /// Interaction logic for PresetThumb.xaml
-    /// </summary>
+
     public partial class PresetThumb : UserControl
     {
-        static Dictionary<String, BitmapImage> _cache = new Dictionary<string, BitmapImage>();
-
         public PresetThumb()
         {
             InitializeComponent();
             Loaded += PresetThumb_Loaded;
+
+            PresetManager = App.Current.OperatorPresetManager;
         }
+
+        private OperatorPresetManager PresetManager;
 
         void PresetThumb_Loaded(object sender, RoutedEventArgs e)
         {
@@ -48,44 +49,26 @@ namespace Framefield.Tooll
             if (preset == null)
                 return;
 
-            if (App.Current.OperatorPresetManager.LivePreviewEnabled)
+            if (PresetManager.LivePreviewEnabled)
             {
-                App.Current.OperatorPresetManager.PreviewPreset(preset);
-                App.Current.OperatorPresetManager.RenderAndSaveThumbnail(preset);
-                App.Current.OperatorPresetManager.RestorePreviewPreset();
-            }
-            LoadThumbnail(preset);
-        }
-
-        private void LoadThumbnail(OperatorPreset preset, bool useCache = true)
-        {
-            var imagePath = preset.BuildImagePath();
-            if (useCache && _cache.ContainsKey(imagePath))
-            {
-                XImage.Source = _cache[imagePath];
-                return;
-            }                
-
-            if (File.Exists(imagePath))
-            {
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-                //bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                //bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                bitmap.EndInit();
-                bitmap.Freeze();
-                XImage.Source = bitmap;
-                _cache[imagePath] = bitmap;
+                PresetManager.PreviewPreset(preset);
+                PresetManager.PresetImageManager.RenderAndSaveThumbnail(preset);
+                PresetManager.RestorePreviewPreset();
             }
             else
             {
-                XImage.Source = null;
-                Logger.Info("Failed to load thumbnail {0}", imagePath);
-                _cache[imagePath] = null;
+                SetImage(preset);
             }
         }
 
+
+        private void SetImage(OperatorPreset preset, bool useCache = true)
+        {
+            XImage.Source = PresetManager.PresetImageManager.GetImageForPreset(preset);
+        }
+
+
+        #region internaction
         private bool _previewed = false;
         private void UserControl_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -93,7 +76,7 @@ namespace Framefield.Tooll
             var preset = o.DataContext as OperatorPreset;
             if (preset != null)
             {
-                _previewed = App.Current.OperatorPresetManager.PreviewPreset(preset);
+                _previewed = PresetManager.PreviewPreset(preset);
             }
         }
 
@@ -102,8 +85,8 @@ namespace Framefield.Tooll
             var o = sender as FrameworkElement;
             var preset = o.DataContext as OperatorPreset;
             if (preset != null && _previewed)
-            {                
-                App.Current.OperatorPresetManager.RestorePreviewPreset();
+            {
+                PresetManager.RestorePreviewPreset();
                 _previewed = false;
             }
         }
@@ -112,10 +95,10 @@ namespace Framefield.Tooll
         private void Thumb_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
             _startDragPos = new Point(e.HorizontalOffset, e.VerticalOffset);
-            XBlendInfoText.Visibility= Visibility.Visible;
+            XBlendInfoText.Visibility = Visibility.Visible;
             XBlendInfoText.Text = "100%";
-            
-            App.Current.OperatorPresetManager.StartBlending();
+
+            PresetManager.StartBlending();
 
         }
 
@@ -125,12 +108,12 @@ namespace Framefield.Tooll
         {
             var o = sender as FrameworkElement;
             var preset = o.DataContext as OperatorPreset;
-            if (preset == null) 
+            if (preset == null)
                 return;
 
-            var factor = (float) ((VIRTUAL_SLIDER_WIDTH + e.HorizontalChange)/VIRTUAL_SLIDER_WIDTH);
-            App.Current.OperatorPresetManager.BlendPreset(preset, factor);
-            XBlendInfoText.Text = String.Format("{0}%", Math.Floor(factor*100));
+            var factor = (float)((VIRTUAL_SLIDER_WIDTH + e.HorizontalChange) / VIRTUAL_SLIDER_WIDTH);
+            PresetManager.BlendPreset(preset, factor);
+            XBlendInfoText.Text = String.Format("{0}%", Math.Floor(factor * 100));
         }
 
         private void Thumb_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -139,34 +122,35 @@ namespace Framefield.Tooll
             var preset = o.DataContext as OperatorPreset;
             if (preset != null)
             {
-                if (Keyboard.Modifiers ==ModifierKeys.Control)
+                if (Keyboard.Modifiers == ModifierKeys.Control)
                 {
-                    App.Current.OperatorPresetManager.DeletePreset(preset);
+                    PresetManager.DeletePreset(preset);
                 }
                 else
                 {
-                    if (Keyboard.Modifiers == ModifierKeys.Shift)
+                    var thumbnailUpdateRequested = Keyboard.Modifiers == ModifierKeys.Shift;
+                    if (thumbnailUpdateRequested)
                     {
-                        App.Current.OperatorPresetManager.RenderAndSaveThumbnail(preset);
-                        LoadThumbnail(preset, false);
+                        PresetManager.PresetImageManager.RenderAndSaveThumbnail(preset);
+                        XImage.Source = PresetManager.PresetImageManager.GetImageForPreset(preset);
                     }
                     else
                     {
                         if (Math.Abs(e.HorizontalChange) < 3)
                         {
-                            App.Current.OperatorPresetManager.ApplyPreset(preset);
+                            PresetManager.ApplyPreset(preset);
                         }
                         else
                         {
-                            var factor = (float) ((VIRTUAL_SLIDER_WIDTH + e.HorizontalChange)/VIRTUAL_SLIDER_WIDTH);
-                            App.Current.OperatorPresetManager.BlendPreset(preset,factor);                                
-                            App.Current.OperatorPresetManager.CompleteBlendPreset(preset);
+                            var factor = (float)((VIRTUAL_SLIDER_WIDTH + e.HorizontalChange) / VIRTUAL_SLIDER_WIDTH);
+                            PresetManager.BlendPreset(preset, factor);
+                            PresetManager.CompleteBlendPreset(preset);
                         }
                     }
                 }
             }
 
-            XBlendInfoText.Visibility= Visibility.Collapsed;            
+            XBlendInfoText.Visibility = Visibility.Collapsed;
             e.Handled = true;
         }
 
@@ -202,5 +186,6 @@ namespace Framefield.Tooll
                 Cursor = Cursors.Arrow;
             }
         }
+        #endregion
     }
 }

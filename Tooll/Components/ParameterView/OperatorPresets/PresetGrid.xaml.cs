@@ -16,14 +16,15 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace Framefield.Tooll
+namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     /// <summary>
     /// Interaction logic for PresetGrid.xaml
     /// </summary>
     public partial class PresetGrid : UserControl
     {
-        public PresetGrid() {
+        public PresetGrid()
+        {
             InitializeComponent();
         }
 
@@ -31,7 +32,8 @@ namespace Framefield.Tooll
         {
             XPreviewButton.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
 
-            var binding= new Binding() {
+            var binding = new Binding()
+            {
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 Source = App.Current.OperatorPresetManager,
                 Path = new PropertyPath("CurrentOperatorPresets")
@@ -39,7 +41,8 @@ namespace Framefield.Tooll
             BindingOperations.SetBinding(XPresetGrid, ItemsControl.ItemsSourceProperty, binding);
         }
 
-        private void SaveClicked_Handler(object sender, RoutedEventArgs e) {
+        private void SaveClicked_Handler(object sender, RoutedEventArgs e)
+        {
             App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperator();
         }
 
@@ -53,7 +56,7 @@ namespace Framefield.Tooll
             App.Current.OperatorPresetManager.LivePreviewEnabled = false;
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void RebuildAllButton_OnClick(object sender, RoutedEventArgs e)
         {
             App.Current.OperatorPresetManager.UpdateAllThumbnails();
         }
