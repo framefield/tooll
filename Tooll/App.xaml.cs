@@ -397,7 +397,7 @@ namespace Framefield.Tooll
 
         private void SavePresets()
         {
-            OperatorPresetManager.SavePresets();
+            OperatorPresetManager.SaveAllPresets();
         }
 
         #endregion

@@ -49,15 +49,11 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             if (preset == null)
                 return;
 
-            if (PresetManager.LivePreviewEnabled)
+            SetImage(preset);
+
+            if (!preset.IsInstancePreset)
             {
-                PresetManager.PreviewPreset(preset);
-                PresetManager.PresetImageManager.RenderAndSaveThumbnail(preset);
-                PresetManager.RestorePreviewPreset();
-            }
-            else
-            {
-                SetImage(preset);
+                XForInstanceText.Visibility = Visibility.Collapsed;
             }
         }
 
