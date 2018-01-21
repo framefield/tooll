@@ -12,9 +12,6 @@ using Framefield.Tooll.Rendering;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
-
-
-
     /** A UserControl that handles rendering and interacting with different Scene, Mesh and Image-Content */
     public partial class ShowContentControl
     {
@@ -257,6 +254,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         //public Render
 
+        public ContentRenderer ContentRenderer { get { return _contentRenderer; } }
         ContentRenderer _contentRenderer;
 
 

@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 using Framefield.Core;
 using Framefield.Core.Commands;
 using Framefield.Core.Rendering;
+using Framefield.Tooll.Rendering;
+//using SharpDX.Direct3D11;
+using SharpDX.Direct3D9;
 
 namespace Framefield.Tooll
 {
@@ -78,9 +81,73 @@ namespace Framefield.Tooll
         }
 
         private const int THUMB_WIDTH = 133;
-        private const int THUMB_HEIGHT = (int) (THUMB_WIDTH*9.0/16.0);
+        private const int THUMB_HEIGHT = (int)(THUMB_WIDTH * 9.0 / 16.0);
+
 
         public void RenderAndSaveThumbnail(OperatorPreset preset)
+        {
+            var showContentControl = App.Current.MainWindow.XRenderView.XShowContentControl;
+            var renderConfig = showContentControl.RenderConfiguration;
+            var renderSetup = App.Current.MainWindow.XRenderView.XShowContentControl.RenderSetup;
+
+            var orgWidth = renderConfig.Width;
+            var orgHeight = renderConfig.Height;
+            renderSetup.Resize(THUMB_WIDTH, THUMB_HEIGHT);
+            showContentControl.ContentRenderer.Reinitialize();
+
+            var filePath = preset.BuildImagePath();
+            Logger.Info("Saving preset for:" + preset.Name + " to " + filePath + " orgWidth:" + orgWidth);
+            try
+            {
+                Texture.ToFile(showContentControl.ContentRenderer.D3DImageContainer.SharedTexture, filePath, ImageFileFormat.Jpg);
+
+            }
+            catch (SharpDX.SharpDXException e)
+            {
+                Logger.Info("Failed to create thumbnail. Exception thrown:" + e);
+            }
+
+            renderConfig.Width = orgWidth;
+            renderConfig.Height = orgHeight;
+            renderSetup.Resize(renderConfig.Width, renderConfig.Height);
+            showContentControl.ContentRenderer.Reinitialize();
+
+        }
+
+
+
+        //public void RenderAndSaveThumbnail(OperatorPreset preset)
+        //{
+        //    var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
+        //    if (op == null || !op.Outputs.Any())
+        //        return;
+
+        //    var output = op.Outputs.First();
+        //    if (LivePreviewEnabled)
+        //    {
+        //        if (App.Current.MainWindow.XRenderView.Operator != null && App.Current.MainWindow.XRenderView.Operator.Outputs.Any())
+        //        {
+        //            output = App.Current.MainWindow.XRenderView.Operator.Outputs[0];
+        //            op = App.Current.MainWindow.XRenderView.Operator;
+        //        }
+        //    }
+
+        //    var _contentRenderer = new ContentRenderer(new ContentRendererConfiguration()
+        //    {
+        //        Operator = op,
+        //        Height = THUMB_HEIGHT,
+        //        Width = THUMB_WIDTH,
+        //    });
+        //    _contentRenderer.SetupRendering();
+        //    _contentRenderer.RenderContent();
+
+
+        //    var filePath = preset.BuildImagePath();
+        //    Texture.ToFile(_contentRenderer.D3DImageContainer.SharedTexture, filePath, ImageFileFormat.Jpg);
+        //}
+
+
+        public void RenderAndSaveThumbnail2(OperatorPreset preset)
         {
             var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
             if (op == null || !op.Outputs.Any())
@@ -233,8 +300,8 @@ namespace Framefield.Tooll
                     float presetValue = preset.ValuesByParameterID[metaInput.ID];
                     float opValue = _tempOperatorPresetBeforePreview.ValuesByParameterID[metaInput.ID];
                     var newFloatValue = opValue + factor * (presetValue - opValue);
-                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);                    
-                    index ++;
+                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);
+                    index++;
                 }
             }
 
@@ -263,7 +330,7 @@ namespace Framefield.Tooll
         /// </summary>
         /// <param name="preset"></param>
         /// <returns>false if preview was refused</returns>
-        public bool PreviewPreset(OperatorPreset preset)        
+        public bool PreviewPreset(OperatorPreset preset)
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
 

@@ -9,7 +9,7 @@ using SharpDX.Direct3D9;
 
 namespace Framefield.Tooll
 {
-    class D3DImageSharpDX : D3DImage, IDisposable
+    public class D3DImageSharpDX : D3DImage, IDisposable
     {
         [DllImport("user32.dll", SetLastError = false)]
         static extern IntPtr GetDesktopWindow();
@@ -18,7 +18,7 @@ namespace Framefield.Tooll
         static Direct3DEx D3DContext;
         static DeviceEx D3DDevice;
 
-        Texture SharedTexture;
+        public Texture SharedTexture;
 
         public D3DImageSharpDX()
         {
