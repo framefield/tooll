@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Framefield.Tooll.Rendering
 {
     /** Provides a united interface to render different content types like Scenes, Meshes and Images.  */
-    class ContentRenderer
+    public class ContentRenderer
     {
         public ContentRenderer(ContentRendererConfiguration renderConfiguration)
         {
@@ -34,6 +34,7 @@ namespace Framefield.Tooll.Rendering
             contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
             _defaultContext = OperatorPartContext.createDefault(contextSettings);
         }
+
 
         public void Reinitialize()
         {
