@@ -6,7 +6,7 @@
         xmlns:console="clr-namespace:Framefield.Tooll.Components.Console"
         xmlns:selectionView="clr-namespace:Framefield.Tooll.Components.SelectionView"
         Loaded="MainWindow_OnLoaded"
-        WindowStyle="None"         
+        WindowStyle="None"
         BorderThickness="0"
         Icon="t2.ico"
         Title="T2" Width="1024" Height="768">
@@ -14,20 +14,20 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes\ScrollbarStyles.xaml"/>
+                <ResourceDictionary Source="Themes\ScrollbarStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Window.CommandBindings>
         <CommandBinding Command="Close" Executed="CloseHandler" />
         <CommandBinding Command="New" Executed="NewHandler" />
         <CommandBinding Command="Save" Executed="SaveHandler" />
         <CommandBinding Command="Undo" Executed="UndoHandler" />
         <CommandBinding Command="Redo" Executed="RedoHandler" />
-        <CommandBinding Command="Cut" Executed="CutHandler" CanExecute="CutCanExecuteHandler"/>
-        <CommandBinding Command="Copy" Executed="CopyHandler" CanExecute="CopyCanExecuteHandler"/>
-        <CommandBinding Command="Paste" Executed="PasteHandler" CanExecute="PasteCanExecuteHandler"/>
+        <CommandBinding Command="Cut" Executed="CutHandler" CanExecute="CutCanExecuteHandler" />
+        <CommandBinding Command="Copy" Executed="CopyHandler" CanExecute="CopyCanExecuteHandler" />
+        <CommandBinding Command="Paste" Executed="PasteHandler" CanExecute="PasteCanExecuteHandler" />
         <CommandBinding Command="{x:Static local:CustomCommands.UpdateCommand}" CanExecute="UpdateCommand_CanExecute"  Executed="UpdateCommand_Executed" />
         <CommandBinding Command="{x:Static local:CustomCommands.PublishCommand}" CanExecute="PublishCommand_CanExecute"  Executed="PublishCommand_Executed" />
         <CommandBinding Command="{x:Static local:CustomCommands.ExportSelectedOperatorCommand}" CanExecute="ExportSelectedOperatorCommand_CanExecute"  Executed="ExportSelectedOperatorCommand_Executed" />
@@ -76,47 +76,47 @@
 
         <CommandBinding Command="{x:Static local:CustomCommands.ShowConsoleViewCommand}" CanExecute="ShowConsoleViewCommand_CanExecute"  Executed="ShowConsoleViewCommand_Executed" />
         <CommandBinding Command="{x:Static local:CustomCommands.ShowGeneticVariationsViewCommand}" CanExecute="ShowGeneticVariationsViewCommand_CanExecute"  Executed="ShowGeneticVariationsViewCommand_Executed" />
-
     </Window.CommandBindings>
 
     <Window.InputBindings>
-        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="local:MainWindow.OpenLastFileCommand"/>
-        <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="SaveAs"/>
-        <KeyBinding Key="D" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.DuplicatedSelectedElementsCommand}"/>
-        <KeyBinding Key="Tab" Command="{x:Static local:CustomCommands.SelectAndAddOperatorAtCursorCommand}"/>
-        <KeyBinding Key="F" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.SearchForOperatorCommand}"/>
-        <KeyBinding Key="H" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.ReplaceOperatorCommand}"/>
-        <KeyBinding Key="B" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.BookmarkCommand}"/>
-        <!--<KeyBinding Key="V" Command="{x:Static local:CustomCommands.AddMarkerCommand}"/>-->
+        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="local:MainWindow.OpenLastFileCommand" />
+        <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="SaveAs" />
+        <KeyBinding Key="D" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.DuplicatedSelectedElementsCommand}" />
+        <KeyBinding Key="Tab" Command="{x:Static local:CustomCommands.SelectAndAddOperatorAtCursorCommand}" />
+        <KeyBinding Key="F" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.SearchForOperatorCommand}" />
+        <KeyBinding Key="H" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.ReplaceOperatorCommand}" />
+        <KeyBinding Key="B" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.BookmarkCommand}" />
+        <KeyBinding Key="M" Modifiers="Ctrl" Command="{x:Static local:CustomCommands.ToggleAudioVolumeCommand}" />
+        <!--<KeyBinding Key="V" Command="{x:Static local:CustomCommands.AddMarkerCommand}" />-->
     </Window.InputBindings>
-    
+
     <Grid Background="Black">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>                
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-    
+
         <!-- Title Bar -->
         <Grid Background="Black" Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Image x:Name="XT2IconImage" 
-                    Source="/Images/icon-t2.png" Stretch="None" VerticalAlignment="Center" Width="32" Height="16" Margin="1" HorizontalAlignment="Right"                       
-                       Grid.Column="0"/>
+            <Image x:Name="XT2IconImage"
+                    Source="/Images/icon-t2.png" Stretch="None" VerticalAlignment="Center" Width="32" Height="16" Margin="1" HorizontalAlignment="Right"
+                       Grid.Column="0" />
 
-            <Menu Grid.Column="1" >
+            <Menu Grid.Column="1">
                 <Menu.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="Themes\MenuStyles.xaml"/>
+                            <ResourceDictionary Source="Themes\MenuStyles.xaml" />
                         </ResourceDictionary.MergedDictionaries>
                     </ResourceDictionary>
                 </Menu.Resources>
@@ -132,7 +132,7 @@
                     <MenuItem Header="_List Operator Dependecnies" Name="FindOperatorDependencies" Command="{x:Static local:CustomCommands.FindOperatorDependenciesCommand}" />
                     <MenuItem Header="_Fix Operator Filepaths" Name="FindMissingAssets" Command="{x:Static local:CustomCommands.FixOperatorFilepathsCommand}" />
                     <MenuItem Header="_Generate Keyframes from Logfile" Command="{x:Static local:CustomCommands.GenerateKeyFramesFromLogfileCommand}" />
-                    <MenuItem Header="E_xit" Command="ApplicationCommands.Close"/>
+                    <MenuItem Header="E_xit" Command="ApplicationCommands.Close" />
                 </MenuItem>
                 <MenuItem Header="_Edit">
                     <MenuItem Name="XUndoMenuItem" Command="Undo" />
@@ -141,90 +141,88 @@
                     <MenuItem Command="Copy" />
                     <MenuItem Command="Paste" />
                     <MenuItem Header="_Search For Operator" Name="SearchForOperator" Command="{x:Static local:CustomCommands.SearchForOperatorCommand}" />
-                    <MenuItem Header="_Search And Replace" Name="ReplaceOperator" Command="{x:Static local:CustomCommands.ReplaceOperatorCommand}"/>
+                    <MenuItem Header="_Search And Replace" Name="ReplaceOperator" Command="{x:Static local:CustomCommands.ReplaceOperatorCommand}" />
                     <MenuItem Header="Toggle Mute Audio"  Command="{x:Static local:CustomCommands.ToggleAudioVolumeCommand}" />
                     <MenuItem Header="Connect Remote Client"  Command="{x:Static local:CustomCommands.ConnectRemoteClientCommand}" />
                 </MenuItem>
                 <MenuItem Header="_Views">
                     <MenuItem Header="New SelectionView" Click="NewPanelHandler" />
-                    <MenuItem Header="Parameter View" Click="ShowParameterViewHandler"/>
+                    <MenuItem Header="Parameter View" Click="ShowParameterViewHandler" />
                     <MenuItem Header="Show Library" Click="ShowLibraryHandler" />
-                    <MenuItem Header="Measure View" Click="ShowMeasureViewHandler"/>
-                    <MenuItem Header="Console View" Command="{x:Static local:CustomCommands.ShowConsoleViewCommand}"/>
-                    <MenuItem Header="Genetic Variations" Command="{x:Static local:CustomCommands.ShowGeneticVariationsViewCommand}"/>
+                    <MenuItem Header="Measure View" Click="ShowMeasureViewHandler" />
+                    <MenuItem Header="Console View" Command="{x:Static local:CustomCommands.ShowConsoleViewCommand}" />
+                    <MenuItem Header="Genetic Variations" Command="{x:Static local:CustomCommands.ShowGeneticVariationsViewCommand}" />
                     <MenuItem Header="_Layout" Name="XLayoutMenuItem">
-                        <MenuItem Header="Save Layout" Click="SaveLayoutHandler"/>
-                        <MenuItem Header="Delete Layout" Click="DeleteLayoutHandler"/>
+                        <MenuItem Header="Save Layout" Click="SaveLayoutHandler" />
+                        <MenuItem Header="Delete Layout" Click="DeleteLayoutHandler" />
                     </MenuItem>
                     <MenuItem Header="_Bookmark" Name="XBookmarkMenuItem">
-                        <MenuItem Header="Save Bookmark" Command="{x:Static local:CustomCommands.BookmarkCommand}"/>
+                        <MenuItem Header="Save Bookmark" Command="{x:Static local:CustomCommands.BookmarkCommand}" />
                         <MenuItem Name="XDeleteBookmarkMenu" Header="Delete Bookmark">
-                            <MenuItem Name="XDeleteAllBookmarks" Header="Delete All Bookmarks" Click="DeleteAllBookmarksHandler"/>
+                            <MenuItem Name="XDeleteAllBookmarks" Header="Delete All Bookmarks" Click="DeleteAllBookmarksHandler" />
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Show Shadow Ops" Command="{x:Static local:CustomCommands.ShowShadowOpsCommand}"/>
-                    <MenuItem Header="Hide Shadow Ops" Command="{x:Static local:CustomCommands.HideShadowOpsCommand}"/>
-                    <MenuItem Header="Show Undo/Redo Stacks" Click="ShowUndoRedoViewHandler"/>
+                    <MenuItem Header="Show Shadow Ops" Command="{x:Static local:CustomCommands.ShowShadowOpsCommand}" />
+                    <MenuItem Header="Hide Shadow Ops" Command="{x:Static local:CustomCommands.HideShadowOpsCommand}" />
+                    <MenuItem Header="Show Undo/Redo Stacks" Click="ShowUndoRedoViewHandler" />
                 </MenuItem>
             </Menu>
-            
+
             <!-- Title Text -->
-            <TextBlock Foreground="Gray"                               
+            <TextBlock Foreground="Gray"
                        MouseLeftButtonDown="OnDragMoveWindow" Grid.Column="2"></TextBlock>
 
             <Image Source="/Images/icon-minimize-window.png" Stretch="None" VerticalAlignment="Center" Width="16" Height="16" Margin="1" HorizontalAlignment="Right"
                        MouseLeftButtonUp="OnMinimizeWindow"
-                       Grid.Column="3"/>
+                       Grid.Column="3" />
 
             <Image Source="/Images/icon-maximize-window.png" Stretch="None" VerticalAlignment="Center" Width="16" Height="16" Margin="1" HorizontalAlignment="Right"
                        MouseLeftButtonUp="OnMaximizeWindow"
-                       Grid.Column="4"/>
-            
+                       Grid.Column="4" />
+
             <Image Source="/Images/icon-close-window.png" Stretch="None" VerticalAlignment="Center" Width="16" Height="16" Margin="1" HorizontalAlignment="Right"
                        MouseLeftButtonUp="OnCloseWindow"
-                       Grid.Column="5"/>         
-
+                       Grid.Column="5" />
         </Grid>
 
         <ad:DockingManager x:Name="dockManager" Grid.Row="2"  SnapsToDevicePixels="True" UseLayoutRounding="True">
             <ad:ResizingPanel Orientation="Horizontal">
                 <ad:ResizingPanel Orientation="Vertical"  ad:ResizingPanel.ResizeWidth="170">
-                    <ad:DocumentPane  x:Name="LibraryPane" >
-                        <local:LibraryView x:Name="XLibraryView"/>
+                    <ad:DocumentPane  x:Name="LibraryPane">
+                        <local:LibraryView x:Name="XLibraryView" />
                     </ad:DocumentPane>
                     <ad:DocumentPane  x:Name="XColorPicker" ad:ResizingPanel.ResizeHeight="200">
-                        <local:ColorPickerView x:Name="XColorPickerView"/>
+                        <local:ColorPickerView x:Name="XColorPickerView" />
                     </ad:DocumentPane>
                 </ad:ResizingPanel>
                 <ad:DocumentPane VerticalAlignment="Stretch" Name="CompositionPane" ad:ResizingPanel.ResizeWidth="0.5*">
-                    <ad:DocumentContent Title="Composition" Name="XCompositionViewDock" >
+                    <ad:DocumentContent Title="Composition" Name="XCompositionViewDock">
                         <local:CompositionView x:Name="CompositionView" />
                     </ad:DocumentContent>
                 </ad:DocumentPane>
 
-                <ad:ResizingPanel Orientation="Vertical"  >
+                <ad:ResizingPanel Orientation="Vertical">
                     <ad:DocumentPane VerticalAlignment="Stretch"   ad:ResizingPanel.ResizeHeight="220">
 
-                        <!--<local:MessageControl x:Name="XMessageControl"/>-->
-                        <console:ConsoleView x:Name="XConsoleView"/>
-
+                        <!--<local:MessageControl x:Name="XMessageControl" />-->
+                        <console:ConsoleView x:Name="XConsoleView" />
                     </ad:DocumentPane>
                     <ad:ResizingPanel Orientation="Horizontal">
 
                         <ad:DocumentPane ad:ResizingPanel.ResizeWidth="290" x:Name="parameterViewPane">
                             <ad:DocumentContent Title="Parameter" x:Name="parameterViewDock">
-                                <local:ParameterView x:Name="XParameterView"/>
+                                <local:ParameterView x:Name="XParameterView" />
                             </ad:DocumentContent>
                         </ad:DocumentPane>
-                        <ad:ResizingPanel Orientation="Vertical"  >
+                        <ad:ResizingPanel Orientation="Vertical">
                             <ad:DocumentPane>
                                 <ad:DocumentContent Title="Selection View" Name="XSelectionViewDock"  SnapsToDevicePixels="True" UseLayoutRounding="True">
-                                    <selectionView:SelectionView x:Name="XRenderView"/>
+                                    <selectionView:SelectionView x:Name="XRenderView" />
                                 </ad:DocumentContent>
                             </ad:DocumentPane>
                             <ad:DocumentPane>
                                 <ad:DocumentContent Title="Selection View" Name="XSelectionView2Dock"  SnapsToDevicePixels="True" UseLayoutRounding="True">
-                                    <selectionView:SelectionView x:Name="XRenderView2"/>
+                                    <selectionView:SelectionView x:Name="XRenderView2" />
                                 </ad:DocumentContent>
                             </ad:DocumentPane>
                         </ad:ResizingPanel>
@@ -232,8 +230,5 @@
                 </ad:ResizingPanel>
             </ad:ResizingPanel>
         </ad:DockingManager>
-
-
     </Grid>
-
 </Window>
