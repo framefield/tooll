@@ -15,15 +15,17 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private Vector3 _spaceMouseRotateVector;
         private int _spaceMouseEventCount;
 
-        public SpaceMouse(CameraInteraction cameraInteraction, D3DRenderSetup renderSetup)
+        public SpaceMouse(CameraInteraction cameraInteraction, ViewerCamera renderingCamera)
         {
             App.Current.MainWindow.SpaceMouseHandlerWpf.Active3DxMouse.MotionEvent += SpaceMouseMotionHandler;
             App.Current.MainWindow.SpaceMouseHandlerWpf.Active3DxMouse.ButtonEvent += SpaceMouseButtonHandler;
             _cameraInteraction = cameraInteraction;
-            _renderSetup = renderSetup;
+            _renderingCamera = renderingCamera;
+
         }
 
-        private D3DRenderSetup _renderSetup;
+        //private D3DRenderSetup _renderSetup;
+        private ViewerCamera _renderingCamera;
 
         public void Discard()
         {
@@ -39,7 +41,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             SharpDX.Vector3 viewDir;
             SharpDX.Vector3 sideDir;
             SharpDX.Vector3 upDir;
-            _renderSetup.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -53,7 +55,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             else
                 direction *= _cameraInteraction.MaxMoveVelocity;
 
-            var oldPosition = _renderSetup.CameraPosition;
+            var oldPosition = _renderingCamera.CameraPosition;
 
             var moveDir = direction.X * sideDir - direction.Y * viewDir - direction.Z * upDir;
 
@@ -63,8 +65,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            _renderSetup.CameraPosition = oldPosition + moveDir;
-            _renderSetup.CameraTarget = oldPosition + moveDir + newViewDir.ToVector3() * viewDirLength;
+            _renderingCamera.CameraPosition = oldPosition + moveDir;
+            _renderingCamera.CameraTarget = oldPosition + moveDir + newViewDir.ToVector3() * viewDirLength;
 
             _spaceMouseEventCount = 0;
             _spaceMouseTranslateVector = new Vector3(0, 0, 0);
@@ -75,7 +77,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         private void SpaceMouseButtonHandler(object sender, Core.Inputs.SpaceMouse.ButtonEventArgs e)
         {
             _cameraInteraction.MoveVelocity = new SharpDX.Vector3(0, 0, 0);
-            _renderSetup.ResetCamera();
+            _renderingCamera.ResetCamera();
             App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 

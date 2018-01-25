@@ -20,11 +20,12 @@ namespace Framefield.Tooll.Rendering
     /** Implements the rendering of content within Tooll. Also provides multiple properties to access the used Camera. */
     public class D3DRenderSetup : IDisposable
     {
-        public D3DRenderSetup(ContentRendererConfiguration renderConfiguration)
+        public D3DRenderSetup(ContentRendererConfiguration renderConfiguration, ViewerCamera viewerCamera)
         {
             _renderConfig = renderConfiguration;
+            _viewerCamera = viewerCamera;
 
-            ResetCamera();
+            _viewerCamera.ResetCamera();
             InitRenderTargets();
             _renderer = OperatorPartContext.DefaultRenderer;
 
@@ -36,26 +37,16 @@ namespace Framefield.Tooll.Rendering
 
             var cubemapSphereDefinition = MetaManager.Instance.GetMetaOperator(Guid.Parse("276da400-ea2d-4769-9e69-07dd652c928e"));
             _cubemapSphereOperator = cubemapSphereDefinition.CreateOperator(Guid.Empty);
-
-            TransformGizmo = new TransformGizmo();
         }
 
 
         #region public attributes
         public Device D3DDevice { get; set; }
-        public TransformGizmo TransformGizmo { get; set; }
+        //public TransformGizmo TransformGizmo { get; set; }
         public OperatorPartContext LastContext { get; set; }
 
 
-        /** Provides access to the current camera for CameraInteraction */
-        public Operator CurrentCameraOp
-        {
-            get
-            {
-                var camProvider = GetCurrentCameraProvider();
-                return camProvider != null ? RenderedOperator : null;
-            }
-        }
+        private ViewerCamera _viewerCamera;
 
         private Texture2D _sharedTexture;
         public Texture2D SharedTexture
@@ -71,67 +62,6 @@ namespace Framefield.Tooll.Rendering
 
         public Operator RenderedOperator { get; set; }
 
-        public Vector3 CameraPosition
-        {
-            get
-            {
-                var cameraProvider = GetCurrentCameraProvider();
-                return cameraProvider != null ? cameraProvider.GetLastPosition() : _cameraPosition;
-            }
-            set
-            {
-                var cameraProvider = GetCurrentCameraProvider();
-                if (cameraProvider != null)
-                {
-                    cameraProvider.SetPosition(App.Current.Model.GlobalTime, value);
-                }
-                _cameraPosition = value;
-            }
-        }
-
-
-        private Vector3 _cameraPosition = new Vector3(0, 0, CameraInteraction.DEFAULT_CAMERA_POSITION_Z);
-
-
-        public Vector3 CameraTarget
-        {
-            get
-            {
-                var renderedOpAsCamera = GetCurrentCameraProvider();
-                return renderedOpAsCamera != null ? renderedOpAsCamera.GetLastTarget() : _cameraTarget;
-            }
-            set
-            {
-                var renderedOpAsCamera = GetCurrentCameraProvider();
-                if (renderedOpAsCamera != null)
-                {
-                    renderedOpAsCamera.SetTarget(App.Current.Model.GlobalTime, value);
-                }
-                _cameraTarget = value;
-            }
-        }
-        private Vector3 _cameraTarget = Vector3.Zero;
-
-
-        public double CameraRoll
-        {
-            get
-            {
-                var camProvider = GetCurrentCameraProvider();
-                return camProvider != null ? camProvider.GetLastRoll() : 0;
-            }
-            set
-            {
-                var camProvider = GetCurrentCameraProvider();
-                if (camProvider != null)
-                {
-                    camProvider.SetRoll(App.Current.Model.GlobalTime, value);
-                }
-            }
-        }
-        #endregion
-
-
         private ContentRendererConfiguration _renderConfig;
 
         public void Resize(int width, int height)
@@ -142,11 +72,7 @@ namespace Framefield.Tooll.Rendering
             InitRenderTargets();
         }
 
-        public void ResetCamera()
-        {
-            CameraPosition = new Vector3(0, 0, CameraInteraction.DEFAULT_CAMERA_POSITION_Z);
-            CameraTarget = new Vector3(0, 0, 0);
-        }
+
 
         public void Dispose()
         {
@@ -155,6 +81,8 @@ namespace Framefield.Tooll.Rendering
             Utilities.DisposeObj(ref _imageBackgroundOperator);
             Utilities.DisposeObj(ref _cubemapSphereOperator);
         }
+        #endregion
+
 
         #region rendering geometry
 
@@ -174,18 +102,18 @@ namespace Framefield.Tooll.Rendering
                                    where opWidget != null && opWidget.Operator.Outputs.Any()
                                    select opWidget.Operator).ToArray();
 
-                TransformGizmo.SetupEvalCallbackForSelectedTransformOperators(selectedOps, context);
+                _renderConfig.TransformGizmo.SetupEvalCallbackForSelectedTransformOperators(selectedOps, context);
 
                 // Override DebugSetting with ShowGizmo-Setting
                 var previousDebugSetting = GetDebugSettingFromContextVariables(context);
                 context.Variables[OperatorPartContext.DEBUG_VARIABLE_NAME] = 1;
-                context.Variables[GIZMO_PART_VARIBALE_NAME] = IndexOfGizmoPartBelowMouse;
+                context.Variables[GIZMO_PART_VARIBALE_NAME] = _renderConfig.TransformGizmo.IndexOfGizmoPartBelowMouse;
 
                 evaluateMeshOrScene(context, _renderConfig.ShownOutputIndex);
 
                 // Render Grid and Gizmos
                 _sceneGridOperator.Outputs[0].Eval(context);
-                TransformGizmo.RenderTransformGizmo(context);
+                _renderConfig.TransformGizmo.RenderTransformGizmo(context);
 
                 // Reset DebugSetting
                 if (previousDebugSetting != null)
@@ -217,16 +145,19 @@ namespace Framefield.Tooll.Rendering
             SetupContextForRenderingGeometry(context, _renderConfig.RenderWithGammaCorrection);
 
             Vector3 viewDir, sideDir, upDir;
-            GetViewDirections(out viewDir, out sideDir, out upDir);
-            var worldToCamera = Matrix.LookAtLH(CameraPosition, CameraTarget, upDir);
+            _viewerCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            var worldToCamera = Matrix.LookAtLH(_viewerCamera.CameraPosition, _viewerCamera.CameraTarget, upDir);
 
             // Find a nice balance between small and large objects (probably skyspheres)
-            var zoomLength = (CameraPosition - CameraTarget).Length();
+            var zoomLength = (_viewerCamera.CameraPosition - _viewerCamera.CameraTarget).Length();
             var farClipping = (zoomLength * 2) + 5000;
             var nearClipping = zoomLength / 100;
 
             SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float)nearClipping,
                 (float)farClipping);
+
+            _viewerCamera.LastWorldToCamera = context.WorldToCamera;
+            _viewerCamera.LastCameraProjection = context.CameraProjection;
         }
 
 
@@ -240,18 +171,19 @@ namespace Framefield.Tooll.Rendering
             return previousDebugSetting;
         }
 
+        #endregion
+
 
         public const string GIZMO_PART_VARIBALE_NAME = "IndexGizmoPartUnderMouse";
 
-        #endregion
 
 
         #region rendering images
         public void RenderImage(Texture2D image, OperatorPartContext context)
         {
             Vector3 viewDir, sideDir, upDir;
-            GetViewDirections(out viewDir, out sideDir, out upDir);
-            var worldToCamera = Matrix.LookAtLH(CameraPosition, CameraTarget, upDir);
+            _viewerCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            var worldToCamera = Matrix.LookAtLH(_viewerCamera.CameraPosition, _viewerCamera.CameraTarget, upDir);
 
             SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera);
 
@@ -291,27 +223,9 @@ namespace Framefield.Tooll.Rendering
 
 
 
-        public void GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir)
-        {
-            GetViewDirections(CameraTarget, CameraPosition, CameraRoll, out viewDir, out sideDir, out upDir);
-        }
 
-        public static void GetViewDirections(Vector3 camTarget, Vector3 camPos, double camRoll,
-                                          out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir)
-        {
-            viewDir = camTarget - camPos;
 
-            var worldUp = Vector3.UnitY;
-            var roll = (float)camRoll;
-            var rolledUp = Vector3.Transform(worldUp, Matrix.RotationAxis(viewDir, roll));
-            rolledUp.Normalize();
 
-            sideDir = Vector3.Cross(rolledUp.ToVector3(), viewDir);
-            sideDir.Normalize();
-
-            upDir = Vector3.Cross(viewDir, sideDir);
-            upDir.Normalize();
-        }
 
 
         #region helper methods
@@ -444,17 +358,7 @@ namespace Framefield.Tooll.Rendering
             context.Texture0 = _texture;
         }
 
-        private ICameraProvider GetCurrentCameraProvider()
-        {
-            if (RenderedOperator != null && RenderedOperator.InternalParts.Count > 0)
-            {
-                return RenderedOperator.InternalParts[0].Func as ICameraProvider;
-            }
-            else
-            {
-                return null;
-            }
-        }
+
 
         private void DisposeTargets()
         {
@@ -477,7 +381,7 @@ namespace Framefield.Tooll.Rendering
         private Texture2D _renderDepth;
         private DepthStencilView _renderTargetDepthView;
 
-        public int IndexOfGizmoPartBelowMouse { get; set; }
+
 
         private readonly DefaultRenderer _renderer;
         private BlockingGpuSyncer _gpuSyncer;

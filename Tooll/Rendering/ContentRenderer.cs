@@ -10,17 +10,20 @@ namespace Framefield.Tooll.Rendering
     /** Provides a united interface to render different content types like Scenes, Meshes and Images.  */
     public class ContentRenderer
     {
-        public ContentRenderer(ContentRendererConfiguration renderConfiguration)
+        public ContentRenderer(ContentRendererConfiguration renderConfiguration, ViewerCamera viewerCamera)
         {
             _renderConfiguration = renderConfiguration;
+            _viewerCamera = viewerCamera;
         }
+
+        ViewerCamera _viewerCamera;
 
         public void SetupRendering()
         {
             if (_D3DImageContainer == null)
                 _D3DImageContainer = new D3DImageSharpDX();
 
-            _renderSetup = new D3DRenderSetup(_renderConfiguration);
+            _renderSetup = new D3DRenderSetup(_renderConfiguration, _viewerCamera);
 
             CreateContextSettingsWithAspectRatio();
         }

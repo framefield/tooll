@@ -9,6 +9,7 @@ using Framefield.Core.OperatorPartTraits;
 using Framefield.Core.Profiling;
 using Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction;
 using Framefield.Tooll.Rendering;
+using Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
@@ -23,7 +24,8 @@ namespace Framefield.Tooll.Components.SelectionView
 
             RenderConfiguration = new ContentRendererConfiguration()
             {
-                ShowGridAndGizmos = true
+                ShowGridAndGizmos = true,
+                TransformGizmo = new TransformGizmo(),
             };
         }
 
@@ -44,10 +46,16 @@ namespace Framefield.Tooll.Components.SelectionView
             App.Current.CompositionTargertRenderingEvent += App_CompositionTargertRenderingHandler;
             App.Current.UpdateRequiredAfterUserInteraction = true;
 
-            _contentRenderer = new ContentRenderer(RenderConfiguration);
+
+            _viewerCamera = new ViewerCamera(RenderConfiguration);
+
+            _contentRenderer = new ContentRenderer(RenderConfiguration, _viewerCamera);
             SetupRenderer();
 
-            CameraInteraction = new CameraInteraction(this);     // Note: This requires ShowSceneControl to have been loaded
+            CameraInteraction = new CameraInteraction(
+                RenderConfiguration,
+                _viewerCamera,
+                this);     // Note: This requires ShowSceneControl to have been loaded
         }
 
 
@@ -164,7 +172,7 @@ namespace Framefield.Tooll.Components.SelectionView
             if (CameraInteraction == null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
                 return;
 
-            if (CurrentOpIsACamera)
+            if (_viewerCamera.SelectedOperatorIsCamProvider)
             {
                 App.Current.UpdateRequiredAfterUserInteraction = true;
             }
@@ -174,17 +182,9 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
+        private ViewerCamera _viewerCamera;
 
-        private bool CurrentOpIsACamera
-        {
-            get
-            {
-                return
-                    RenderConfiguration.Operator != null
-                    && RenderConfiguration.Operator.InternalParts.Count > 0
-                    && RenderConfiguration.Operator.InternalParts[0].Func is ICameraProvider;
-            }
-        }
+
         #endregion
 
 
@@ -203,7 +203,7 @@ namespace Framefield.Tooll.Components.SelectionView
         #region Rendering
         private void SwitchToFullscreenMode()
         {
-            var fsView = new FullScreenView(_contentRenderer.RenderSetup);
+            var fsView = new FullScreenView(RenderConfiguration, _viewerCamera);
         }
 
 

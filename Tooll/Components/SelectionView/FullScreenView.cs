@@ -42,9 +42,15 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private double _currentTime;
 
-        public FullScreenView(D3DRenderSetup renderSetup)
+        private ViewerCamera _renderingCamera;
+        private ContentRendererConfiguration _renderConfig;
+
+
+        public FullScreenView(ContentRendererConfiguration renderConfig, ViewerCamera renderingCamera)
         {
-            d3DScene = renderSetup;
+            _renderingCamera = renderingCamera;
+            _renderConfig = renderConfig;
+            //d3DScene = renderSetup;
             App.Current.MainWindow.Hide();
             System.Windows.Forms.Cursor.Hide();
 
@@ -174,10 +180,11 @@ namespace Framefield.Tooll.Components.SelectionView
             //    return;
             //var op = _showSceneControl.Operator;
             //var d3DScene = _showSceneControl.RenderSetup;
-            if (d3DScene == null || d3DScene.RenderedOperator == null || d3DScene.RenderedOperator.Outputs.Count <= 0)
+            if (_renderConfig == null || _renderConfig.Operator == null || _renderConfig.Operator.Outputs.Count <= 0)
                 return;
 
-            var op = d3DScene.RenderedOperator;
+            //var op = d3DScene.RenderedOperator;
+            var op = _renderConfig.Operator;
             D3DDevice.WindowSize = new SharpDX.Size2(Size.Width, Size.Height);
             D3DDevice.TouchWidth = Size.Width;
             D3DDevice.TouchHeight = Size.Height;
@@ -210,10 +217,10 @@ namespace Framefield.Tooll.Components.SelectionView
                 Vector3 viewDir;
                 Vector3 sideDir;
                 Vector3 upDir;
-                D3DRenderSetup.GetViewDirections(d3DScene.CameraTarget, d3DScene.CameraPosition, d3DScene.CameraRoll, out viewDir, out sideDir, out upDir);
-                var worldToCamera = Matrix.LookAtLH(d3DScene.CameraPosition, d3DScene.CameraTarget, upDir);
+                ViewerCamera.GetViewDirections(_renderingCamera.CameraTarget, _renderingCamera.CameraPosition, _renderingCamera.CameraRoll, out viewDir, out sideDir, out upDir);
+                var worldToCamera = Matrix.LookAtLH(_renderingCamera.CameraPosition, _renderingCamera.CameraTarget, upDir);
 
-                d3DScene.RenderedOperator = op;
+
 
                 switch (op.FunctionType)
                 {
@@ -328,7 +335,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             var initialVelocity = _moveVelocity.Length() < Constants.Epsilon ? INITIAL_MOVE_VELOCITY : 0;
@@ -357,12 +364,12 @@ namespace Framefield.Tooll.Components.SelectionView
                         break;
                     case Keys.F:
                         _moveVelocity = new SharpDX.Vector3(0, 0, 0);
-                        d3DScene.ResetCamera();
+                        _renderingCamera.ResetCamera();
                         break;
                     case Keys.C:
                         _moveVelocity = new SharpDX.Vector3(0, 0, 0);
-                        d3DScene.CameraTarget = new SharpDX.Vector3(0, 0, 0);
-                        d3DScene.CameraPosition = -viewDir;
+                        _renderingCamera.CameraTarget = new SharpDX.Vector3(0, 0, 0);
+                        _renderingCamera.CameraPosition = -viewDir;
                         break;
                 }
             }
@@ -380,8 +387,8 @@ namespace Framefield.Tooll.Components.SelectionView
                     _moveVelocity *= MAX_MOVE_VELOCITY / speed;
                 }
 
-                d3DScene.CameraPosition += _moveVelocity;
-                d3DScene.CameraTarget += _moveVelocity;
+                _renderingCamera.CameraPosition += _moveVelocity;
+                _renderingCamera.CameraTarget += _moveVelocity;
                 _moveVelocity *= FRICTION;
             }
         }
@@ -467,7 +474,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             viewDir.Normalize();
             viewDir *= 0.001f;
@@ -486,7 +493,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -501,7 +508,7 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            d3DScene.CameraTarget = d3DScene.CameraPosition + newViewDir.ToVector3() * viewDirLength;
+            _renderingCamera.CameraTarget = _renderingCamera.CameraPosition + newViewDir.ToVector3() * viewDirLength;
         }
 
 
@@ -512,7 +519,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -527,7 +534,7 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            d3DScene.CameraPosition = d3DScene.CameraTarget - newViewDir.ToVector3() * viewDirLength;
+            _renderingCamera.CameraPosition = _renderingCamera.CameraTarget - newViewDir.ToVector3() * viewDirLength;
         }
 
         private void Pan()
@@ -537,7 +544,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var factorX = (float)(-diff.X / Height * 10.0);
@@ -546,8 +553,8 @@ namespace Framefield.Tooll.Components.SelectionView
             sideDir *= factorX;
             upDir *= factorY;
 
-            d3DScene.CameraPosition += sideDir + upDir;
-            d3DScene.CameraTarget += sideDir + upDir;
+            _renderingCamera.CameraPosition += sideDir + upDir;
+            _renderingCamera.CameraTarget += sideDir + upDir;
         }
 
         private void Zoom()
@@ -557,7 +564,7 @@ namespace Framefield.Tooll.Components.SelectionView
             //var d3DScene = _showSceneControl.RenderSetup;
 
             Vector3 viewDir, sideDir, upDir;
-            d3DScene.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var velocity = (float)(-diff.Y / Height * 5.0);
@@ -565,8 +572,8 @@ namespace Framefield.Tooll.Components.SelectionView
             viewDir.Normalize();
             viewDir *= velocity;
 
-            d3DScene.CameraPosition += viewDir;
-            d3DScene.CameraTarget += viewDir;
+            _renderingCamera.CameraPosition += viewDir;
+            _renderingCamera.CameraTarget += viewDir;
         }
 
         #endregion
@@ -585,7 +592,7 @@ namespace Framefield.Tooll.Components.SelectionView
         #endregion
 
         private OperatorPartContext _defaultContext;
-        private D3DRenderSetup d3DScene;
+        //private D3DRenderSetup d3DScene;
 
         public void CleanUp()
         {

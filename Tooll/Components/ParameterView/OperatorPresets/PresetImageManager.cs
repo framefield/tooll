@@ -66,13 +66,13 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 }
             }
 
+
             try
             {
                 SharpDX.Direct3D9.Texture.ToFile(
                     showContentControl.ContentRenderer.D3DImageContainer.SharedTexture,
                     filePath,
                     SharpDX.Direct3D9.ImageFileFormat.Png);
-
             }
             catch (SharpDX.SharpDXException e)
             {
@@ -84,6 +84,8 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             renderSetup.Resize(renderConfig.Width, renderConfig.Height);
             showContentControl.ContentRenderer.Reinitialize();
         }
+
+
 
 
         /*

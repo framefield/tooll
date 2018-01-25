@@ -367,6 +367,7 @@
     <Compile Include="Components\ParameterView\SceneParameterValue.xaml.cs">
       <DependentUpon>SceneParameterValue.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\RenderingCamera.cs" />
     <Compile Include="Rendering\ContentRenderer.cs" />
     <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
       <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
@@ -465,7 +466,7 @@
       <DependentUpon>RenderUpdateDebugViz.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\CompositionView\ConnectionDragHelper.cs" />
-    <Compile Include="D3DImageSharpDX.cs" />
+    <Compile Include="Rendering\D3DImageSharpDX.cs" />
     <Compile Include="GradientPath\GradientMode.cs" />
     <Compile Include="GradientPath\GradientPath.cs" />
     <Compile Include="IConnectableWidget.cs" />
@@ -509,7 +510,7 @@
     <Compile Include="Components\ParameterView\ParameterView.xaml.cs">
       <DependentUpon>ParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="D3DRenderSetup.cs" />
+    <Compile Include="Rendering\D3DRenderSetup.cs" />
     <Compile Include="SelectionHandler.cs" />
     <Compile Include="Components\CompositionView\ShakeDetector.cs" />
     <Compile Include="Components\CompositionView\OperatorSnappingHelper.cs" />
