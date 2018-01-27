@@ -36,7 +36,7 @@ namespace Framefield.Tooll.Rendering
 
 
         #region public attributes
-        public Device D3DDevice { get; set; }
+        public Device D3D11Device { get; set; }
         public OperatorPartContext LastContext { get; set; }
 
 
@@ -52,7 +52,6 @@ namespace Framefield.Tooll.Rendering
             get { return _sceneRenderTargetTexture; }
         }
 
-        //public Operator RenderedOperator { get; set; }
 
         private RenderViewConfiguration _renderConfig;
 
@@ -74,6 +73,134 @@ namespace Framefield.Tooll.Rendering
             Utilities.DisposeObj(ref _cubemapSphereOperator);
         }
         #endregion
+
+
+        #region content rendering
+
+        public void SetupRendering()
+        {
+            if (_D3DImageContainer == null)
+                _D3DImageContainer = new D3DImageSharpDX();
+
+
+            CreateContextSettingsWithAspectRatio();
+        }
+
+
+        public void Reinitialize()
+        {
+
+            Resize(_renderConfig.Width, _renderConfig.Height);
+
+            CreateContextSettingsWithAspectRatio();
+
+            if (_renderConfig.Operator != null && _renderConfig.Operator.Outputs.Count > 0)
+            {
+                var invalidator = new OperatorPart.InvalidateVariableAccessors("AspectRatio");
+                _renderConfig.Operator.Outputs[0].TraverseWithFunction(null, invalidator);
+            }
+            RenderContent();
+        }
+
+
+        private void CreateContextSettingsWithAspectRatio()
+        {
+            _D3DImageContainer.SetBackBufferSharpDX(SharedTexture);
+
+            var contextSettings = new ContextSettings();
+            contextSettings.DisplayMode = new SharpDX.Direct3D9.DisplayMode()
+            {
+                Width = _renderConfig.Width,
+                Height = _renderConfig.Height,
+                RefreshRate = 60,
+                Format = D3DImageSharpDX.TranslateFormat(SharedTexture)
+            };
+            contextSettings.AspectRatio = contextSettings.DisplayMode.AspectRatio;
+            _defaultContext = OperatorPartContext.createDefault(contextSettings);
+        }
+
+
+        public void RenderContent()
+        {
+            if (_renderConfig.Operator == null || _renderConfig.Operator.Outputs.Count <= 0)
+                return;
+
+            D3DDevice.BeginFrame();
+
+            try
+            {
+                var context = new OperatorPartContext(_defaultContext, (float)App.Current.Model.GlobalTime);
+
+                var invalidator = new OperatorPart.InvalidateInvalidatables();
+                _renderConfig.Operator.Outputs[_renderConfig.ShownOutputIndex].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
+
+                var evaluationType = _renderConfig.Operator.Outputs[_renderConfig.ShownOutputIndex].Type;
+
+                switch (evaluationType)
+                {
+                    case FunctionType.Scene:
+                        Action<OperatorPartContext, int> lambdaForScenes = (OperatorPartContext context2, int outputIdx) =>
+                        {
+                            _renderConfig.Operator.Outputs[outputIdx].Eval(context);
+                        };
+                        RenderGeometry(
+                            context,
+                            lambdaForScenes);
+
+                        break;
+
+                    case FunctionType.Mesh:
+                        {
+                            Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
+                            {
+                                var mesh = _renderConfig.Operator.Outputs[outputIdx].Eval(context2).Mesh;
+                                context2.Renderer.SetupEffect(context2);
+                                context2.Renderer.Render(mesh, context2);
+                            };
+                            RenderGeometry(
+                                context,
+                                lambdaForMeshes);
+                            break;
+                        }
+
+                    case FunctionType.Image:
+                        SetupContextForRenderingImage(
+                            context,
+                            _renderConfig.RenderWithGammaCorrection);
+
+                        var image = _renderConfig.Operator.Outputs[_renderConfig.ShownOutputIndex].Eval(new OperatorPartContext(context)).Image;
+                        if (image == null)
+                            break;
+
+                        RenderedImageIsACubemap = image.Description.ArraySize > 1;
+                        var cubeMapSide = RenderedImageIsACubemap ? _renderConfig.PreferredCubeMapSideIndex : -1;
+                        if (cubeMapSide == 6)
+                        {
+                            RenderCubemapAsSphere(image, context);
+                        }
+                        else
+                        {
+                            RenderImage(image, context);
+                        }
+                        break;
+                }
+                _D3DImageContainer.InvalidateD3DImage();
+
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception.ToString());
+            }
+        }
+
+
+        public void CleanUp()
+        {
+            Utilities.DisposeObj(ref _D3DImageContainer);
+            //Utilities.DisposeObj(ref this);
+        }
+        #endregion
+
 
 
         #region rendering geometry
@@ -128,7 +255,7 @@ namespace Framefield.Tooll.Rendering
                 SetupContextForRenderingImage(context, withGammaCorrection: true);
                 _renderer.RenderToScreen(_sceneRenderTargetTexture, context);
             }
-            _gpuSyncer.Sync(D3DDevice.ImmediateContext);
+            _gpuSyncer.Sync(D3D11Device.ImmediateContext);
         }
 
 
@@ -189,7 +316,7 @@ namespace Framefield.Tooll.Rendering
             _renderer.SetupBaseEffectParameters(context);
             _renderer.RenderToScreen(image, context);
 
-            _gpuSyncer.Sync(D3DDevice.ImmediateContext);
+            _gpuSyncer.Sync(D3D11Device.ImmediateContext);
         }
 
 
@@ -218,7 +345,7 @@ namespace Framefield.Tooll.Rendering
         {
             try
             {
-                D3DDevice = Core.D3DDevice.Device;
+                D3D11Device = Core.D3DDevice.Device;
 
                 var colorDesc = new Texture2DDescription
                 {
@@ -248,28 +375,28 @@ namespace Framefield.Tooll.Rendering
                     ArraySize = 1
                 };
 
-                _sharedTexture = new Texture2D(D3DDevice, colorDesc);
+                _sharedTexture = new Texture2D(D3D11Device, colorDesc);
                 colorDesc.OptionFlags = ResourceOptionFlags.None;
                 colorDesc.Format = Format.R16G16B16A16_UNorm;
-                _sceneRenderTargetTexture = new Texture2D(D3DDevice, colorDesc);
-                _depthTexture = new Texture2D(D3DDevice, depthdesc);
-                _renderDepth = new Texture2D(D3DDevice, depthdesc);
+                _sceneRenderTargetTexture = new Texture2D(D3D11Device, colorDesc);
+                _depthTexture = new Texture2D(D3D11Device, depthdesc);
+                _renderDepth = new Texture2D(D3D11Device, depthdesc);
 
-                _sharedTextureRenderView = new RenderTargetView(D3DDevice, SharedTexture);
-                _sceneRenderTargetTextureRenderView = new RenderTargetView(D3DDevice, SceneRenderTargetTexture);
-                _renderTargetDepthView = new DepthStencilView(D3DDevice, _renderDepth);
+                _sharedTextureRenderView = new RenderTargetView(D3D11Device, SharedTexture);
+                _sceneRenderTargetTextureRenderView = new RenderTargetView(D3D11Device, SceneRenderTargetTexture);
+                _renderTargetDepthView = new DepthStencilView(D3D11Device, _renderDepth);
 
-                _texture = ShaderResourceView.FromFile(D3DDevice, "./assets-common/image/white.png");
+                _texture = ShaderResourceView.FromFile(D3D11Device, "./assets-common/image/white.png");
                 _screenQuadMesh = Mesh.CreateScreenQuadMesh();
 
-                _gpuSyncer = new BlockingGpuSyncer(D3DDevice);
+                _gpuSyncer = new BlockingGpuSyncer(D3D11Device);
             }
             catch (Exception e)
             {
                 Logger.Error(e.Message);
             }
 
-            D3DDevice.ImmediateContext.Flush();
+            D3D11Device.ImmediateContext.Flush();
         }
 
         public static void SetupContextForRenderingCamToBuffer(OperatorPartContext context, Operator op, DefaultRenderer renderer, Matrix worldToCamera, float nearClipping = 0.01f, float farClipping = 10000)
@@ -308,7 +435,7 @@ namespace Framefield.Tooll.Rendering
 
         private void SetupContextForRenderingGeometry(OperatorPartContext context, bool withGammaCorrection)
         {
-            context.D3DDevice = D3DDevice;
+            context.D3DDevice = D3D11Device;
             context.Effect = _renderer.SceneDefaultEffect;
             context.InputLayout = _renderer.SceneDefaultInputLayout;
             context.RenderTargetView = withGammaCorrection
@@ -329,7 +456,7 @@ namespace Framefield.Tooll.Rendering
             context.Effect = withGammaCorrection
                 ? _renderer.ScreenRenderGammaCorrectionEffect
                 : _renderer.ScreenRenderEffect;
-            context.D3DDevice = D3DDevice;
+            context.D3DDevice = D3D11Device;
             context.InputLayout = _renderer.ScreenQuadInputLayout;
             context.RenderTargetView = _sharedTextureRenderView;
             context.DepthStencilView = null;
@@ -361,6 +488,15 @@ namespace Framefield.Tooll.Rendering
         #endregion
 
 
+        /** After rendering an image this flag can be used to display UI-elements relevant for CubeMaps */
+        public bool RenderedImageIsACubemap { get; private set; }
+
+
+        public D3DImageSharpDX D3DImageContainer { get { return _D3DImageContainer; } }
+        private D3DImageSharpDX _D3DImageContainer;
+
+        public OperatorPartContext DefaultContext { get { return _defaultContext; } }
+        private OperatorPartContext _defaultContext;
 
         private Texture2D _renderDepth;
         private DepthStencilView _renderTargetDepthView;

@@ -369,7 +369,6 @@
     </Compile>
     <Compile Include="Rendering\CameraSetup.cs" />
     <Compile Include="Components\SelectionView\ShowScene\CameraInteraction\ViewCameraSetupProvider.cs" />
-    <Compile Include="Rendering\ContentRenderer.cs" />
     <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
       <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
     </Compile>

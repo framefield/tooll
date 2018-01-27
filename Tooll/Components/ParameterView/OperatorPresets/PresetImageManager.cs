@@ -51,7 +51,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             var orgWidth = renderConfig.Width;
             var orgHeight = renderConfig.Height;
             renderSetup.Resize(THUMB_WIDTH, THUMB_HEIGHT);
-            showContentControl.ContentRenderer.Reinitialize();
+            showContentControl.RenderSetup.Reinitialize();
 
             var filePath = BuildImagePath(preset);
             if (File.Exists(filePath))
@@ -70,7 +70,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             try
             {
                 SharpDX.Direct3D9.Texture.ToFile(
-                    showContentControl.ContentRenderer.D3DImageContainer.SharedTexture,
+                    showContentControl.RenderSetup.D3DImageContainer.SharedTexture,
                     filePath,
                     SharpDX.Direct3D9.ImageFileFormat.Png);
             }
@@ -82,7 +82,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             renderConfig.Width = orgWidth;
             renderConfig.Height = orgHeight;
             renderSetup.Resize(renderConfig.Width, renderConfig.Height);
-            showContentControl.ContentRenderer.Reinitialize();
+            showContentControl.RenderSetup.Reinitialize();
         }
 
 

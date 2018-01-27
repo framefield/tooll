@@ -13,7 +13,8 @@ using Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo;
 
 namespace Framefield.Tooll.Components.SelectionView
 {
-    /** A UserControl that handles rendering and interacting with different Scene, Mesh and Image-Content */
+    /** A UserControl that handles rendering and interacting with different Scene, Mesh and Image-Content.
+     * Adds functionality for CameraInteraction. */
     public partial class ShowContentControl
     {
         public ShowContentControl()
@@ -21,8 +22,6 @@ namespace Framefield.Tooll.Components.SelectionView
             Loaded += OnLoadedHandler;
             Unloaded += OnUnloadedHandler;
             InitializeComponent();
-
-
         }
 
 
@@ -64,7 +63,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
                 CameraInteraction.Discard();
             }
-            _contentRenderer.CleanUp();
+            _renderSetup.CleanUp();
         }
 
 
@@ -92,7 +91,7 @@ namespace Framefield.Tooll.Components.SelectionView
             {
                 LateInit();
             }
-            _contentRenderer.Reinitialize();
+            _renderSetup.Reinitialize();
         }
 
 
@@ -156,16 +155,16 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MainWindow_ContentRendered_Handler(object sender, EventArgs e)
         {
-            _contentRenderer.Reinitialize();
+            _renderSetup.Reinitialize();
         }
 
 
         private void SizeChanged_Handler(object sender, SizeChangedEventArgs e)
         {
-            if (_contentRenderer != null)
+            if (_renderSetup != null)
             {
                 SetRendererSizeFromWindow();
-                _contentRenderer.Reinitialize();
+                _renderSetup.Reinitialize();
             }
         }
 
@@ -211,7 +210,7 @@ namespace Framefield.Tooll.Components.SelectionView
             if (TimeLoggingSourceEnabled)
                 TimeLogger.BeginFrame(App.Current.Model.GlobalTime);
 
-            _contentRenderer.RenderContent();
+            _renderSetup.RenderContent();
 
             D3DDevice.EndFrame();
             if (TimeLoggingSourceEnabled)
@@ -222,8 +221,8 @@ namespace Framefield.Tooll.Components.SelectionView
         private void SetupRenderer()
         {
             SetRendererSizeFromWindow();
-            _contentRenderer.SetupRendering();
-            XSceneImage.Source = _contentRenderer.D3DImageContainer;
+            _renderSetup.SetupRendering();
+            XSceneImage.Source = _renderSetup.D3DImageContainer;
         }
 
 
@@ -236,9 +235,9 @@ namespace Framefield.Tooll.Components.SelectionView
                 TransformGizmo = new TransformGizmo(),
             };
 
-            _camSetupProvider = new ViewCameraSetupProvider(RenderConfiguration);
 
-            _contentRenderer = new ContentRenderer(RenderConfiguration);
+            _camSetupProvider = new ViewCameraSetupProvider(RenderConfiguration);
+            _renderSetup = new D3DRenderSetup(RenderConfiguration);
             SetupRenderer();
 
             CameraInteraction = new CameraInteraction(
@@ -261,15 +260,15 @@ namespace Framefield.Tooll.Components.SelectionView
         {
             get
             {
-                return _contentRenderer.RenderedImageIsACubemap;
+                return _renderSetup.RenderedImageIsACubemap;
             }
         }
 
-        public ContentRenderer ContentRenderer { get { return _contentRenderer; } }
-        ContentRenderer _contentRenderer;
+
         #endregion
 
-        public D3DRenderSetup RenderSetup { get { return _contentRenderer.RenderSetup; } }
+        public D3DRenderSetup RenderSetup { get { return _renderSetup; } }
+        private D3DRenderSetup _renderSetup;
         public RenderViewConfiguration RenderConfiguration;
         public CameraInteraction CameraInteraction { get; set; }
 
