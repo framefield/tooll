@@ -367,7 +367,8 @@
     <Compile Include="Components\ParameterView\SceneParameterValue.xaml.cs">
       <DependentUpon>SceneParameterValue.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\RenderingCamera.cs" />
+    <Compile Include="Rendering\CameraSetup.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\CameraInteraction\ViewCameraSetupProvider.cs" />
     <Compile Include="Rendering\ContentRenderer.cs" />
     <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
       <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
@@ -451,7 +452,7 @@
     <Compile Include="Components\SelectionView\FullScreenView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Rendering\ContentRendererConfiguration.cs" />
+    <Compile Include="Rendering\RenderViewConfiguration.cs" />
     <Compile Include="Utils\ImportFbxScene.cs" />
     <Compile Include="ISelectable.cs" />
     <Compile Include="Components\CodeEditor\CodeEditor.xaml.cs">

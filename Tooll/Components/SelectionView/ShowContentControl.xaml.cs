@@ -22,11 +22,7 @@ namespace Framefield.Tooll.Components.SelectionView
             Unloaded += OnUnloadedHandler;
             InitializeComponent();
 
-            RenderConfiguration = new ContentRendererConfiguration()
-            {
-                ShowGridAndGizmos = true,
-                TransformGizmo = new TransformGizmo(),
-            };
+
         }
 
 
@@ -46,17 +42,9 @@ namespace Framefield.Tooll.Components.SelectionView
             App.Current.CompositionTargertRenderingEvent += App_CompositionTargertRenderingHandler;
             App.Current.UpdateRequiredAfterUserInteraction = true;
 
-
-            _viewerCamera = new ViewerCamera(RenderConfiguration);
-
-            _contentRenderer = new ContentRenderer(RenderConfiguration, _viewerCamera);
-            SetupRenderer();
-
-            CameraInteraction = new CameraInteraction(
-                RenderConfiguration,
-                _viewerCamera,
-                this);     // Note: This requires ShowSceneControl to have been loaded
         }
+
+
 
 
         private void OnUnloadedHandler(object sender, RoutedEventArgs e)
@@ -80,9 +68,30 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
+        /** Called by ShowContentControl */
+        public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0)
+        {
+            if (_camSetupProvider == null)
+                LateInit();
+
+            if (op == null || op.Outputs.Count < outputIndex + 1)
+                return;
+
+            _camSetupProvider.SetSelectedOperator(op);
+
+            RenderConfiguration.ShownOutputIndex = outputIndex;
+            RenderConfiguration.Operator = op;
+            RenderContent();
+        }
+
+
         #region Event-Handlers
         private void MainWindow_GotFocusHandler(object sender, RoutedEventArgs e)
         {
+            if (_camSetupProvider == null)
+            {
+                LateInit();
+            }
             _contentRenderer.Reinitialize();
         }
 
@@ -172,7 +181,7 @@ namespace Framefield.Tooll.Components.SelectionView
             if (CameraInteraction == null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
                 return;
 
-            if (_viewerCamera.SelectedOperatorIsCamProvider)
+            if (_camSetupProvider.SelectedOperatorIsCamProvider)
             {
                 App.Current.UpdateRequiredAfterUserInteraction = true;
             }
@@ -182,28 +191,15 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
-        private ViewerCamera _viewerCamera;
-
+        private ViewCameraSetupProvider _camSetupProvider;
 
         #endregion
-
-
-
-        public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0)
-        {
-            if (op == null || op.Outputs.Count < outputIndex + 1)
-                return;
-
-            RenderConfiguration.ShownOutputIndex = outputIndex;
-            RenderConfiguration.Operator = op;
-            RenderContent();
-        }
 
 
         #region Rendering
         private void SwitchToFullscreenMode()
         {
-            var fsView = new FullScreenView(RenderConfiguration, _viewerCamera);
+            var fsView = new FullScreenView(RenderConfiguration);
         }
 
 
@@ -230,11 +226,35 @@ namespace Framefield.Tooll.Components.SelectionView
             XSceneImage.Source = _contentRenderer.D3DImageContainer;
         }
 
+
+        /* This requires ShowSceneControl to have been loaded */
+        private void LateInit()
+        {
+            RenderConfiguration = new RenderViewConfiguration()
+            {
+                ShowGridAndGizmos = true,
+                TransformGizmo = new TransformGizmo(),
+            };
+
+            _camSetupProvider = new ViewCameraSetupProvider(RenderConfiguration);
+
+            _contentRenderer = new ContentRenderer(RenderConfiguration);
+            SetupRenderer();
+
+            CameraInteraction = new CameraInteraction(
+                RenderConfiguration,
+                this);
+        }
+
+
         private void SetRendererSizeFromWindow()
         {
             RenderConfiguration.Width = (int)XGrid.ActualWidth;
             RenderConfiguration.Height = (int)XGrid.ActualHeight;
         }
+
+
+
 
         /** After rendering a image this flag can be used to display UI-elements relevant for CubeMaps */
         public bool RenderedImageIsACubemap
@@ -250,7 +270,7 @@ namespace Framefield.Tooll.Components.SelectionView
         #endregion
 
         public D3DRenderSetup RenderSetup { get { return _contentRenderer.RenderSetup; } }
-        public ContentRendererConfiguration RenderConfiguration;
+        public RenderViewConfiguration RenderConfiguration;
         public CameraInteraction CameraInteraction { get; set; }
 
         public bool TimeLoggingSourceEnabled { get; set; }

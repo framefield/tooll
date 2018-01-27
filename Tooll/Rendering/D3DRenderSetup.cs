@@ -6,8 +6,6 @@ using System.Linq;
 using Framefield.Core;
 using Framefield.Core.OperatorPartTraits;
 using Framefield.Core.Rendering;
-using Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction;
-using Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -20,12 +18,9 @@ namespace Framefield.Tooll.Rendering
     /** Implements the rendering of content within Tooll. Also provides multiple properties to access the used Camera. */
     public class D3DRenderSetup : IDisposable
     {
-        public D3DRenderSetup(ContentRendererConfiguration renderConfiguration, ViewerCamera viewerCamera)
+        public D3DRenderSetup(RenderViewConfiguration renderConfiguration)
         {
             _renderConfig = renderConfiguration;
-            _viewerCamera = viewerCamera;
-
-            _viewerCamera.ResetCamera();
             InitRenderTargets();
             _renderer = OperatorPartContext.DefaultRenderer;
 
@@ -42,11 +37,8 @@ namespace Framefield.Tooll.Rendering
 
         #region public attributes
         public Device D3DDevice { get; set; }
-        //public TransformGizmo TransformGizmo { get; set; }
         public OperatorPartContext LastContext { get; set; }
 
-
-        private ViewerCamera _viewerCamera;
 
         private Texture2D _sharedTexture;
         public Texture2D SharedTexture
@@ -60,9 +52,9 @@ namespace Framefield.Tooll.Rendering
             get { return _sceneRenderTargetTexture; }
         }
 
-        public Operator RenderedOperator { get; set; }
+        //public Operator RenderedOperator { get; set; }
 
-        private ContentRendererConfiguration _renderConfig;
+        private RenderViewConfiguration _renderConfig;
 
         public void Resize(int width, int height)
         {
@@ -144,20 +136,19 @@ namespace Framefield.Tooll.Rendering
         {
             SetupContextForRenderingGeometry(context, _renderConfig.RenderWithGammaCorrection);
 
-            Vector3 viewDir, sideDir, upDir;
-            _viewerCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
-            var worldToCamera = Matrix.LookAtLH(_viewerCamera.CameraPosition, _viewerCamera.CameraTarget, upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
+            var worldToCamera = Matrix.LookAtLH(_renderConfig.CameraSetup.Position, _renderConfig.CameraSetup.Target, upDir);
 
             // Find a nice balance between small and large objects (probably skyspheres)
-            var zoomLength = (_viewerCamera.CameraPosition - _viewerCamera.CameraTarget).Length();
+            var zoomLength = (_renderConfig.CameraSetup.Position - _renderConfig.CameraSetup.Target).Length();
             var farClipping = (zoomLength * 2) + 5000;
             var nearClipping = zoomLength / 100;
 
-            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera, (float)nearClipping,
+            SetupContextForRenderingCamToBuffer(context, _renderConfig.Operator, _renderer, worldToCamera, (float)nearClipping,
                 (float)farClipping);
 
-            _viewerCamera.LastWorldToCamera = context.WorldToCamera;
-            _viewerCamera.LastCameraProjection = context.CameraProjection;
+            _renderConfig.CameraSetup.LastWorldToCamera = context.WorldToCamera;
+            _renderConfig.CameraSetup.LastCameraProjection = context.CameraProjection;
         }
 
 
@@ -181,11 +172,10 @@ namespace Framefield.Tooll.Rendering
         #region rendering images
         public void RenderImage(Texture2D image, OperatorPartContext context)
         {
-            Vector3 viewDir, sideDir, upDir;
-            _viewerCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
-            var worldToCamera = Matrix.LookAtLH(_viewerCamera.CameraPosition, _viewerCamera.CameraTarget, upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
+            var worldToCamera = Matrix.LookAtLH(_renderConfig.CameraSetup.Position, _renderConfig.CameraSetup.Target, upDir);
 
-            SetupContextForRenderingCamToBuffer(context, RenderedOperator, _renderer, worldToCamera);
+            SetupContextForRenderingCamToBuffer(context, _renderConfig.Operator, _renderer, worldToCamera);
 
             _imageBackgroundOperator.Outputs[0].Eval(context);
             context.Image = null;
@@ -220,12 +210,6 @@ namespace Framefield.Tooll.Rendering
             RenderGeometry(context, lambdaForMeshes);
         }
         #endregion
-
-
-
-
-
-
 
 
         #region helper methods
@@ -380,8 +364,6 @@ namespace Framefield.Tooll.Rendering
 
         private Texture2D _renderDepth;
         private DepthStencilView _renderTargetDepthView;
-
-
 
         private readonly DefaultRenderer _renderer;
         private BlockingGpuSyncer _gpuSyncer;

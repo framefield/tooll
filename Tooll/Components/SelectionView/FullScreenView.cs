@@ -42,15 +42,12 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private double _currentTime;
 
-        private ViewerCamera _renderingCamera;
-        private ContentRendererConfiguration _renderConfig;
+        private RenderViewConfiguration _renderConfig;
 
 
-        public FullScreenView(ContentRendererConfiguration renderConfig, ViewerCamera renderingCamera)
+        public FullScreenView(RenderViewConfiguration renderConfig)
         {
-            _renderingCamera = renderingCamera;
             _renderConfig = renderConfig;
-            //d3DScene = renderSetup;
             App.Current.MainWindow.Hide();
             System.Windows.Forms.Cursor.Hide();
 
@@ -214,13 +211,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 context.Viewport = _viewport;
                 context.Texture0 = _shaderResourceView;
 
-                Vector3 viewDir;
-                Vector3 sideDir;
-                Vector3 upDir;
-                ViewerCamera.GetViewDirections(_renderingCamera.CameraTarget, _renderingCamera.CameraPosition, _renderingCamera.CameraRoll, out viewDir, out sideDir, out upDir);
-                var worldToCamera = Matrix.LookAtLH(_renderingCamera.CameraPosition, _renderingCamera.CameraTarget, upDir);
-
-
+                var worldToCamera = Matrix.LookAtLH(_renderConfig.CameraSetup.Position, _renderConfig.CameraSetup.Target, _renderConfig.CameraSetup.UpDir);
 
                 switch (op.FunctionType)
                 {
@@ -330,12 +321,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void ProcessKeyEvents()
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
 
             var viewDirLength = viewDir.Length();
             var initialVelocity = _moveVelocity.Length() < Constants.Epsilon ? INITIAL_MOVE_VELOCITY : 0;
@@ -364,12 +350,12 @@ namespace Framefield.Tooll.Components.SelectionView
                         break;
                     case Keys.F:
                         _moveVelocity = new SharpDX.Vector3(0, 0, 0);
-                        _renderingCamera.ResetCamera();
+                        _renderConfig.CameraSetup.ResetCamera();
                         break;
                     case Keys.C:
                         _moveVelocity = new SharpDX.Vector3(0, 0, 0);
-                        _renderingCamera.CameraTarget = new SharpDX.Vector3(0, 0, 0);
-                        _renderingCamera.CameraPosition = -viewDir;
+                        _renderConfig.CameraSetup.Target = new SharpDX.Vector3(0, 0, 0);
+                        _renderConfig.CameraSetup.Position = -viewDir;
                         break;
                 }
             }
@@ -387,8 +373,8 @@ namespace Framefield.Tooll.Components.SelectionView
                     _moveVelocity *= MAX_MOVE_VELOCITY / speed;
                 }
 
-                _renderingCamera.CameraPosition += _moveVelocity;
-                _renderingCamera.CameraTarget += _moveVelocity;
+                _renderConfig.CameraSetup.Position += _moveVelocity;
+                _renderConfig.CameraSetup.Target += _moveVelocity;
                 _moveVelocity *= FRICTION;
             }
         }
@@ -469,12 +455,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MouseWheelHandler(object sender, MouseEventArgs e)
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            var viewDir = _renderConfig.CameraSetup.ViewDir;
 
             viewDir.Normalize();
             viewDir *= 0.001f;
@@ -488,12 +469,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void LookAround()
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -508,18 +484,13 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            _renderingCamera.CameraTarget = _renderingCamera.CameraPosition + newViewDir.ToVector3() * viewDirLength;
+            _renderConfig.CameraSetup.Target = _renderConfig.CameraSetup.Position + newViewDir.ToVector3() * viewDirLength;
         }
 
 
         private void RotateAroundTarget()
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
 
             var viewDirLength = viewDir.Length();
             viewDir /= viewDirLength;
@@ -534,17 +505,12 @@ namespace Framefield.Tooll.Components.SelectionView
             var newViewDir = Vector3.Transform(viewDir, rot);
             newViewDir.Normalize();
 
-            _renderingCamera.CameraPosition = _renderingCamera.CameraTarget - newViewDir.ToVector3() * viewDirLength;
+            _renderConfig.CameraSetup.Position = _renderConfig.CameraSetup.Target - newViewDir.ToVector3() * viewDirLength;
         }
 
         private void Pan()
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var factorX = (float)(-diff.X / Height * 10.0);
@@ -553,18 +519,13 @@ namespace Framefield.Tooll.Components.SelectionView
             sideDir *= factorX;
             upDir *= factorY;
 
-            _renderingCamera.CameraPosition += sideDir + upDir;
-            _renderingCamera.CameraTarget += sideDir + upDir;
+            _renderConfig.CameraSetup.Position += sideDir + upDir;
+            _renderConfig.CameraSetup.Target += sideDir + upDir;
         }
 
         private void Zoom()
         {
-            //if (_showSceneControl == null)
-            //    return;
-            //var d3DScene = _showSceneControl.RenderSetup;
-
-            Vector3 viewDir, sideDir, upDir;
-            _renderingCamera.GetViewDirections(out viewDir, out sideDir, out upDir);
+            _renderConfig.CameraSetup.GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir);
 
             var diff = _currentMousePos - _lastMousePos;
             var velocity = (float)(-diff.Y / Height * 5.0);
@@ -572,8 +533,8 @@ namespace Framefield.Tooll.Components.SelectionView
             viewDir.Normalize();
             viewDir *= velocity;
 
-            _renderingCamera.CameraPosition += viewDir;
-            _renderingCamera.CameraTarget += viewDir;
+            _renderConfig.CameraSetup.Position += viewDir;
+            _renderConfig.CameraSetup.Target += viewDir;
         }
 
         #endregion
@@ -592,12 +553,9 @@ namespace Framefield.Tooll.Components.SelectionView
         #endregion
 
         private OperatorPartContext _defaultContext;
-        //private D3DRenderSetup d3DScene;
 
         public void CleanUp()
         {
-            //ShowSceneControl = null;
-
             Utilities.DisposeObj(ref _renderer);
             Utilities.DisposeObj(ref _shaderResourceView);
             Utilities.DisposeObj(ref _depthStencilView);

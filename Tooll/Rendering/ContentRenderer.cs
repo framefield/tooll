@@ -10,20 +10,18 @@ namespace Framefield.Tooll.Rendering
     /** Provides a united interface to render different content types like Scenes, Meshes and Images.  */
     public class ContentRenderer
     {
-        public ContentRenderer(ContentRendererConfiguration renderConfiguration, ViewerCamera viewerCamera)
+        public ContentRenderer(RenderViewConfiguration renderConfiguration)
         {
             _renderConfiguration = renderConfiguration;
-            _viewerCamera = viewerCamera;
         }
 
-        ViewerCamera _viewerCamera;
 
         public void SetupRendering()
         {
             if (_D3DImageContainer == null)
                 _D3DImageContainer = new D3DImageSharpDX();
 
-            _renderSetup = new D3DRenderSetup(_renderConfiguration, _viewerCamera);
+            _renderSetup = new D3DRenderSetup(_renderConfiguration);
 
             CreateContextSettingsWithAspectRatio();
         }
@@ -77,8 +75,6 @@ namespace Framefield.Tooll.Rendering
 
                 var invalidator = new OperatorPart.InvalidateInvalidatables();
                 _renderConfiguration.Operator.Outputs[_renderConfiguration.ShownOutputIndex].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
-
-                _renderSetup.RenderedOperator = _renderConfiguration.Operator;
 
                 var evaluationType = _renderConfiguration.Operator.Outputs[_renderConfiguration.ShownOutputIndex].Type;
 
@@ -149,7 +145,7 @@ namespace Framefield.Tooll.Rendering
         /** After rendering an image this flag can be used to display UI-elements relevant for CubeMaps */
         public bool RenderedImageIsACubemap { get; private set; }
 
-        private ContentRendererConfiguration _renderConfiguration;
+        private RenderViewConfiguration _renderConfiguration;
 
         public D3DImageSharpDX D3DImageContainer { get { return _D3DImageContainer; } }
         private D3DImageSharpDX _D3DImageContainer;

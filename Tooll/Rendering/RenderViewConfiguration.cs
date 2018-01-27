@@ -5,9 +5,10 @@ using System;
 namespace Framefield.Tooll.Rendering
 {
     /** Defines how content of undefined type (Image, Scene or Mesh) should be rendered. */
-    public class ContentRendererConfiguration
+    public class RenderViewConfiguration
     {
         public Operator Operator;
+        public CameraSetup CameraSetup; // points to SetupForOperator or View
 
         public bool ShowGridAndGizmos;
         public int PreferredCubeMapSideIndex = -1;
@@ -15,6 +16,7 @@ namespace Framefield.Tooll.Rendering
         public TransformGizmo TransformGizmo;
 
         public bool RenderWithGammaCorrection;
+
 
         public int Width
         {
