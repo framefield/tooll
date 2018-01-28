@@ -37,7 +37,6 @@ namespace Framefield.Tooll
             Controls.Children.Add(m_MixedControl);
             Controls.Children.Add(m_AnimationControl);
             Controls.Children.Add(m_ConnectionControl);
-            ConnectEventHandler();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -50,6 +49,10 @@ namespace Framefield.Tooll
         {
             foreach (var opPart in m_OperatorParts)
                 opPart.ManipulatedEvent -= UpdateHandler;
+
+            m_MixedControl = null;
+            m_AnimationControl = null;
+            m_ConnectionControl = null;
         }
 
         private void ConnectEventHandler()
