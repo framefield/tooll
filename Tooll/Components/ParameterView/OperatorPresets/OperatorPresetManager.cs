@@ -41,7 +41,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
 
         /** This is called from Parameter-View on selection change */
-        public void FilterCurrentPresetsForSelection()
+        public void FindAndShowPresetsForSelectedOp()
         {
             var op = App.Current.MainWindow.XParameterView.ShownOperator;
             if (op == null || op.Definition == null || _operatorPresetsByMetaOpID == null)
@@ -64,6 +64,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             {
                 CurrentOperatorPresets.Clear();
             }
+            RerenderCurrentThumbnails();
         }
 
 
@@ -97,16 +98,20 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+
+
         /** Invoked after mouse leaves the thumbnail */
         public void RerenderCurrentThumbnails()
         {
+            PresetImageManager.ReleasePreviousImages();
             var keepList = CurrentOperatorPresets.ToArray();
             CurrentOperatorPresets.Clear(); // We rebuild the list to trigger update notification of the observable collection
 
             foreach (var preset in keepList)
             {
                 PreviewPreset(preset);
-                PresetImageManager.RenderAndSaveThumbnail(preset);
+                //PresetImageManager.RenderAndSaveThumbnail(preset);
+                PresetImageManager.RenderImageForPreset(preset);
                 RestorePreviewPreset();
                 CurrentOperatorPresets.Add(preset);
             }
@@ -139,7 +144,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             PresetImageManager.RenderAndSaveThumbnail(newPreset);
 
             AddPreset(newPreset, 0);
-            FilterCurrentPresetsForSelection();
+            FindAndShowPresetsForSelectedOp();
             SaveAllPresets();
         }
 
@@ -182,7 +187,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                         Logger.Debug("Skipped a preset without any matching parameters");
                 }
             }
-            FilterCurrentPresetsForSelection();
+            FindAndShowPresetsForSelectedOp();
             SaveAllPresets();
         }
 
@@ -398,7 +403,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
                 {
                     _operatorPresetsByMetaOpID[op.Definition.ID].Remove(preset);
-                    FilterCurrentPresetsForSelection();
+                    FindAndShowPresetsForSelectedOp();
                     SaveAllPresets();
                     App.Current.UpdateRequiredAfterUserInteraction = true;
                 }

@@ -31,5 +31,18 @@ namespace Framefield.Tooll.Rendering
             set { _height = Math.Max(1, value); }
         }
         private int _height = 1;
+
+        public RenderViewConfiguration Clone()
+        {
+            return new RenderViewConfiguration()
+            {
+                Width = Width,
+                Height = Height,
+                ShownOutputIndex = ShownOutputIndex,
+                Operator = Operator,
+                CameraSetup = CameraSetup,
+                RenderWithGammaCorrection = RenderWithGammaCorrection,
+            };
+        }
     }
 }

@@ -30,6 +30,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         {
             InitializeComponent();
             Loaded += PresetThumb_Loaded;
+            Unloaded += PresetThumb_Unloaded;
 
             PresetManager = App.Current.OperatorPresetManager;
         }
@@ -58,9 +59,22 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+        void PresetThumb_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var applicationWindow = Window.GetWindow(this);
+            if (applicationWindow != null)
+            {
+                applicationWindow.PreviewKeyDown -= XControl_KeyDown;
+                applicationWindow.PreviewKeyUp -= XControl_KeyUp;
+            }
+            XImage.Source = null;
+        }
+
+
         private void SetImage(OperatorPreset preset, bool useCache = true)
         {
             XImage.Source = PresetManager.PresetImageManager.GetImageForPreset(preset);
+            //XImage.Source = PresetManager.PresetImageManager.RenderImageForPreset(preset);
         }
 
 
@@ -87,7 +101,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-        private Point _startDragPos;
+
         private void Thumb_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
             _startDragPos = new Point(e.HorizontalOffset, e.VerticalOffset);
@@ -98,7 +112,6 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         }
 
-        private const double VIRTUAL_SLIDER_WIDTH = 200;
 
         private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
         {
@@ -111,6 +124,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             PresetManager.BlendPreset(preset, factor);
             XBlendInfoText.Text = String.Format("{0}%", Math.Floor(factor * 100));
         }
+
 
         private void Thumb_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
@@ -158,10 +172,12 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+
         private void XControl_KeyUp(object sender, KeyEventArgs e)
         {
             UpdateCursorShape();
         }
+
 
 
         private void UpdateCursorShape()
@@ -183,5 +199,9 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
         #endregion
+
+
+        private Point _startDragPos;
+        private const double VIRTUAL_SLIDER_WIDTH = 200;
     }
 }

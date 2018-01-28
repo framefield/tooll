@@ -227,13 +227,14 @@ namespace Framefield.Tooll
             XParameterStackPanel.Children.Add(descriptionBox);
 
             XParameterScrollViewer.Content = XParameterStackPanel;
-            App.Current.OperatorPresetManager.FilterCurrentPresetsForSelection();
+            //App.Current.OperatorPresetManager.FindAndShowPresetsForSelectedOp();
 
             watch.Stop();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            Logger.Info("OperatorParameterView.Unload()");
             foreach (var opPart in _operator.Inputs)
             {
                 opPart.ManipulatedEvent += opPart_ModifiedEventHandler;

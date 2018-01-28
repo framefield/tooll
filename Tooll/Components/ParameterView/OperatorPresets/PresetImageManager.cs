@@ -9,19 +9,21 @@ using Framefield.Core;
 using System.Text.RegularExpressions;
 using Framefield.Core.Rendering;
 using SharpDX.Direct3D11;
+using Framefield.Tooll.Rendering;
+using System.Windows.Interop;
 
 namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     /** Handles loading and providing bitmap images.*/
     class PresetImageManager
     {
-        internal BitmapImage GetImageForPreset(OperatorPreset preset, bool useCache = false)
+        internal D3DImage GetImageForPreset(OperatorPreset preset, bool useLive = true)
         {
             var imagePath = BuildImagePath(preset);
-            //if (useCache && _cache.ContainsKey(imagePath))
-            //{
-            //    return _cache[imagePath];
-            //}
+            if (useLive && _renderSetupsByPreset.ContainsKey(preset))
+            {
+                return _renderSetupsByPreset[preset].D3DImageContainer;
+            }
 
             if (File.Exists(imagePath))
             {
@@ -32,7 +34,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache; // Force reload (e.g. to load regenerate images)
                 bitmap.EndInit();
                 bitmap.Freeze();
-                return bitmap;
+                return null;
             }
             else
             {
@@ -41,6 +43,63 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 return null;
             }
         }
+
+        internal D3DImageSharpDX RenderImageForPreset(OperatorPreset preset, RenderViewConfiguration renderConfig = null)
+        {
+            if (renderConfig == null)
+                renderConfig = App.Current.MainWindow.XRenderView.XShowContentControl.RenderConfiguration;
+
+            var renderSetup = CreateOrReuseRenderSetup(renderConfig);
+
+            _renderSetupsByPreset[preset] = renderSetup;
+
+            return renderSetup.RenderToD3dImage();
+        }
+
+
+        internal void StartPreviewCache()
+        {
+            _renderSetupsByPreset.Clear();
+        }
+
+
+        internal void ReleasePreviousImages()
+        {
+            foreach (var renderS in _renderSetupsByPreset.Values)
+            {
+                _renderSetupPool.Enqueue(renderS);
+            }
+            _renderSetupsByPreset.Clear();
+        }
+
+
+
+        private D3DRenderSetup CreateOrReuseRenderSetup(RenderViewConfiguration referenceConfig = null)
+        {
+            if (_renderSetupPool.Count > 0)
+            {
+                var setup = _renderSetupPool.Dequeue();
+                setup.RenderConfig.CameraSetup = referenceConfig.CameraSetup;
+                setup.RenderConfig.Operator = referenceConfig.Operator;
+                return setup;
+            }
+
+            Logger.Info("Creating new renderSetup of Preset-thumb");
+
+            var clonedRenderConfig = referenceConfig.Clone();
+            clonedRenderConfig.Width = THUMB_WIDTH;
+            clonedRenderConfig.Height = THUMB_HEIGHT;
+            var renderSetup = new D3DRenderSetup(clonedRenderConfig);
+            return renderSetup;
+        }
+
+
+
+        private Queue<D3DRenderSetup> _renderSetupPool = new Queue<D3DRenderSetup>();
+
+
+        private Dictionary<OperatorPreset, D3DRenderSetup> _renderSetupsByPreset = new Dictionary<OperatorPreset, D3DRenderSetup>();
+
 
         internal void RenderAndSaveThumbnail(OperatorPreset preset)
         {

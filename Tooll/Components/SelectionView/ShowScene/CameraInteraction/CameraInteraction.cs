@@ -296,7 +296,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             if (!(_mouseMoveDelta.Length > MOUSE_MOVE_THRESHOLD))
                 return false;
 
-            var rayInWorld = ComputeMouseViewRayInWorld(_showContentControl.RenderSetup);
+            var rayInWorld = ComputeMouseViewRayInWorld();
             var hitIndex = _renderConfig.TransformGizmo.CheckForManipulationByRay(rayInWorld);
 
             if (hitIndex == GizmoPartHitIndex)
@@ -308,7 +308,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         }
 
 
-        private Ray ComputeMouseViewRayInWorld(D3DRenderSetup renderSetup)
+        private Ray ComputeMouseViewRayInWorld()
         {
             var windowPos = _showContentControl.PointFromScreen(_mousePos);
 

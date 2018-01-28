@@ -25,8 +25,6 @@ namespace Framefield.Tooll.Rendering
 
         public void SetSelectedOperator(Operator newOperator)
         {
-            _activeSetup = _setupForView;
-
             var opIsCamera = newOperator != null
                 && newOperator.InternalParts.Count > 0
                 && newOperator.InternalParts[0].Func is ICameraProvider;

@@ -31,7 +31,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
             // Not sure why this callback is required. Probably to prevent some render update after comming back from full-screen?
             App.Current.MainWindow.ContentRendered += MainWindow_ContentRendered_Handler;
-
             App.Current.UpdateAfterUserInteractionEvent += App_UpdateAfterUserInteractionHandler;
 
             KeyDown += KeyDown_Handler;
@@ -40,21 +39,41 @@ namespace Framefield.Tooll.Components.SelectionView
 
             App.Current.CompositionTargertRenderingEvent += App_CompositionTargertRenderingHandler;
             App.Current.UpdateRequiredAfterUserInteraction = true;
-
         }
 
+
+        /* This requires ShowSceneControl to have been loaded */
+        private void LateInit()
+        {
+            Logger.Info("ShowContentControl.LateInit()");
+            RenderConfiguration = new RenderViewConfiguration()
+            {
+                ShowGridAndGizmos = true,
+                TransformGizmo = new TransformGizmo(),
+            };
+
+
+            _camSetupProvider = new ViewCameraSetupProvider(RenderConfiguration);
+            _renderSetup = new D3DRenderSetup(RenderConfiguration);
+            SetupRenderer();
+
+            CameraInteraction = new CameraInteraction(
+                RenderConfiguration,
+                this);
+        }
 
 
 
         private void OnUnloadedHandler(object sender, RoutedEventArgs e)
         {
+            Logger.Info("Unloading ShowContentControl");
             KeyDown -= KeyDown_Handler;
             KeyUp -= KeyUp_Handler;
+            LostFocus -= LostFocus_Handler;
 
             App.Current.MainWindow.GotFocus -= MainWindow_GotFocusHandler;
             App.Current.MainWindow.ContentRendered -= MainWindow_ContentRendered_Handler;
 
-            LostFocus -= LostFocus_Handler;
 
             if (App.Current != null)
             {
@@ -63,15 +82,18 @@ namespace Framefield.Tooll.Components.SelectionView
 
                 CameraInteraction.Discard();
             }
-            _renderSetup.CleanUp();
+            //_renderSetup.CleanUp();
+            Utilities.DisposeObj(ref _renderSetup);
         }
+
+
+
 
 
         /** Called by ShowContentControl */
         public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0)
         {
-            if (_camSetupProvider == null)
-                LateInit();
+            EnsureLateInitialization();
 
             if (op == null || op.Outputs.Count < outputIndex + 1)
                 return;
@@ -84,19 +106,25 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
+        private void EnsureLateInitialization()
+        {
+            if (_camSetupProvider == null || _renderSetup == null)
+                LateInit();
+        }
+
+
         #region Event-Handlers
         private void MainWindow_GotFocusHandler(object sender, RoutedEventArgs e)
         {
-            if (_camSetupProvider == null)
-            {
-                LateInit();
-            }
+            EnsureLateInitialization();
             _renderSetup.Reinitialize();
         }
 
 
         private void MouseDown_Handler(object sender, MouseButtonEventArgs e)
         {
+            EnsureLateInitialization();
+
             Focus();
             CameraInteraction.HandleMouseDown(e.ChangedButton);
 
@@ -155,12 +183,17 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MainWindow_ContentRendered_Handler(object sender, EventArgs e)
         {
+            Logger.Info("MainWindow_ContentRendered_Handler()");
+            EnsureLateInitialization();
             _renderSetup.Reinitialize();
         }
 
 
         private void SizeChanged_Handler(object sender, SizeChangedEventArgs e)
         {
+            //EnsureLateInitialization();
+
+            Logger.Info("MainWindow_SizeChanged_Handler()");
             if (_renderSetup != null)
             {
                 SetRendererSizeFromWindow();
@@ -204,7 +237,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void RenderContent()
         {
-            if (!IsVisible)
+            if (!IsVisible || _renderSetup == null)
                 return;
 
             if (TimeLoggingSourceEnabled)
@@ -212,7 +245,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             _renderSetup.RenderContent();
 
-            D3DDevice.EndFrame();
+
             if (TimeLoggingSourceEnabled)
                 TimeLogger.EndFrame();
         }
@@ -226,24 +259,7 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
-        /* This requires ShowSceneControl to have been loaded */
-        private void LateInit()
-        {
-            RenderConfiguration = new RenderViewConfiguration()
-            {
-                ShowGridAndGizmos = true,
-                TransformGizmo = new TransformGizmo(),
-            };
 
-
-            _camSetupProvider = new ViewCameraSetupProvider(RenderConfiguration);
-            _renderSetup = new D3DRenderSetup(RenderConfiguration);
-            SetupRenderer();
-
-            CameraInteraction = new CameraInteraction(
-                RenderConfiguration,
-                this);
-        }
 
 
         private void SetRendererSizeFromWindow()

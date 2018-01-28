@@ -66,6 +66,6 @@
                       ResizeDirection="Rows"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Bottom" Background="Transparent"></GridSplitter>
-        <local1:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local1:PresetGrid>
+        <!--<local1:PresetGrid x:Name="XPresetGrid" Grid.Row="2"></local1:PresetGrid>-->
     </Grid>
 </UserControl>
