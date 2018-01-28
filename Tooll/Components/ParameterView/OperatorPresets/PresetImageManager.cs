@@ -44,12 +44,12 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-        internal D3DImageSharpDX RenderImageForPreset(OperatorPreset preset, RenderViewConfiguration renderConfig = null)
+        internal D3DImageSharpDX RenderImageForPreset(OperatorPreset preset, RenderViewConfiguration referenceConfig = null)
         {
-            if (renderConfig == null)
-                renderConfig = App.Current.MainWindow.XRenderView.XShowContentControl.RenderConfiguration;
+            if (referenceConfig == null)
+                referenceConfig = App.Current.MainWindow.XRenderView.XShowContentControl.RenderConfiguration;
 
-            var renderSetup = CreateOrReuseRenderSetup(renderConfig);
+            var renderSetup = CreateOrReuseRenderSetup(referenceConfig);
 
             _renderSetupsByPreset[preset] = renderSetup;
 
@@ -81,6 +81,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 var setup = _renderSetupPool.Dequeue();
                 setup.RenderConfig.CameraSetup = referenceConfig.CameraSetup;
                 setup.RenderConfig.Operator = referenceConfig.Operator;
+                setup.RenderConfig.RenderWithGammaCorrection = referenceConfig.RenderWithGammaCorrection;
                 return setup;
             }
 
