@@ -1054,6 +1054,18 @@
   <ItemGroup>
     <Resource Include="Images\components\color-circle-quad.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\view-icons\gamma-correction%402x.png" />
+    <Resource Include="Images\view-icons\gamma-correction.png" />
+    <Resource Include="Images\view-icons\grid%402x.png" />
+    <Resource Include="Images\view-icons\grid.png" />
+    <Resource Include="Images\view-icons\view-hover%402x.png" />
+    <Resource Include="Images\view-icons\view-hover.png" />
+    <Resource Include="Images\view-icons\view-locked%402x.png" />
+    <Resource Include="Images\view-icons\view-locked.png" />
+    <Resource Include="Images\view-icons\view-selected%402x.png" />
+    <Resource Include="Images\view-icons\view-selected.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

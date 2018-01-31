@@ -18,7 +18,7 @@
     >
     <UserControl.Resources>
         <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>
-        <Style BasedOn="{StaticResource ToggleButtonStyle}" TargetType="{x:Type ToggleButton}"/>
+        <Style BasedOn="{StaticResource ViewOptionToggleStyle}" TargetType="{x:Type ToggleButton}"/>
 
     </UserControl.Resources>
 
@@ -29,24 +29,50 @@
         <SelectionView:ShowAsTextControl x:Name="XShowAsTextControl" Visibility="Hidden" Focusable="True"/>
 
         <StackPanel Orientation="Horizontal" 
-                    HorizontalAlignment="Left" Background="#50000000" VerticalAlignment="Top">
-
-            <CheckBox  x:Name="XStickyCheckbox"
+                    HorizontalAlignment="Left" 
+                    Background="#30000000" 
+                    VerticalAlignment="Top">
+            <ToggleButton x:Name="XHoverButton" 
+                          Click="XLinearButton_Click"  
+                          IsChecked="False"
+                          ToolTip="Show hovered operator">
+                <Image Source="/Tooll;component/Images/view-icons/view-hover.png"/>
+            </ToggleButton>
+            <ToggleButton x:Name="XLockedButton" 
+                          IsChecked="False"
+                          Click="ToggleLocked_ClickedHandler"
+                          ToolTip="Lock view to show..."
+                          >
+                <Image Source="/Tooll;component/Images/view-icons/view-locked.png"/>
+            </ToggleButton>
+            <!--<CheckBox  x:Name="XStickyCheckbox"
                        Margin="5" 
                        Foreground="White" Content="Lock to..."
                        Background="Transparent"
-                       Click="CheckBox_StickyClickedHandler"/>
+                       />-->
             <TextBlock x:Name="XSelectedOperatorName" 
                        Text="nothing selected"
                        Foreground="White"
                        Margin="5"
-                       MouseUp="OnClickLockedOpLabel"/>
+                       MouseUp="OnClickLockedOpLabel">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="0"/>
+                </TextBlock.Effect>
+            </TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" 
-                    HorizontalAlignment="Right" Background="#50000000" VerticalAlignment="Top">
-            <ToggleButton x:Name="XGizmoButton" Click="XGizmoButton_Click"  IsChecked="True">Gizmos</ToggleButton>
-            <ToggleButton x:Name="XLinearButton" Click="XLinearButton_Click"  IsChecked="False">
-                <Image Source="/Tooll;component/Images/icon-key-off.png"></Image>
+                    HorizontalAlignment="Right" Background="#30000000" VerticalAlignment="Top">
+            <ToggleButton x:Name="XGizmoButton" 
+                          Click="XGizmoButton_Click"  
+                          IsChecked="True"
+                          ToolTip="Show grid and gizmos">
+                <Image Source="/Tooll;component/Images/view-icons/grid.png"/>
+            </ToggleButton>
+            <ToggleButton x:Name="XLinearButton" 
+                          Click="XLinearButton_Click"  
+                          IsChecked="False"
+                          ToolTip="Enable gamma correction for PBR rendering">
+                <Image Source="/Tooll;component/Images/view-icons/gamma-correction.png"/>
             </ToggleButton>
         </StackPanel>
 

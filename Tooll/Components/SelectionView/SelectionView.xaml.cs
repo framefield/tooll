@@ -166,7 +166,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             _shownOperatorWidget = null;
             XSelectedOperatorName.Text = "?";
-            XStickyCheckbox.IsChecked = false;
+            XLockedButton.IsChecked = false;
 
             XShowCurveControl.Curve = null;
             XShowAsTextControl.SetOperatorAndOutput(null);
@@ -193,7 +193,7 @@ namespace Framefield.Tooll.Components.SelectionView
             if (op == null)
                 return;
 
-            if (XStickyCheckbox.IsChecked == true)
+            if (XLockedButton.IsChecked == true)
                 return;
 
             // Remove handler from old op?
@@ -256,10 +256,10 @@ namespace Framefield.Tooll.Components.SelectionView
             SetOperatorWidget(e.Element as OperatorWidget);
         }
 
-        private void CheckBox_StickyClickedHandler(object sender, RoutedEventArgs e)
+        private void ToggleLocked_ClickedHandler(object sender, RoutedEventArgs e)
         #region XAML Event handlers
         {
-            if (XStickyCheckbox.IsChecked == true)
+            if (XLockedButton.IsChecked == true)
             {
                 if (_shownOperatorWidget != null)
                 {

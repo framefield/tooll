@@ -16,8 +16,7 @@
             <Setter Property="FontSize" Value="12"/>
         </Style>
 
-        
-        
+
         <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -166,7 +165,7 @@
                             </Trigger>
                             <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
                                 <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
-                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,0,0,0"/>                                
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,0,0,0"/>
                             </Trigger>
                             <Trigger Property="IsEditable"  Value="true">
                                 <Setter Property="IsTabStop" Value="false"/>
@@ -206,7 +205,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-       
+
 
         <Style TargetType="{x:Type Button}" x:Key="ButtonStyle">
             <Setter Property="Foreground" Value="White"/>
@@ -312,7 +311,7 @@
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="innerRect" Property="Fill" Value="Orange"/>
                                 <Setter Property="Foreground" Value="Black"/>
-                                
+
                                 <Setter TargetName="top" Property="Fill" Value="#202020"/>
                                 <Setter TargetName="bottom" Property="Fill" Value="#393939"/>
                                 <Setter TargetName="content" Property="Margin" Value="4,4,2,2"/>
@@ -322,6 +321,56 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="{x:Type ToggleButton}" x:Key="ViewOptionToggleStyle">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Background" Value="Transparent"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition 
+                                    Height="Auto" 
+                                    MinHeight="21" 
+                                    MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
+                            </Grid.RowDefinitions>
+
+                            <Rectangle Name="innerRect" Grid.Row="0" Fill="Transparent" Opacity="0.1" />
+                            <Rectangle 
+                                Name="Left" Grid.Row="1" Fill="#32272727" 
+                                Opacity="0"
+                                Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                                />
+
+
+                            <ContentPresenter 
+                                Name="content"
+                                Opacity="0.1"
+                                Grid.Row="0"  
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="{Binding RelativeSource={RelativeSource TemplatedParent},Path=HorizontalContentAlignment}"
+                                Margin="2"  />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="content" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="content" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
 
     </Application.Resources>
 </Application>

@@ -358,9 +358,9 @@ namespace Framefield.Tooll
             var ow = SelectionHandler.SelectedElements[0] as OperatorWidget;
             if (ow != null)
             {
-                App.Current.MainWindow.XRenderView.XStickyCheckbox.IsChecked = false;
+                App.Current.MainWindow.XRenderView.XLockedButton.IsChecked = false;
                 App.Current.MainWindow.XRenderView.SetOperatorWidget(ow);
-                App.Current.MainWindow.XRenderView.XStickyCheckbox.IsChecked = true;
+                App.Current.MainWindow.XRenderView.XLockedButton.IsChecked = true;
             }
         }
 
