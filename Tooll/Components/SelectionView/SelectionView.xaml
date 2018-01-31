@@ -14,7 +14,9 @@
              SnapsToDevicePixels="True" 
              UseLayoutRounding="True"
              GotFocus="GotFocusHandler" 
-             LostFocus="LostFocusHandler" BorderThickness="1"             
+             LostFocus="LostFocusHandler" BorderThickness="1"     
+             Loaded="XRenderView_Loaded"
+             Unloaded="XRenderView_Unloaded"
     >
     <UserControl.Resources>
         <Style BasedOn="{StaticResource ButtonStyle}" TargetType="{x:Type Button}"/>

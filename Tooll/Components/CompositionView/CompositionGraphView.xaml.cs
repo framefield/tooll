@@ -90,6 +90,7 @@ namespace Framefield.Tooll
             Unloaded += CompositionGraphView_Unloaded;
         }
 
+
         private void CompositionGraphView_Loaded(object sender, RoutedEventArgs e)
         {
             CV.XCompositionToolBar.XBreadCrumbsView.JumpOutEvent += XBreadCrumbs_JumpOutEvent;
@@ -109,11 +110,18 @@ namespace Framefield.Tooll
             ConnectionDragHelper = new ConnectionDragHelper(this);
         }
 
+
+
+
+
+
+
         private void CompositionGraphView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             UpdateConnectionsFromInputs();
             UpdateConnectionsToOutputs();
         }
+
 
         private void CompositionGraphView_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -121,7 +129,12 @@ namespace Framefield.Tooll
             SelectionHandler.SelectionChanged -= SelectionChangedHandler;
             KeyUp -= KeyUpHandler;
             SizeChanged -= CompositionGraphView_SizeChanged;
+
         }
+
+
+
+
 
         private void SelectionChangedHandler(object sender, SelectionHandler.SelectionChangedEventArgs e)
         {
@@ -526,7 +539,7 @@ namespace Framefield.Tooll
 
         #endregion Selection Event handling
 
-        #region model change event handles
+        #region model change event handlers
 
         private void CompositionOperator_OperatorAddedHandler(object sender, OperatorChangedEventArgs e)
         {
@@ -535,9 +548,11 @@ namespace Framefield.Tooll
                 SelectElement(opWidget);
         }
 
+
         private void CompositionOperator_OperatorRemovedHandler(object sender, OperatorChangedEventArgs e)
         {
             var opWidgetToRemove = FindCorrespondingWidget(e.Operator);
+            RemoveEventHandlersFromOpWidget(opWidgetToRemove);
             XOperatorCanvas.Children.Remove(opWidgetToRemove);
             SelectionHandler.RemoveElement(opWidgetToRemove);
 
@@ -562,6 +577,7 @@ namespace Framefield.Tooll
                         Annotations.Remove(anvm);
                 }
             }
+
         }
 
         private void CompositionOperator_ConnectionInsertedHandler(object sender, ConnectionChangedEventArgs e)
@@ -1272,38 +1288,39 @@ namespace Framefield.Tooll
 
         private OperatorWidget AddOperatorWidget(Operator op)
         {
-            var opWidget = new OperatorWidget(op);
-            opWidget.SelectedEvent += OpWidget_OperatorSelectedHandler;
-            opWidget.OpenedEvent += OpWidget_OperatorOpenedHandler;
+            var newOpWidget = new OperatorWidget(op);
+            AddSelectionHandlersToNewOpWidget(newOpWidget);
+            AddHoverHandlersToNewOpWidget(newOpWidget);
+            _opWidgets.Add(newOpWidget);
 
-            XOperatorCanvas.Children.Add(opWidget);
+            XOperatorCanvas.Children.Add(newOpWidget);
 
             if (op.InternalParts.Count > 0)
             {
                 ITimeClip tc = op.InternalParts[0].Func as ITimeClip;
                 if (tc != null)
                 {
-                    TimeClipViewModel tcvm = TimeClips.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    TimeClipViewModel tcvm = TimeClips.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (tcvm == null)
-                        TimeClips.Add(new TimeClipViewModel(opWidget));
+                        TimeClips.Add(new TimeClipViewModel(newOpWidget));
                 }
                 ITimeMarker tm = op.InternalParts[0].Func as ITimeMarker;
                 if (tm != null)
                 {
-                    TimeMarkerViewModel tmvm = TimeMarkers.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    TimeMarkerViewModel tmvm = TimeMarkers.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (tmvm == null)
-                        TimeMarkers.Add(new TimeMarkerViewModel(opWidget));
+                        TimeMarkers.Add(new TimeMarkerViewModel(newOpWidget));
                 }
 
                 IAnnotation an = op.InternalParts[0].Func as IAnnotation;
                 if (an != null)
                 {
-                    AnnotationViewModel anvm = Annotations.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    AnnotationViewModel anvm = Annotations.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (anvm == null)
-                        Annotations.Add(new AnnotationViewModel(opWidget));
+                        Annotations.Add(new AnnotationViewModel(newOpWidget));
                 }
             }
-            return opWidget;
+            return newOpWidget;
         }
 
         private void AddConnectionLine(Connection connection)
@@ -1415,6 +1432,8 @@ namespace Framefield.Tooll
 
         #endregion private helper methods for UI
 
+
+
         #region interface IConnectableWidget
 
         public CompositionView CV
@@ -1500,13 +1519,16 @@ namespace Framefield.Tooll
             return eventWasHandled;
         }
 
+
         private void ClearGUI()
         {
+            RemoveEventHandlersFromAllOpWidgets();
             XOperatorCanvas.Children.Clear();
             InputView.Panel.Children.Clear();
             OutputView.Panel.Children.Clear();
             SelectionHandler.Clear();
         }
+
 
         #endregion interface IElementView
 
@@ -1904,6 +1926,90 @@ namespace Framefield.Tooll
             CenterAllOrSelectedElements();
         }
 
+
+        #region events for OpWidgets
+        private void AddEventHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            AddSelectionHandlersToNewOpWidget(opWidget);
+            AddHoverHandlersToNewOpWidget(opWidget);
+        }
+
+        private void RemoveEventHandlersFromAllOpWidgets()
+        {
+            foreach (var opWidget in _opWidgets)
+            {
+                RemoveEventHandlersFromOpWidget(opWidget);
+            }
+        }
+
+        private void RemoveEventHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            RemoveSelectionHandlersFromOpWidget(opWidget);
+            RemoveHoverHandlersFromOpWidget(opWidget);
+
+        }
+        #endregion
+
+
+        #region Operator Widget Selection handling
+        private void AddSelectionHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.SelectedEvent += OpWidget_OperatorSelectedHandler;
+            opWidget.OpenedEvent += OpWidget_OperatorOpenedHandler;
+        }
+
+        private void RemoveSelectionHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.SelectedEvent -= OpWidget_OperatorSelectedHandler;
+            opWidget.OpenedEvent -= OpWidget_OperatorOpenedHandler;
+        }
+
+
+        #endregion
+
+
+        #region operator hovering
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverStartEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverUpdateEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverEndEvent;
+
+
+        // Forward events
+        private void OperatorHoverStartHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverStartEvent?.Invoke(sender, e);
+        }
+
+        private void OperatorHoverUpdateHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverUpdateEvent?.Invoke(sender, e);
+        }
+
+        private void OperatorHoverEndHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverEndEvent?.Invoke(sender, e);
+        }
+
+        private void AddHoverHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.OperatorHoverStartEvent += OperatorHoverStartHandler;
+            opWidget.OperatorHoverUpdateEvent += OperatorHoverUpdateHandler;
+            opWidget.OperatorHoverEndEvent += OperatorHoverEndHandler;
+        }
+
+        /** This needs to be called on remove */
+        private void RemoveHoverHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.OperatorHoverStartEvent -= OperatorHoverStartHandler;
+            opWidget.OperatorHoverUpdateEvent -= OperatorHoverUpdateHandler;
+            opWidget.OperatorHoverEndEvent -= OperatorHoverEndHandler;
+        }
+        #endregion
+
+
         public ConnectionDragHelper ConnectionDragHelper;
+
+        /** Keep track of all created opWidgets to remove event-handlers on cleanup */
+        private List<OperatorWidget> _opWidgets = new List<OperatorWidget>();
     }
 }

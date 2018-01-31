@@ -19,11 +19,50 @@ namespace Framefield.Tooll.Components.SelectionView
             InitializeComponent();
 
             DisplayMode = DisplayAs.Nothing;
+        }
+
+        private void XRenderView_Loaded(object sender, RoutedEventArgs e)
+        {
             ContextMenuOpening += ContextMenuOpening_Handler;
+            var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
+            CGV.OperatorHoverStartEvent += CGV_OperatorHoverStartEvent;
+            CGV.OperatorHoverEndEvent += CGV_OperatorHoverEndEvent;
+
         }
 
 
-        void ContextMenuOpening_Handler(object sender, ContextMenuEventArgs e)
+        private void XRenderView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            ContextMenuOpening -= ContextMenuOpening_Handler;
+        }
+
+
+
+
+        #region hover event handling
+        private void CGV_OperatorHoverStartEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == true)
+            {
+                SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+            }
+        }
+
+        private void CGV_OperatorHoverEndEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == true && _selectionBeforeHover != null)
+            {
+                SetOperatorWidget(_selectionBeforeHover);
+            }
+        }
+
+        private OperatorWidget _selectionBeforeHover;
+        #endregion
+
+
+
+
+        private void ContextMenuOpening_Handler(object sender, ContextMenuEventArgs e)
         {
             if (Operator == null || Operator.Outputs.Count < 1 || _displayMode == DisplayAs.Curve)
                 return;
@@ -184,17 +223,30 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private int _shownOutputIndex = 0;
 
-        public void SetOperatorWidget(OperatorWidget opWidget)
+
+        /** Tries to select operator widget if view isn't locked. 
+         Returns true if successful. */
+        public bool SetOperatorWidget(OperatorWidget opWidget, bool forHoverOnly = false)
         {
+            if (XLockedButton.IsChecked == true)
+                return false;
+
             if (opWidget == null || opWidget == _shownOperatorWidget)
-                return;
+                return false;
 
             var op = opWidget.Operator;
             if (op == null)
-                return;
+                return false;
 
-            if (XLockedButton.IsChecked == true)
-                return;
+
+            if (forHoverOnly)
+            {
+                _selectionBeforeHover = opWidget;
+            }
+            else
+            {
+                _selectionBeforeHover = null;
+            }
 
             // Remove handler from old op?
             if (_shownOperatorWidget != null)
@@ -210,7 +262,10 @@ namespace Framefield.Tooll.Components.SelectionView
             _shownOutputIndex = 0;
 
             UpdateShowControls();
+            return true;
         }
+
+
 
         private void UpdateShowControls()
         {
@@ -251,10 +306,12 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
+
         public void UpdateViewToCurrentSelectionHandler(object sender, SelectionHandler.FirstSelectedChangedEventArgs e)
         {
             SetOperatorWidget(e.Element as OperatorWidget);
         }
+
 
         private void ToggleLocked_ClickedHandler(object sender, RoutedEventArgs e)
         #region XAML Event handlers
@@ -337,6 +394,7 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
         public int PreferredCubeMapSideIndex { get; set; }
+
 
     }
 }

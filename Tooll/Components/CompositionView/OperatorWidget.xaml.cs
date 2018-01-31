@@ -1050,5 +1050,34 @@ namespace Framefield.Tooll
         }
 
         #endregion find composition view
+
+
+        #region hover event handling
+        public class HoverEventsArgs : EventArgs
+        {
+            public OperatorWidget OpWidget;
+            public float HorizontalPosition;
+        }
+
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverStartEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverUpdateEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverEndEvent;
+
+
+        private void XControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            OperatorHoverStartEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+        }
+
+        private void XControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            OperatorHoverUpdateEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+        }
+
+        private void XControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            OperatorHoverEndEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+        }
+        #endregion
     }
 }
