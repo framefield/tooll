@@ -256,19 +256,6 @@ namespace Framefield.Tooll.Components.SelectionView
                 return false;
 
             var op = opWidget.Operator;
-            //if (op == null)
-            //    return false;
-
-            // Was explicity set e.g. by selection
-
-            //if (forHoverOnly)
-            //{
-            //    _selectionBeforeHover = opWidget;
-            //}
-            //else
-            //{
-            //    _selectionBeforeHover = null;
-            //}
 
             // Remove handler from old op?  Why do we need this?
             if (_shownOperatorWidget != null)
@@ -306,12 +293,12 @@ namespace Framefield.Tooll.Components.SelectionView
                 XShowCurveControl.Curve = curve;
                 newDisplayMode = DisplayAs.Curve;
             }
-            else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh)
+            else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh || output.Type == FunctionType.Float)
             {
                 newDisplayMode = DisplayAs.Scene;
                 XShowContentControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex);
             }
-            else if (output.Type == FunctionType.Float || output.Type == FunctionType.Generic ||
+            else if (output.Type == FunctionType.Generic ||
                      output.Type == FunctionType.Text)
             {
                 newDisplayMode = DisplayAs.Text;

@@ -32,6 +32,9 @@ namespace Framefield.Tooll.Rendering
 
             var cubemapSphereDefinition = MetaManager.Instance.GetMetaOperator(Guid.Parse("276da400-ea2d-4769-9e69-07dd652c928e"));
             _cubemapSphereOperator = cubemapSphereDefinition.CreateOperator(Guid.Empty);
+
+            var plotValueDefinition = MetaManager.Instance.GetMetaOperator(Guid.Parse("0fa9a212-427c-4098-a429-7996ad36be5d"));
+            _plotValueOperator = plotValueDefinition.CreateOperator(Guid.Empty);
         }
 
         public void Dispose()
@@ -40,6 +43,7 @@ namespace Framefield.Tooll.Rendering
             Utilities.DisposeObj(ref _sceneGridOperator);
             Utilities.DisposeObj(ref _imageBackgroundOperator);
             Utilities.DisposeObj(ref _cubemapSphereOperator);
+            Utilities.DisposeObj(ref _plotValueOperator);
             Utilities.DisposeObj(ref _D3DImageContainer);
         }
 
@@ -143,6 +147,10 @@ namespace Framefield.Tooll.Rendering
 
                 switch (evaluationType)
                 {
+                    case FunctionType.Float:
+                        RenderValuePlot(context, RenderConfig);
+                        break;
+
                     case FunctionType.Scene:
                         Action<OperatorPartContext, int> lambdaForScenes = (OperatorPartContext context2, int outputIdx) =>
                         {
@@ -260,6 +268,22 @@ namespace Framefield.Tooll.Rendering
             }
             _gpuSyncer.Sync(D3D11Device.ImmediateContext);
         }
+
+        public void RenderValuePlot(OperatorPartContext context, RenderViewConfiguration renderConfig)
+        {
+            SetupContextForGeometry(context);
+
+            renderConfig.Operator.Outputs[renderConfig.ShownOutputIndex].Eval(context);
+
+            context.Variables[OperatorPartContext.PLOT_FLOAT_VALUE] = context.Value;
+
+            var invalidator = new OperatorPart.InvalidateInvalidatables();
+            _plotValueOperator.Outputs[0].TraverseWithFunction(null, invalidator);
+
+            _plotValueOperator.Outputs[0].Eval(context);
+            _gpuSyncer.Sync(D3D11Device.ImmediateContext);
+        }
+
 
 
         private void SetupContextForGeometry(OperatorPartContext context)
@@ -509,6 +533,7 @@ namespace Framefield.Tooll.Rendering
         private Operator _sceneGridOperator;
         private Operator _imageBackgroundOperator;
         private Operator _cubemapSphereOperator;
+        private Operator _plotValueOperator;
 
         private InputLayout _inputLayout;
         private RenderTargetView _sharedTextureRenderView;

@@ -22,7 +22,8 @@ namespace Framefield.Core
         public static readonly string TESTS_EVALUATOR_ID = "Core.Testing.TestsEvaluator";
         public static readonly string UI_EVENT_ID = "Core.UI.Event";
         public static readonly string DEBUG_VARIABLE_NAME = "ShowDebugOverlays";
-        public static readonly string PREFERRED_CUBEMAP_SIDE_INDEX = "Tooll.UI.CubeMapSideIndex"; 
+        public static readonly string PLOT_FLOAT_VALUE = "Value.ForPlot";
+        public static readonly string PREFERRED_CUBEMAP_SIDE_INDEX = "Tooll.UI.CubeMapSideIndex";
 
         public float Time { get; set; }
         public float GlobalTime { get; private set; }
@@ -64,8 +65,8 @@ namespace Framefield.Core
             context.Viewport = new ViewportF(0, 0, settings.DisplayMode.Width, settings.DisplayMode.Height);
             context.Variables.Add("Screensize.Width", settings.DisplayMode.Width);
             context.Variables.Add("Screensize.Height", settings.DisplayMode.Height);
-            context.Variables.Add("AspectRatio", (float) settings.AspectRatio);
-            context.Variables.Add("Samples", (float) settings.Sampling);
+            context.Variables.Add("AspectRatio", (float)settings.AspectRatio);
+            context.Variables.Add("Samples", (float)settings.Sampling);
             context.Variables.Add("FullScreen", settings.FullScreen ? 1.0f : 0.0f);
             context.Variables.Add("LoopMode", settings.Looped ? 1.0f : 0.0f);
             return context;
@@ -83,7 +84,7 @@ namespace Framefield.Core
             DepthImage = null;
             ObjectTWorld = Matrix.Identity;
             WorldToCamera = Matrix.LookAtLH(new Vector3(0, 0, -2.415f), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-            CameraProjection = Matrix.PerspectiveFovLH(3.1415f/4.0f, 1.3333f, 0.1f, 100);
+            CameraProjection = Matrix.PerspectiveFovLH(3.1415f / 4.0f, 1.3333f, 0.1f, 100);
             TextureMatrix = Matrix.Identity;
             Renderer = DefaultRenderer;
             InputLayout = Renderer.SceneDefaultInputLayout;
@@ -110,7 +111,7 @@ namespace Framefield.Core
             GlobalTime = other.GlobalTime;
             Time = other.Time;
             _variables = new Dictionary<string, float>(other._variables);
-            _objects = new Dictionary<string,object>(other._objects);
+            _objects = new Dictionary<string, object>(other._objects);
             Value = other.Value;
             Text = string.Copy(other.Text);
             Mesh = other.Mesh;

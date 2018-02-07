@@ -234,7 +234,6 @@ namespace Framefield.Tooll
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Logger.Info("OperatorParameterView.Unload()");
             foreach (var opPart in _operator.Inputs)
             {
                 opPart.ManipulatedEvent += opPart_ModifiedEventHandler;
