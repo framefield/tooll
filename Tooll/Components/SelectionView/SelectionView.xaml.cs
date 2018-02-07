@@ -38,24 +38,39 @@ namespace Framefield.Tooll.Components.SelectionView
 
 
 
-
         #region hover event handling
         private void CGV_OperatorHoverStartEvent(object sender, OperatorWidget.HoverEventsArgs e)
         {
-            if (XHoverButton.IsChecked == true)
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (e.OpWidget == _shownOperatorWidget)
             {
-                SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+                return;
             }
+
+            if (_isShowingHover)
+                return;
+
+            _selectionBeforeHover = _shownOperatorWidget;
+            SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+            _isShowingHover = true;
         }
 
         private void CGV_OperatorHoverEndEvent(object sender, OperatorWidget.HoverEventsArgs e)
         {
-            if (XHoverButton.IsChecked == true && _selectionBeforeHover != null)
-            {
-                SetOperatorWidget(_selectionBeforeHover);
-            }
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (!_isShowingHover)
+                return;
+
+            SetOperatorWidget(_selectionBeforeHover);
+            _isShowingHover = false;
+            _selectionBeforeHover = null;
         }
 
+        bool _isShowingHover = false;
         private OperatorWidget _selectionBeforeHover;
         #endregion
 
@@ -231,24 +246,31 @@ namespace Framefield.Tooll.Components.SelectionView
             if (XLockedButton.IsChecked == true)
                 return false;
 
+            if (!forHoverOnly)
+            {
+                _isShowingHover = false;
+            }
+
+
             if (opWidget == null || opWidget == _shownOperatorWidget)
                 return false;
 
             var op = opWidget.Operator;
-            if (op == null)
-                return false;
+            //if (op == null)
+            //    return false;
 
+            // Was explicity set e.g. by selection
 
-            if (forHoverOnly)
-            {
-                _selectionBeforeHover = opWidget;
-            }
-            else
-            {
-                _selectionBeforeHover = null;
-            }
+            //if (forHoverOnly)
+            //{
+            //    _selectionBeforeHover = opWidget;
+            //}
+            //else
+            //{
+            //    _selectionBeforeHover = null;
+            //}
 
-            // Remove handler from old op?
+            // Remove handler from old op?  Why do we need this?
             if (_shownOperatorWidget != null)
             {
                 _shownOperatorWidget.Operator.Parent.OperatorRemovedEvent -= Parent_OperatorRemovedEventHandler;
