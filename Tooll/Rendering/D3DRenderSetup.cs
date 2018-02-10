@@ -138,7 +138,9 @@ namespace Framefield.Tooll.Rendering
 
             try
             {
-                var context = new OperatorPartContext(_defaultContext, (float)App.Current.Model.GlobalTime);
+                var context = new OperatorPartContext(
+                                    _defaultContext,
+                                    (float)(App.Current.Model.GlobalTime + RenderConfig.TimeScrubOffset));
 
                 var invalidator = new OperatorPart.InvalidateInvalidatables();
                 RenderConfig.Operator.Outputs[RenderConfig.ShownOutputIndex].TraverseWithFunctionUseSpecificBehavior(null, invalidator);

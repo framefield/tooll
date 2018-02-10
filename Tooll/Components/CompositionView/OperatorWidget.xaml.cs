@@ -663,6 +663,9 @@ namespace Framefield.Tooll
 
         private void XWidgetThumb_MouseMove(object sender, MouseEventArgs e)
         {
+            var ha = BuildHoverArgs(e);
+            OperatorHoverUpdateEvent?.Invoke(this, ha);
+
             UpdateCursorShape();
             e.Handled = true;
         }
@@ -1066,18 +1069,32 @@ namespace Framefield.Tooll
 
         private void XControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            OperatorHoverStartEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+            OperatorHoverStartEvent?.Invoke(this, BuildHoverArgs(e));
         }
 
         private void XControl_MouseMove(object sender, MouseEventArgs e)
         {
-            OperatorHoverUpdateEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+            var ha = BuildHoverArgs(e);
+            OperatorHoverUpdateEvent?.Invoke(this, ha);
         }
 
         private void XControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            OperatorHoverEndEvent?.Invoke(this, new HoverEventsArgs() { OpWidget = this, HorizontalPosition = 0 });
+            OperatorHoverEndEvent?.Invoke(this, BuildHoverArgs(e));
         }
+
+        private HoverEventsArgs BuildHoverArgs(MouseEventArgs mouseArgs)
+        {
+            return new HoverEventsArgs() { OpWidget = this, HorizontalPosition = GetRelativeXPosition(mouseArgs) };
+        }
+
+        private float GetRelativeXPosition(MouseEventArgs mouseArgs)
+        {
+            var mousePosition = mouseArgs.GetPosition(this);
+            var relativePosition = mousePosition.X / this.ActualWidth;
+            return (float)relativePosition;
+        }
+
         #endregion
     }
 }

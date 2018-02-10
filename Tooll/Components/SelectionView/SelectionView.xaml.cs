@@ -23,9 +23,10 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void XRenderView_Loaded(object sender, RoutedEventArgs e)
         {
-            ContextMenuOpening += ContextMenuOpening_Handler;
             var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
+            ContextMenuOpening += ContextMenuOpening_Handler;
             CGV.OperatorHoverStartEvent += CGV_OperatorHoverStartEvent;
+            CGV.OperatorHoverUpdateEvent += CGV_OperatorHoverUpdateEvent;
             CGV.OperatorHoverEndEvent += CGV_OperatorHoverEndEvent;
 
         }
@@ -33,7 +34,11 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void XRenderView_Unloaded(object sender, RoutedEventArgs e)
         {
+            var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
             ContextMenuOpening -= ContextMenuOpening_Handler;
+            CGV.OperatorHoverStartEvent -= CGV_OperatorHoverStartEvent;
+            CGV.OperatorHoverUpdateEvent -= CGV_OperatorHoverUpdateEvent;
+            CGV.OperatorHoverEndEvent -= CGV_OperatorHoverEndEvent;
         }
 
 
@@ -52,9 +57,28 @@ namespace Framefield.Tooll.Components.SelectionView
             if (_isShowingHover)
                 return;
 
+
             _selectionBeforeHover = _shownOperatorWidget;
+            _hoverTimeScrubbingOffset = ComputeTimeScrubbingOffset(e);
             SetOperatorWidget(e.OpWidget, forHoverOnly: true);
             _isShowingHover = true;
+        }
+
+        private void CGV_OperatorHoverUpdateEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (!_isShowingHover)
+                return;
+
+            _hoverTimeScrubbingOffset = ComputeTimeScrubbingOffset(e);
+            SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+        }
+
+        private double ComputeTimeScrubbingOffset(OperatorWidget.HoverEventsArgs hoverArgs)
+        {
+            return (hoverArgs.HorizontalPosition - 0.5f) * 15f;
         }
 
         private void CGV_OperatorHoverEndEvent(object sender, OperatorWidget.HoverEventsArgs e)
@@ -65,12 +89,14 @@ namespace Framefield.Tooll.Components.SelectionView
             if (!_isShowingHover)
                 return;
 
+            _hoverTimeScrubbingOffset = 0;
             SetOperatorWidget(_selectionBeforeHover);
             _isShowingHover = false;
             _selectionBeforeHover = null;
         }
 
         bool _isShowingHover = false;
+        double _hoverTimeScrubbingOffset = 0;
         private OperatorWidget _selectionBeforeHover;
         #endregion
 
@@ -160,8 +186,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         enum DisplayAs
         {
-            Scene,
-            Image,
+            SceneContent,
             Text,
             Curve,
             Nothing,
@@ -185,7 +210,7 @@ namespace Framefield.Tooll.Components.SelectionView
         private void UpdateControlVisibility()
         {
             var visibilityOfCurve = Visibility.Hidden;
-            var visibilityOfScene = Visibility.Hidden;
+            var visibilityOfSceneContent = Visibility.Hidden;
             var visibilityOfText = Visibility.Hidden;
 
             switch (DisplayMode)
@@ -193,21 +218,19 @@ namespace Framefield.Tooll.Components.SelectionView
                 case DisplayAs.Curve:
                     visibilityOfCurve = Visibility.Visible;
                     break;
-                case DisplayAs.Scene:
-                    visibilityOfScene = Visibility.Visible;
+
+                case DisplayAs.SceneContent:
+                    visibilityOfSceneContent = Visibility.Visible;
                     break;
-                //case DisplayAs.Image:
-                //    visibilityOfImage = Visibility.Visible;
-                //    break;
+
                 case DisplayAs.Text:
                     visibilityOfText = Visibility.Visible;
                     break;
             }
 
             XShowCurveControl.Visibility = visibilityOfCurve;
-            XShowContentControl.Visibility = visibilityOfScene;
+            XShowContentControl.Visibility = visibilityOfSceneContent;
             XShowAsTextControl.Visibility = visibilityOfText;
-            //XShowImageControl.Visibility = visibilityImage;
         }
 
         private void DiscardShownOperator()
@@ -227,17 +250,14 @@ namespace Framefield.Tooll.Components.SelectionView
             XShowContentControl.SetOperatorAndOutputIndex(null);
         }
 
+
         public Operator Operator
         {
-            get
-            {
-                return _shownOperatorWidget == null ? null
-                                                    : _shownOperatorWidget.Operator;
-            }
+            get { return _shownOperatorWidget?.Operator; }
         }
 
         private int _shownOutputIndex = 0;
-
+        private double _lastRenderedHoverTime = 0;
 
         /** Tries to select operator widget if view isn't locked. 
          Returns true if successful. */
@@ -252,7 +272,12 @@ namespace Framefield.Tooll.Components.SelectionView
             }
 
 
-            if (opWidget == null || opWidget == _shownOperatorWidget)
+            var hasOpWidgetChanged = opWidget != _shownOperatorWidget
+                                || _hoverTimeScrubbingOffset != _lastRenderedHoverTime;
+
+            _lastRenderedHoverTime = _hoverTimeScrubbingOffset;
+
+            if (opWidget == null || !hasOpWidgetChanged)
                 return false;
 
             var op = opWidget.Operator;
@@ -295,8 +320,8 @@ namespace Framefield.Tooll.Components.SelectionView
             }
             else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh || output.Type == FunctionType.Float)
             {
-                newDisplayMode = DisplayAs.Scene;
-                XShowContentControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex);
+                newDisplayMode = DisplayAs.SceneContent;
+                XShowContentControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex, _hoverTimeScrubbingOffset);
             }
             else if (output.Type == FunctionType.Generic ||
                      output.Type == FunctionType.Text)

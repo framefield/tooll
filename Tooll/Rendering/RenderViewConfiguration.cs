@@ -16,6 +16,7 @@ namespace Framefield.Tooll.Rendering
         public TransformGizmo TransformGizmo;
 
         public bool RenderWithGammaCorrection;
+        public double TimeScrubOffset;
 
 
         public int Width

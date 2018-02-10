@@ -45,7 +45,6 @@ namespace Framefield.Tooll.Components.SelectionView
         /* This requires ShowSceneControl to have been loaded */
         private void LateInit()
         {
-            Logger.Info("ShowContentControl.LateInit()");
             RenderConfiguration = new RenderViewConfiguration()
             {
                 ShowGridAndGizmos = true,
@@ -66,7 +65,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void OnUnloadedHandler(object sender, RoutedEventArgs e)
         {
-            Logger.Info("Unloading ShowContentControl");
             KeyDown -= KeyDown_Handler;
             KeyUp -= KeyUp_Handler;
             LostFocus -= LostFocus_Handler;
@@ -91,7 +89,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
 
         /** Called by ShowContentControl */
-        public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0)
+        public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0, double timeScrubOffset = 0)
         {
             EnsureLateInitialization();
 
@@ -100,6 +98,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
             _camSetupProvider.SetSelectedOperator(op);
 
+            RenderConfiguration.TimeScrubOffset = timeScrubOffset;
             RenderConfiguration.ShownOutputIndex = outputIndex;
             RenderConfiguration.Operator = op;
             RenderContent();
