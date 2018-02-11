@@ -452,6 +452,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Rendering\RenderViewConfiguration.cs" />
+    <Compile Include="Utils\DirectoryManager.cs" />
     <Compile Include="Utils\ImportFbxScene.cs" />
     <Compile Include="ISelectable.cs" />
     <Compile Include="Components\CodeEditor\CodeEditor.xaml.cs">

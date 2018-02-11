@@ -12,6 +12,7 @@ using SharpDX.Direct3D11;
 using Framefield.Tooll.Rendering;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Framefield.Tooll.Utils;
 
 namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
@@ -195,9 +196,10 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         public string BuildImagePath(OperatorPreset preset)
         {
-            var imagePath = "assets-common/preset-thumbs/" + preset.Id + ".png";
-
-            return imagePath;
+            var filename = preset.Id + ".png";
+            return preset.IsInstancePreset
+                ? DirectoryManager.USER_PRESET_THUMBNAILS + filename
+                : DirectoryManager.GLOBAL_PRESET_THUMBNAILS + filename;
         }
 
         internal const int THUMB_WIDTH = 133;
