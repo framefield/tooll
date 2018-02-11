@@ -20,20 +20,35 @@
         </Grid.RowDefinitions>
         <Grid  Grid.Row="0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="XSaveButton" Click="SaveClicked_Handler" Grid.Column="0" HorizontalContentAlignment="Center" FontWeight="Bold">
-                Save Preset
-            </Button>
-            <Button x:Name="XSaveButtonForType" Click="SaveForTypeClicked_Handler" Grid.Column="1">
-                ...as global
-            </Button>
-            <Button Grid.Column="3" Click="RebuildAllButton_OnClick" >
-                Refresh
-            </Button>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Button x:Name="XSaveButton" 
+                        Click="SaveClicked_Handler"  
+                        HorizontalContentAlignment="Center" 
+                        FontWeight="Bold"
+                        Padding="5 1"
+                       >
+                    Save Preset
+                </Button>
+                <Button x:Name="XSaveButtonForType" 
+                        Click="SaveForTypeClicked_Handler"
+                        Padding="5 1">
+                    ...as global
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <Button Click="RebuildAllButton_OnClick"  Padding="5 1">
+                    Refresh
+                </Button>
+                <ToggleButton Click="LivePreview_OnClick"
+                              x:Name="XLiveViewToggle"
+                              Padding="5 1">
+                    Live
+                </ToggleButton>
+            </StackPanel>
 
         </Grid>
 

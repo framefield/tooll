@@ -40,6 +40,8 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+        public bool LivePreviewEnabled { get; set; }
+
         /** This is called from Parameter-View on selection change */
         public void FindAndShowPresetsForSelectedOp()
         {
@@ -58,17 +60,22 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                     }
                     CurrentOperatorPresets.Add(p); // FIXME: This triggers update events for each preset. Needs refactoring to new custom observable collection that enables range setting
                 }
-                SelectActivePreset();
+                HighlightActivePreset();
             }
             else
             {
                 CurrentOperatorPresets.Clear();
             }
-            RerenderCurrentThumbnails();
+
+            if (LivePreviewEnabled)
+            {
+                RerenderCurrentThumbnails();
+            }
         }
 
 
 
+        /** Called when pressing the "save global preset"-button in preview region of parameter view */
         public void SavePresetFromCurrentlyShownOperatorType()
         {
             var newPreset = TryToCreatePresetFromCurrentOperator();
@@ -79,6 +86,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+        /** Called when pressing the "save local preset"-button in preview region of parameter view */
         public void SavePresetFromCurrentlyShownOperatorInstance()
         {
             var newPreset = TryToCreatePresetFromCurrentOperator();
@@ -99,8 +107,159 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
 
 
+        /** Should be used when duplicating an Operator-Definition */
+        public void CopyPresetsOfOpToAnother(MetaOperator source, MetaOperator target)
+        {
+            int idx = 0;
+            if (_operatorPresetsByMetaOpID.ContainsKey(source.ID))
+            {
+                foreach (var srcPreset in _operatorPresetsByMetaOpID[source.ID])
+                {
+                    var newPreset = new OperatorPreset { MetaOperatorID = target.ID };
+                    foreach (var srcEntry in srcPreset.ValuesByParameterID)
+                    {
+                        try
+                        {
+                            var srcInputIdx = (from input in source.Inputs
+                                               where input.ID == srcEntry.Key
+                                               select source.Inputs.IndexOf(input)).Single();
+                            newPreset.ValuesByParameterID[target.Inputs[srcInputIdx].ID] = srcEntry.Value;
+                        }
+                        catch (Exception)
+                        {
+                            Logger.Warn("Could not copy preset parameter. This can happen when the preset contains obsolete parameters.");
+                        }
+                    }
+                    if (newPreset.ValuesByParameterID.Count > 0)
+                        AddPreset(newPreset, idx++);
+                    else
+                        Logger.Debug("Skipped a preset without any matching parameters");
+                }
+            }
+            FindAndShowPresetsForSelectedOp();
+            SaveAllPresets();
+        }
+
+
+        /** This is a left-over from autobackup */
+        public void SavePresetsAs(string filePath)
+        {
+            //FIXME: Implement to fix saving preset in autobackup
+        }
+
+
+
+        #region showing and using a preset
+        /** Called after click */
+        public void ApplyPreset(OperatorPreset preset)
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
+
+            _isBlending = false;
+            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
+            if (op == null || _setValueGroupCommand == null || op.Definition.ID != preset.MetaOperatorID)
+                return;
+
+            App.Current.UndoRedoStack.Add(_setValueGroupCommand);
+            _tempOperatorPresetBeforePreview = null;
+            _setValueGroupCommand = null;
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+            HighlightActivePreset();
+        }
+
+        private bool _isBlending = false;
+
+        public void StartBlending()
+        {
+            _isBlending = true;
+        }
+
+        public void BlendPreset(OperatorPreset preset, float factor)
+        {
+            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
+            if (op == null || op.Definition.ID != preset.MetaOperatorID || _setValueGroupCommand == null)
+                return;
+
+            var index = 0;
+            foreach (var input in op.Inputs)
+            {
+                var metaInput = input.Parent.GetMetaInput(input);
+                if (preset.ValuesByParameterID.ContainsKey(metaInput.ID) && _tempOperatorPresetBeforePreview != null)
+                {
+                    float presetValue = preset.ValuesByParameterID[metaInput.ID];
+                    float opValue = _tempOperatorPresetBeforePreview.ValuesByParameterID[metaInput.ID];
+                    var newFloatValue = opValue + factor * (presetValue - opValue);
+                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);
+                    index++;
+                }
+            }
+
+            _setValueGroupCommand.Do();
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+        public void CompleteBlendPreset(OperatorPreset preset)
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
+            _isBlending = false;
+            HighlightActivePreset();
+            if (_setValueGroupCommand == null)
+                return;
+
+            App.Current.UndoRedoStack.Add(_setValueGroupCommand);
+            _tempOperatorPresetBeforePreview = null;
+        }
+
+
+        /** Returns false if preview was prevevent (e.g. because we're blending another preset with virutal slider) */
+        public bool PreviewPreset(OperatorPreset preset)
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
+
+            if (_isBlending)
+                return false;
+
+            var entries = new List<SetValueGroupCommand.Entry>();
+
+            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
+            if (op != null && op.Definition.ID == preset.MetaOperatorID)
+            {
+                _tempOperatorPresetBeforePreview = CreatePresetFromOperator(op);
+
+                foreach (var input in op.Inputs)
+                {
+                    var metaInput = input.Parent.GetMetaInput(input);
+                    if (preset.ValuesByParameterID.ContainsKey(metaInput.ID))
+                    {
+                        entries.Add(new SetValueGroupCommand.Entry { OpPart = input, Value = new Float(preset.ValuesByParameterID[metaInput.ID]) });
+                    }
+                }
+                App.Current.UpdateRequiredAfterUserInteraction = true;
+            }
+            _setValueGroupCommand = new SetValueGroupCommand(entries, App.Current.Model.GlobalTime);
+            _setValueGroupCommand.Do();
+            HighlightActivePreset();
+            return true;
+        }
+
 
         /** Invoked after mouse leaves the thumbnail */
+        public void RestorePreviewPreset()
+        {
+            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
+
+            if (_isBlending)
+                return;
+
+            if (_setValueGroupCommand != null)
+            {
+                _setValueGroupCommand.Undo();
+                _setValueGroupCommand = null;
+                App.Current.UpdateRequiredAfterUserInteraction = true;
+            }
+        }
+
+
         public void RerenderCurrentThumbnails()
         {
             PresetImageManager.ReleasePreviousImages();
@@ -118,8 +277,28 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
+        public void DeletePreset(OperatorPreset preset)
+        {
+            Operator op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view
+            if (op != null && op.Definition.ID == preset.MetaOperatorID)
+            {
+                _isBlending = false;
+                RestorePreviewPreset();
+
+                if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
+                {
+                    _operatorPresetsByMetaOpID[op.Definition.ID].Remove(preset);
+                    FindAndShowPresetsForSelectedOp();
+                    SaveAllPresets();
+                    App.Current.UpdateRequiredAfterUserInteraction = true;
+                }
+            }
+        }
+        #endregion
 
 
+
+        #region internal implementation
 
         /** Tries to create a new preset from the current selection.
          * will return NULL if selection is not valid or preset would be empty
@@ -159,37 +338,45 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
-        public void CopyPresetsOfOpToAnother(MetaOperator source, MetaOperator target)
+        private void HighlightActivePreset()
         {
-            int idx = 0;
-            if (_operatorPresetsByMetaOpID.ContainsKey(source.ID))
+            var preset = TryToCreatePresetFromCurrentOperator();
+            foreach (var p in CurrentOperatorPresets)
             {
-                foreach (var srcPreset in _operatorPresetsByMetaOpID[source.ID])
+                bool matching = true;
+                foreach (var paramID in p.ValuesByParameterID.Keys)
                 {
-                    var newPreset = new OperatorPreset { MetaOperatorID = target.ID };
-                    foreach (var srcEntry in srcPreset.ValuesByParameterID)
+                    if (preset.ValuesByParameterID.ContainsKey(paramID))
                     {
-                        try
+                        if (preset.ValuesByParameterID[paramID] != p.ValuesByParameterID[paramID])
                         {
-                            var srcInputIdx = (from input in source.Inputs
-                                               where input.ID == srcEntry.Key
-                                               select source.Inputs.IndexOf(input)).Single();
-                            newPreset.ValuesByParameterID[target.Inputs[srcInputIdx].ID] = srcEntry.Value;
-                        }
-                        catch (Exception)
-                        {
-                            Logger.Warn("Could not copy preset parameter. This can happen when the preset contains obsolete parameters.");
+                            matching = false;
+                            break;
                         }
                     }
-                    if (newPreset.ValuesByParameterID.Count > 0)
-                        AddPreset(newPreset, idx++);
-                    else
-                        Logger.Debug("Skipped a preset without any matching parameters");
+                }
+                p.IsSelected = matching;
+            }
+        }
+
+
+        private OperatorPreset CreatePresetFromOperator(Operator op)
+        {
+            var newPreset = new OperatorPreset { MetaOperatorID = op.Definition.ID };
+
+            foreach (var input in op.Inputs)
+            {
+                if (input.Type == FunctionType.Float)
+                {
+                    var metaInput = input.Parent.GetMetaInput(input);
+                    var currentValue = OperatorPartUtilities.GetInputFloatValue(input);
+                    newPreset.ValuesByParameterID[metaInput.ID] = currentValue;
                 }
             }
-            FindAndShowPresetsForSelectedOp();
-            SaveAllPresets();
+            return newPreset;
         }
+        #endregion
+
 
 
         #region serialization to disk
@@ -270,184 +457,9 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 sw.Write(serializedPresets);
             }
         }
-
-
-
-
         #endregion
 
 
-        public void SavePresetsAs(string filePath)
-        {
-        }
-
-
-
-        // Called after click
-        public void ApplyPreset(OperatorPreset preset)
-        {
-            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
-
-            _blending = false;
-            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
-            if (op == null || _setValueGroupCommand == null || op.Definition.ID != preset.MetaOperatorID)
-                return;
-
-            App.Current.UndoRedoStack.Add(_setValueGroupCommand);
-            _tempOperatorPresetBeforePreview = null;
-            _setValueGroupCommand = null;
-            App.Current.UpdateRequiredAfterUserInteraction = true;
-            SelectActivePreset();
-        }
-
-        private bool _blending = false;
-
-        public void StartBlending()
-        {
-            _blending = true;
-        }
-
-        public void BlendPreset(OperatorPreset preset, float factor)
-        {
-            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
-            if (op == null || op.Definition.ID != preset.MetaOperatorID || _setValueGroupCommand == null)
-                return;
-
-            var index = 0;
-            foreach (var input in op.Inputs)
-            {
-                var metaInput = input.Parent.GetMetaInput(input);
-                if (preset.ValuesByParameterID.ContainsKey(metaInput.ID) && _tempOperatorPresetBeforePreview != null)
-                {
-                    float presetValue = preset.ValuesByParameterID[metaInput.ID];
-                    float opValue = _tempOperatorPresetBeforePreview.ValuesByParameterID[metaInput.ID];
-                    var newFloatValue = opValue + factor * (presetValue - opValue);
-                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);
-                    index++;
-                }
-            }
-
-            _setValueGroupCommand.Do();
-            App.Current.UpdateRequiredAfterUserInteraction = true;
-        }
-
-        public void CompleteBlendPreset(OperatorPreset preset)
-        {
-            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
-            _blending = false;
-            SelectActivePreset();
-            if (_setValueGroupCommand == null)
-                return;
-
-            App.Current.UndoRedoStack.Add(_setValueGroupCommand);
-            _tempOperatorPresetBeforePreview = null;
-        }
-
-
-        /** Returns false if preview was refused */
-        public bool PreviewPreset(OperatorPreset preset)
-        {
-            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
-
-            if (_blending)
-                return false;
-
-            var entries = new List<SetValueGroupCommand.Entry>();
-
-            Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
-            if (op != null && op.Definition.ID == preset.MetaOperatorID)
-            {
-                _tempOperatorPresetBeforePreview = CreatePresetFromOperator(op);
-
-                foreach (var input in op.Inputs)
-                {
-                    var metaInput = input.Parent.GetMetaInput(input);
-                    if (preset.ValuesByParameterID.ContainsKey(metaInput.ID))
-                    {
-                        entries.Add(new SetValueGroupCommand.Entry { OpPart = input, Value = new Float(preset.ValuesByParameterID[metaInput.ID]) });
-                    }
-                }
-                App.Current.UpdateRequiredAfterUserInteraction = true;
-            }
-            _setValueGroupCommand = new SetValueGroupCommand(entries, App.Current.Model.GlobalTime);
-            _setValueGroupCommand.Do();
-            SelectActivePreset();
-            return true;
-        }
-
-
-        public void RestorePreviewPreset()
-        {
-            App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
-
-            if (_blending)
-                return;
-
-            if (_setValueGroupCommand != null)
-            {
-                _setValueGroupCommand.Undo();
-                _setValueGroupCommand = null;
-                App.Current.UpdateRequiredAfterUserInteraction = true;
-            }
-        }
-
-
-        public void DeletePreset(OperatorPreset preset)
-        {
-            Operator op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view
-            if (op != null && op.Definition.ID == preset.MetaOperatorID)
-            {
-                _blending = false;
-                RestorePreviewPreset();
-
-                if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
-                {
-                    _operatorPresetsByMetaOpID[op.Definition.ID].Remove(preset);
-                    FindAndShowPresetsForSelectedOp();
-                    SaveAllPresets();
-                    App.Current.UpdateRequiredAfterUserInteraction = true;
-                }
-            }
-        }
-
-
-        public void SelectActivePreset()
-        {
-            var preset = TryToCreatePresetFromCurrentOperator();
-            foreach (var p in CurrentOperatorPresets)
-            {
-                bool matching = true;
-                foreach (var paramID in p.ValuesByParameterID.Keys)
-                {
-                    if (preset.ValuesByParameterID.ContainsKey(paramID))
-                    {
-                        if (preset.ValuesByParameterID[paramID] != p.ValuesByParameterID[paramID])
-                        {
-                            matching = false;
-                            break;
-                        }
-                    }
-                }
-                p.IsSelected = matching;
-            }
-        }
-
-
-        private OperatorPreset CreatePresetFromOperator(Operator op)
-        {
-            var newPreset = new OperatorPreset { MetaOperatorID = op.Definition.ID };
-
-            foreach (var input in op.Inputs)
-            {
-                if (input.Type == FunctionType.Float)
-                {
-                    var metaInput = input.Parent.GetMetaInput(input);
-                    var currentValue = OperatorPartUtilities.GetInputFloatValue(input);
-                    newPreset.ValuesByParameterID[metaInput.ID] = currentValue;
-                }
-            }
-            return newPreset;
-        }
 
         #region notifier
 

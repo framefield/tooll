@@ -11,13 +11,14 @@ using Framefield.Core.Rendering;
 using SharpDX.Direct3D11;
 using Framefield.Tooll.Rendering;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     /** Handles loading and providing bitmap images.*/
     class PresetImageManager
     {
-        internal D3DImage GetImageForPreset(OperatorPreset preset, bool useLive = true)
+        internal ImageSource GetImageForPreset(OperatorPreset preset, bool useLive = true)
         {
             var imagePath = BuildImagePath(preset);
             if (useLive && _renderSetupsByPreset.ContainsKey(preset))
@@ -34,7 +35,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
                 bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache; // Force reload (e.g. to load regenerate images)
                 bitmap.EndInit();
                 bitmap.Freeze();
-                return null;
+                return bitmap;
             }
             else
             {

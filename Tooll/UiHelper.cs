@@ -213,6 +213,7 @@ namespace Framefield.Tooll
             if (dialog.DialogResult == false)
                 return null;
 
+            // FIXME: shouldn't this be a command?
             var copiedMetaOp = orgMetaOp.Clone(dialog.XName.Text);
             copiedMetaOp.Description = dialog.XDescription.Text;
             copiedMetaOp.Namespace = dialog.XNamespace.Text;

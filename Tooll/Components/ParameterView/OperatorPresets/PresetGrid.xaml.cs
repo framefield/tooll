@@ -28,9 +28,10 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             InitializeComponent();
         }
 
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            //XPreviewButton.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
+            XLiveViewToggle.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
 
             var binding = new Binding()
             {
@@ -54,10 +55,17 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
-
         private void RebuildAllButton_OnClick(object sender, RoutedEventArgs e)
         {
             App.Current.OperatorPresetManager.RerenderCurrentThumbnails();
         }
+
+
+        private void LivePreview_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Current.OperatorPresetManager.LivePreviewEnabled = !App.Current.OperatorPresetManager.LivePreviewEnabled;
+            App.Current.OperatorPresetManager.RerenderCurrentThumbnails();
+        }
     }
 }
+

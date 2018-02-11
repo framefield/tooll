@@ -33,7 +33,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="0.45*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition MinWidth="25" Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox Grid.Row="0" Grid.Column="0" Name="NamespaceTextBox" Grid.ColumnSpan="1" VerticalContentAlignment="Center" FontSize="13" TextAlignment="Right" Background="#2D2D2D" Foreground="#37FFFFFF" BorderThickness="0"

@@ -211,7 +211,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontFamily" Value="Arial"/>
-            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Padding" Value="4 1"/>
             <Setter Property="Margin" Value="0"/>
             <!--<Setter Property="MaxHeight" Value="25"/>-->
             <Setter Property="Background" Value="#393939"/>
@@ -222,21 +222,26 @@
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Grid Margin="0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
-                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                                <RowDefinition Height="1" />
+                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="22"/>
+                                <RowDefinition Height="1" />
+                                <RowDefinition Height="1" />
                             </Grid.RowDefinitions>
                             <Rectangle Name="top" Grid.Row="0" Fill="#464544" />
                             <Rectangle Name="topRight" Grid.Row="0" Fill="#353433" 
-                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            Width="1" 
                             HorizontalAlignment="Right" />
 
                             <Rectangle Name="innerRect" Grid.Row="1" Fill="{TemplateBinding Background}"  />
                             <Rectangle Name="Left" Grid.Row="1" Fill="#272727" 
-                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                                        Width="1" 
                                         HorizontalAlignment="Right" />
-                            <ContentPresenter Grid.Row="1"  Name="content" Margin="2"  VerticalAlignment="Center"/>
+                            <ContentPresenter 
+                                Grid.Row="1"  
+                                Name="content" 
+                                VerticalAlignment="Center"
+                                Margin="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding}"
+                            />
 
 
                             <Rectangle Name="bottom" Grid.Row="2" Fill="#2F2F2F" />
@@ -278,30 +283,30 @@
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Top}" />
-                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent},Path=MaxHeight}"/>
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
-                                <RowDefinition Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Bottom}" />
+                                <RowDefinition Height="1" />
+                                <RowDefinition Height="Auto" MinHeight="22" MaxHeight="30"/>
+                                <RowDefinition Height="1" />
+                                <RowDefinition Height="1" />
                             </Grid.RowDefinitions>
                             <Rectangle Name="top" Grid.Row="0" Fill="#464544" />
                             <Rectangle Name="topRight" Grid.Row="0" Fill="#353433" 
-                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            Width="1" 
                             HorizontalAlignment="Right" />
 
                             <Rectangle Name="innerRect" Grid.Row="1" Fill="#393939"  />
                             <Rectangle Name="Left" Grid.Row="1" Fill="#272727" 
-                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            Width="1" 
                             HorizontalAlignment="Right" />
 
                             <Rectangle Name="bottom" Grid.Row="2" Fill="#2F2F2F" />
                             <Rectangle Name="bottomRight" Grid.Row="2" Fill="#242424" 
-                            Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Padding.Right}" 
+                            Width="1" 
                             HorizontalAlignment="Right" />
 
                             <Rectangle Fill="Black" Grid.Row="3" />
                             <ContentPresenter Name="content" 
                                                   Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="{Binding RelativeSource={RelativeSource TemplatedParent},Path=HorizontalContentAlignment}"
-                                                  Margin="2"  />
+                                                  Margin="10 2"  />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
