@@ -57,14 +57,14 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         private void RebuildAllButton_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.RerenderCurrentThumbnails();
+            App.Current.OperatorPresetManager.RerenderThumbnails();
         }
 
 
         private void LivePreview_OnClick(object sender, RoutedEventArgs e)
         {
             App.Current.OperatorPresetManager.LivePreviewEnabled = !App.Current.OperatorPresetManager.LivePreviewEnabled;
-            App.Current.OperatorPresetManager.RerenderCurrentThumbnails();
+            App.Current.OperatorPresetManager.RerenderThumbnails();
         }
     }
 }

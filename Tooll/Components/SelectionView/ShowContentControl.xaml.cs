@@ -182,7 +182,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void MainWindow_ContentRendered_Handler(object sender, EventArgs e)
         {
-            Logger.Info("MainWindow_ContentRendered_Handler()");
             EnsureLateInitialization();
             _renderSetup.Reinitialize();
         }
@@ -190,9 +189,6 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void SizeChanged_Handler(object sender, SizeChangedEventArgs e)
         {
-            //EnsureLateInitialization();
-
-            Logger.Info("MainWindow_SizeChanged_Handler()");
             if (_renderSetup != null)
             {
                 SetRendererSizeFromWindow();

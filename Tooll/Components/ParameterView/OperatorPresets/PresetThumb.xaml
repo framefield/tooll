@@ -25,6 +25,7 @@
         	DragStarted="Thumb_DragStarted"
         	DragDelta="Thumb_DragDelta"
         	DragCompleted="Thumb_DragCompleted"        
+            ToolTip="Hover to preview&#x0a;Click to set&#x0a;Click and drag to apply partially&#x0a;Shift-Click to save new thumbnail&#x0a;CTRL+click to delete"
         >
             <Thumb.Template>
                 <ControlTemplate>

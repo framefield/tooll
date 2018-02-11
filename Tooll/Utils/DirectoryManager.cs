@@ -11,4 +11,5 @@ namespace Framefield.Tooll.Utils
         public const string GLOBAL_PRESET_THUMBNAILS = "assets-common/preset-thumbs/";
         public const string USER_PRESET_THUMBNAILS = "Temp/user-thumbs/";
     }
+
 }

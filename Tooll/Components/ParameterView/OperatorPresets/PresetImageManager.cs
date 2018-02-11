@@ -19,6 +19,16 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
     /** Handles loading and providing bitmap images.*/
     class PresetImageManager
     {
+        public PresetImageManager()
+        {
+            if (!Directory.Exists(DirectoryManager.USER_PRESET_THUMBNAILS))
+            {
+                Logger.Debug("Creating folder " + DirectoryManager.USER_PRESET_THUMBNAILS);
+                Directory.CreateDirectory(DirectoryManager.USER_PRESET_THUMBNAILS);
+            }
+        }
+
+
         internal ImageSource GetImageForPreset(OperatorPreset preset, bool useLive = true)
         {
             var imagePath = BuildImagePath(preset);
@@ -46,17 +56,6 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             }
         }
 
-        internal D3DImageSharpDX RenderImageForPreset(OperatorPreset preset, RenderViewConfiguration referenceConfig = null)
-        {
-            if (referenceConfig == null)
-                referenceConfig = App.Current.MainWindow.XRenderView.XShowContentControl.RenderConfiguration;
-
-            var renderSetup = CreateOrReuseRenderSetup(referenceConfig);
-
-            _renderSetupsByPreset[preset] = renderSetup;
-
-            return renderSetup.RenderToD3dImage();
-        }
 
 
         internal void StartPreviewCache()
@@ -103,16 +102,33 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
         private Dictionary<OperatorPreset, D3DRenderSetup> _renderSetupsByPreset = new Dictionary<OperatorPreset, D3DRenderSetup>();
 
+        /** Used for live preview */
+        internal D3DImageSharpDX RenderImageForPreset(OperatorPreset preset, RenderViewConfiguration referenceConfig = null)
+        {
+            if (referenceConfig == null)
+                referenceConfig = App.Current.MainWindow.XRenderView.XShowContentControl.RenderConfiguration;
 
+            var renderSetup = CreateOrReuseRenderSetup(referenceConfig);
+
+            _renderSetupsByPreset[preset] = renderSetup;
+
+            return renderSetup.RenderToD3dImage();
+        }
+
+
+        /** Renders and saves a thumbnail to disk */
         internal void RenderAndSaveThumbnail(OperatorPreset preset)
         {
             var showContentControl = App.Current.MainWindow.XRenderView.XShowContentControl;
             var renderConfig = showContentControl.RenderConfiguration;
-            var renderSetup = App.Current.MainWindow.XRenderView.XShowContentControl.RenderSetup;
+            var renderSetup = showContentControl.RenderSetup;
 
             var orgWidth = renderConfig.Width;
             var orgHeight = renderConfig.Height;
+            var orgGizmos = renderConfig.ShowGridAndGizmos;
             renderSetup.Resize(THUMB_WIDTH, THUMB_HEIGHT);
+            renderConfig.ShowGridAndGizmos = false;
+
             showContentControl.RenderSetup.Reinitialize();
 
             var filePath = BuildImagePath(preset);
@@ -132,7 +148,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             try
             {
                 SharpDX.Direct3D9.Texture.ToFile(
-                    showContentControl.RenderSetup.D3DImageContainer.SharedTexture,
+                    renderSetup.D3DImageContainer.SharedTexture,
                     filePath,
                     SharpDX.Direct3D9.ImageFileFormat.Png);
             }
@@ -143,10 +159,10 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
             renderConfig.Width = orgWidth;
             renderConfig.Height = orgHeight;
+            renderConfig.ShowGridAndGizmos = orgGizmos;
             renderSetup.Resize(renderConfig.Width, renderConfig.Height);
             showContentControl.RenderSetup.Reinitialize();
         }
-
 
 
 

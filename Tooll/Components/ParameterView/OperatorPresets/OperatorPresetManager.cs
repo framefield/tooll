@@ -69,7 +69,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 
             if (LivePreviewEnabled)
             {
-                RerenderCurrentThumbnails();
+                RerenderThumbnails();
             }
         }
 
@@ -260,7 +260,7 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         }
 
 
-        public void RerenderCurrentThumbnails()
+        public void RerenderThumbnails()
         {
             PresetImageManager.ReleasePreviousImages();
             var keepList = CurrentOperatorPresets.ToArray();
@@ -269,8 +269,14 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
             foreach (var preset in keepList)
             {
                 PreviewPreset(preset);
-                //PresetImageManager.RenderAndSaveThumbnail(preset);
-                PresetImageManager.RenderImageForPreset(preset);
+                if (!LivePreviewEnabled)
+                {
+                    PresetImageManager.RenderAndSaveThumbnail(preset);
+                }
+                else
+                {
+                    PresetImageManager.RenderImageForPreset(preset);
+                }
                 RestorePreviewPreset();
                 CurrentOperatorPresets.Add(preset);
             }
