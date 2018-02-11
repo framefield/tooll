@@ -29,12 +29,19 @@ namespace Framefield.Tooll
         public GroupAnimationControls(List<OperatorPart> opParts)
         {
             m_OperatorParts = opParts;
-
             InitializeComponent();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            /** NOTE: it not really clear, how this case can happen, because the
+             * constructor is always aclled with a valid list. However, when
+             * changing the layout a shadow copy without proper construction
+             * might receive an OnLoaded-event
+            */
+            if (m_OperatorParts == null)
+                return;
+
             ConnectEventHandler();
             RebuiltAnimationContainer();
             UpdateControls();
@@ -42,6 +49,10 @@ namespace Framefield.Tooll
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            // See note above. WPF sucks.
+            if (m_OperatorParts == null)
+                return;
+
             App.Current.Model.GlobalTimeChangedEvent -= GlobalTimeChangedHandler;
 
             foreach (var el in m_Animations)
@@ -216,7 +227,7 @@ namespace Framefield.Tooll
                 el.Value.ChangedEvent += CurveChangedHandler;
         }
 
-        private List<OperatorPart> m_OperatorParts;
+        private List<OperatorPart> m_OperatorParts = new List<OperatorPart>();
         private Dictionary<OperatorPart, ICurve> m_Animations = new Dictionary<OperatorPart, ICurve>();
 
         static private BitmapImage m_CurrentKeyOnImage = new BitmapImage(new Uri("/Images/icon-key-on.png", UriKind.Relative)) { DecodePixelHeight = 32, DecodePixelWidth = 32, CacheOption = BitmapCacheOption.OnLoad };

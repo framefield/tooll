@@ -30,17 +30,17 @@ namespace Framefield.Tooll
         {
             m_OperatorParts = opParts;
             InitializeComponent();
+        }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
             m_MixedControl = new GroupMixedAnimationConnectionControls(m_OperatorParts) { Visibility = Visibility.Hidden };
             m_AnimationControl = new GroupAnimationControls(m_OperatorParts) { Visibility = Visibility.Hidden };
             m_ConnectionControl = new GroupConnectionControls(m_OperatorParts) { Visibility = Visibility.Hidden };
             Controls.Children.Add(m_MixedControl);
             Controls.Children.Add(m_AnimationControl);
             Controls.Children.Add(m_ConnectionControl);
-        }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
             ConnectEventHandler();
             UpdateControl();
         }
@@ -53,6 +53,7 @@ namespace Framefield.Tooll
             m_MixedControl = null;
             m_AnimationControl = null;
             m_ConnectionControl = null;
+            _unloadedWasRequested = true;
         }
 
         private void ConnectEventHandler()
@@ -66,8 +67,12 @@ namespace Framefield.Tooll
             UpdateControl();
         }
 
+        private bool _unloadedWasRequested = false;
         private void UpdateControl()
         {
+            if (_unloadedWasRequested)
+                return;
+
             bool atLeastOneElementIsAnimated = false;
             bool atLeastOneElementIsConnected = false;
             bool allElementsAreNotModified = true;
