@@ -252,7 +252,6 @@
     <Compile Include="Rendering\MeshCollector.cs" />
     <Compile Include="Rendering\MeshUtilities.cs" />
     <Compile Include="Rendering\OffscreenRenderer.cs" />
-    <Compile Include="Rendering\PbrPointLight.cs" />
     <Compile Include="Rendering\PbrSphereLight.cs" />
     <Compile Include="Rendering\PointLight.cs" />
     <Compile Include="ResourceManager.cs" />

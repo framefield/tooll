@@ -249,22 +249,6 @@ namespace Framefield.Core.Rendering
             }
         }
 
-        protected void SetupPbrPointLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer pointLightsBuffer, ref ShaderResourceView pointLightsSRV)
-        {
-            var pointLights = (List<IPbrPointLight>)context.Objects[OperatorPartContext.PBR_POINT_LIGHT_CONTAINER_ID];
-            bool success = SetupStructuredBuffer(context.D3DDevice, pointLights.ToArray(), pl => new PbrPointLightBufferLayout(pl),
-                                                 ref pointLightsBuffer, ref pointLightsSRV);
-            var pointLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
-            if (pointLightVariable != null)
-            {
-                pointLightVariable.SetResource(success ? pointLightsSRV : null);
-            }
-            else
-            {
-                Logger.Warn("Found no PBR point light effect variable '{0}'.", effectVariableName);
-            }
-        }
-
         protected void SetupPbrSphereLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer sphereLightsBuffer, ref ShaderResourceView sphereLightsSRV)
         {
             var sphereLights = (List<IPbrSphereLight>)context.Objects[OperatorPartContext.PBR_SPHERE_LIGHT_CONTAINER_ID];
