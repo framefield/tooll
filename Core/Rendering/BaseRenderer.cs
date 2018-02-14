@@ -133,26 +133,26 @@ namespace Framefield.Core.Rendering
                     Utilities.DisposeObj(ref structuredBuffer);
                     Utilities.DisposeObj(ref srv);
                     var bufferDesc = new BufferDescription
-                    {
-                        Usage = ResourceUsage.Dynamic,
-                        SizeInBytes = elementSizeInBytes * numElements,
-                        StructureByteStride = elementSizeInBytes,
-                        OptionFlags = ResourceOptionFlags.BufferStructured,
-                        CpuAccessFlags = CpuAccessFlags.Write,
-                        BindFlags = BindFlags.ShaderResource
-                    };
+                                     {
+                                         Usage = ResourceUsage.Dynamic,
+                                         SizeInBytes = elementSizeInBytes*numElements,
+                                         StructureByteStride = elementSizeInBytes,
+                                         OptionFlags = ResourceOptionFlags.BufferStructured,
+                                         CpuAccessFlags = CpuAccessFlags.Write,
+                                         BindFlags = BindFlags.ShaderResource
+                                     };
                     structuredBuffer = new Buffer(device, data, bufferDesc);
                     var bufferResource = new ShaderResourceViewDescription.ExtendedBufferResource()
-                    {
-                        ElementCount = numElements,
-                        FirstElement = 0,
-                    };
+                                         {
+                                             ElementCount = numElements,
+                                             FirstElement = 0,
+                                         };
                     var srvDesc = new ShaderResourceViewDescription()
-                    {
-                        Format = Format.Unknown,
-                        Dimension = ShaderResourceViewDimension.Buffer,
-                        BufferEx = bufferResource
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = ShaderResourceViewDimension.Buffer,
+                                      BufferEx = bufferResource
+                                  };
                     srv = new ShaderResourceView(device, structuredBuffer, srvDesc);
                 }
             }
@@ -190,30 +190,30 @@ namespace Framefield.Core.Rendering
             {
                 Utilities.DisposeObj(ref structuredBuffer);
                 var bufferDesc = new BufferDescription
-                {
-                    Usage = ResourceUsage.Default,
-                    SizeInBytes = elementSizeInBytes * numElements,
-                    StructureByteStride = elementSizeInBytes,
-                    OptionFlags = ResourceOptionFlags.BufferStructured,
-                    CpuAccessFlags = CpuAccessFlags.None,
-                    BindFlags = BindFlags.ShaderResource | BindFlags.UnorderedAccess
-                };
+                                 {
+                                     Usage = ResourceUsage.Default,
+                                     SizeInBytes = elementSizeInBytes*numElements,
+                                     StructureByteStride = elementSizeInBytes,
+                                     OptionFlags = ResourceOptionFlags.BufferStructured,
+                                     CpuAccessFlags = CpuAccessFlags.None,
+                                     BindFlags = BindFlags.ShaderResource | BindFlags.UnorderedAccess
+                                 };
                 structuredBuffer = new Buffer(device, bufferDesc);
 
                 if (createSRV)
                 {
                     Utilities.DisposeObj(ref srv);
                     var bufferResource = new ShaderResourceViewDescription.ExtendedBufferResource
-                    {
-                        ElementCount = numElements,
-                        FirstElement = 0,
-                    };
+                                         {
+                                             ElementCount = numElements,
+                                             FirstElement = 0,
+                                         };
                     var srvDesc = new ShaderResourceViewDescription()
-                    {
-                        Format = Format.Unknown,
-                        Dimension = ShaderResourceViewDimension.Buffer,
-                        BufferEx = bufferResource
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = ShaderResourceViewDimension.Buffer,
+                                      BufferEx = bufferResource
+                                  };
                     srv = new ShaderResourceView(device, structuredBuffer, srvDesc);
                 }
 
@@ -221,16 +221,16 @@ namespace Framefield.Core.Rendering
                 {
                     Utilities.DisposeObj(ref uav);
                     var uavDesc = new UnorderedAccessViewDescription
-                    {
-                        Format = Format.Unknown,
-                        Dimension = UnorderedAccessViewDimension.Buffer,
-                        Buffer = new UnorderedAccessViewDescription.BufferResource
-                        {
-                            FirstElement = 0,
-                            ElementCount = numElements,
-                            Flags = UnorderedAccessViewBufferFlags.None
-                        }
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = UnorderedAccessViewDimension.Buffer,
+                                      Buffer = new UnorderedAccessViewDescription.BufferResource
+                                               {
+                                                   FirstElement = 0,
+                                                   ElementCount = numElements,
+                                                   Flags = UnorderedAccessViewBufferFlags.None
+                                               }
+                                  };
                     uav = new UnorderedAccessView(device, structuredBuffer, uavDesc);
                 }
             }
@@ -251,12 +251,12 @@ namespace Framefield.Core.Rendering
 
         protected void SetupPbrSphereLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer sphereLightsBuffer, ref ShaderResourceView sphereLightsSRV)
         {
-            var sphereLights = (List<IPbrSphereLight>)context.Objects[OperatorPartContext.PBR_SPHERE_LIGHT_CONTAINER_ID];
-            bool success = SetupStructuredBuffer(context.D3DDevice, sphereLights.ToArray(), pl => new PbrSphereLightBufferLayout(pl),
-                                                 ref sphereLightsBuffer, ref sphereLightsSRV);
             var sphereLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
             if (sphereLightVariable != null)
             {
+                var sphereLights = (List<IPbrSphereLight>)context.Objects[OperatorPartContext.PBR_SPHERE_LIGHT_CONTAINER_ID];
+                bool success = SetupStructuredBuffer(context.D3DDevice, sphereLights.ToArray(), pl => new PbrSphereLightBufferLayout(pl),
+                                                     ref sphereLightsBuffer, ref sphereLightsSRV);
                 sphereLightVariable.SetResource(success ? sphereLightsSRV : null);
             }
             else
