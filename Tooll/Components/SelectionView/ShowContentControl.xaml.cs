@@ -88,7 +88,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
 
 
-        /** Called by ShowContentControl */
+        /** Called by SelectView */
         public void SetOperatorAndOutputIndex(Operator op, int outputIndex = 0, double timeScrubOffset = 0)
         {
             EnsureLateInitialization();
@@ -197,28 +197,48 @@ namespace Framefield.Tooll.Components.SelectionView
         }
 
 
+
+        private void App_CompositionTargertRenderingHandler(object source, EventArgs e)
+        {
+            if (CameraInteraction == null)
+                return;
+
+            var updateRequiredAfterCameraInteraction = CameraInteraction.UpdateAndCheckIfRedrawRequired();
+            if (!updateRequiredAfterCameraInteraction)
+            {
+                /**
+                 * If the current camera is an operator, and its parameter have been modified from
+                 * the outside (e.g. through animation or in the ParameterView) we have to update
+                 * the CameraSetup and the interaction. */
+                var shouldUpdateFromCamOp = _camSetupProvider.SelectedOperatorIsCamProvider && !CameraInteraction.SmoothedMovementInProgress;
+                if (shouldUpdateFromCamOp)
+                {
+                    var newPos = _camSetupProvider.OperatorCameraProvider.GetLastPosition();
+                    var newTarget = _camSetupProvider.OperatorCameraProvider.GetLastTarget();
+                    CameraInteraction.SetCameraAfterExternalChanges(newPos, newTarget);
+                    _camSetupProvider.ActiveCameraSetup.SetCameraAfterExternalChanges(newPos, newTarget);
+                }
+                return;
+            }
+
+            // Trigger update of other UI Elements like ParameterView
+            // Because this will eventually triggere a RenderContent, we can skip rendering it here.
+            if (_camSetupProvider.SelectedOperatorIsCamProvider)
+            {
+                App.Current.UpdateRequiredAfterUserInteraction = true;
+
+            }
+
+            RenderContent();
+        }
+
         void App_UpdateAfterUserInteractionHandler(object sender, EventArgs e)
         {
             RenderContent();
         }
 
 
-        private void App_CompositionTargertRenderingHandler(object source, EventArgs e)
-        {
-            if (CameraInteraction == null || !CameraInteraction.UpdateAndCheckIfRedrawRequired())
-                return;
 
-            if (_camSetupProvider.SelectedOperatorIsCamProvider)
-            {
-                App.Current.UpdateRequiredAfterUserInteraction = true;
-            }
-            else
-            {
-                RenderContent();
-            }
-        }
-
-        private ViewCameraSetupProvider _camSetupProvider;
 
         #endregion
 
@@ -278,9 +298,11 @@ namespace Framefield.Tooll.Components.SelectionView
 
         #endregion
 
+        private ViewCameraSetupProvider _camSetupProvider;
         public D3DRenderSetup RenderSetup { get { return _renderSetup; } }
         private D3DRenderSetup _renderSetup;
-        public RenderViewConfiguration RenderConfiguration;
+
+        public RenderViewConfiguration RenderConfiguration { get; set; }
         public CameraInteraction CameraInteraction { get; set; }
 
         public bool TimeLoggingSourceEnabled { get; set; }

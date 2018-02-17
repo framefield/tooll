@@ -29,7 +29,7 @@ namespace Framefield.Tooll.Rendering
                 && newOperator.InternalParts.Count > 0
                 && newOperator.InternalParts[0].Func is ICameraProvider;
 
-            _operatorCameraProvider = opIsCamera ? newOperator.InternalParts[0].Func as ICameraProvider
+            OperatorCameraProvider = opIsCamera ? newOperator.InternalParts[0].Func as ICameraProvider
                                                  : null;
 
             _activeSetup = opIsCamera ? _setupForACameraOperator
@@ -42,27 +42,30 @@ namespace Framefield.Tooll.Rendering
          * a camera-operators is selected */
         private void CameraAttributeChangedHandler(object sender, EventArgs e)
         {
-            if (_operatorCameraProvider == null)
+            if (OperatorCameraProvider == null)
                 return;
 
             var t = App.Current.Model.GlobalTime;
-            _operatorCameraProvider.SetPosition(t, _setupForACameraOperator.Position);
-            _operatorCameraProvider.SetTarget(t, _setupForACameraOperator.Target);
+
+            OperatorCameraProvider.SetPosition(t, _setupForACameraOperator.Position);
+            OperatorCameraProvider.SetTarget(t, _setupForACameraOperator.Target);
         }
 
-        private RenderViewConfiguration _renderConfig;
 
 
         public CameraSetup ActiveCameraSetup { get { return _activeSetup; } }
         CameraSetup _activeSetup;
 
-        ICameraProvider _operatorCameraProvider;
-        private CameraSetup _setupForACameraOperator = new CameraSetup();
-        private CameraSetup _setupForView = new CameraSetup();
+        public ICameraProvider OperatorCameraProvider { get; set; }
 
         public bool SelectedOperatorIsCamProvider
         {
             get { return _activeSetup != null && _activeSetup == _setupForACameraOperator; }
         }
+
+
+        private RenderViewConfiguration _renderConfig;
+        private CameraSetup _setupForACameraOperator = new CameraSetup(isViewCamera: false);
+        private CameraSetup _setupForView = new CameraSetup(isViewCamera: true);
     }
 }

@@ -11,6 +11,7 @@ using Key = System.Windows.Input.Key;
 using Keyboard = System.Windows.Input.Keyboard;
 using Point = System.Windows.Point;
 using Framefield.Tooll.Rendering;
+using Framefield.Core.OperatorPartTraits;
 
 namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 {
@@ -67,6 +68,15 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 
         private Operator _lastRenderedOperator;
 
+
+
+
+        public void SetCameraAfterExternalChanges(Vector3 newPosition, Vector3 newTarget)
+        {
+            _cameraPositionGoal = newPosition;
+            _cameraTargetGoal = newTarget;
+        }
+
         public bool UpdateAndCheckIfRedrawRequired()
         {
             if (_showContentControl.RenderSetup == null)
@@ -79,16 +89,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
                 _cameraPositionGoal = _renderConfig.CameraSetup.Position;
                 _cameraTargetGoal = _renderConfig.CameraSetup.Target;
                 MoveVelocity = Vector3.Zero;
-                _isTransitionActive = false;
-            }
-
-            // This is an extremely unfortunate solution to check if the camera has been manipulated from the
-            // outside (e.g. by another view, parameters or animation)
-            if (!_isTransitionActive && (PositionDistance.Length() > STOP_DISTANCE_THRESHOLD || TargetDistance.Length() > STOP_DISTANCE_THRESHOLD))
-            {
-                _cameraPositionGoal = _renderConfig.CameraSetup.Position;
-                _cameraTargetGoal = _renderConfig.CameraSetup.Target;
-                return true;
+                SmoothedMovementInProgress = false;
             }
 
             var redrawRequired = false;
@@ -112,7 +113,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
             _spaceMouse.ManipulateCamera();
 
             // Transition...
-            redrawRequired |= ComputeCameraMovement();
+            redrawRequired |= ComputeSmoothMovement();
 
             _interactionLocked = false;
 
@@ -122,7 +123,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
         /* 
          * Returns false if camera didn't move
          */
-        private bool ComputeCameraMovement()
+        private bool ComputeSmoothMovement()
         {
             var frameDurationFactor = (float)(App.Current.TimeSinceLastFrame) / FRAME_DURATION_AT_60_FPS;
 
@@ -156,14 +157,14 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
                 PositionDistance *= CAMERA_MOVE_FRICTION / frameDurationFactor;
                 TargetDistance *= CAMERA_MOVE_FRICTION / frameDurationFactor;
 
-                _isTransitionActive = true;
+                SmoothedMovementInProgress = true;
                 _manipulatedByMouseWheel = false;
                 return true;
             }
             else
             {
                 StopTransitionOfPositionTarget();
-                _isTransitionActive = false;
+                SmoothedMovementInProgress = false;
                 return false;
             }
         }
@@ -613,7 +614,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.CameraInteraction
 
         private readonly ShowContentControl _showContentControl;
 
-        private bool _isTransitionActive;
+        internal bool SmoothedMovementInProgress;
         private bool _manipulatedByMouseWheel;
         private bool _manipulatedByKeyboard;
 

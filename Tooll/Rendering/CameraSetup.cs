@@ -11,10 +11,18 @@ namespace Framefield.Tooll.Rendering
 {
     /** Holds all necessary attributes to describe a camera for rendering 
      * and provides helper functionality of computations. 
-     * Can represent a CameraOperator the internal camera view of a RenderUserControl
+     * Can represent a CameraOperator or the internal camera view of a RenderUserControl
      */
     public class CameraSetup : ICameraProvider
     {
+        public CameraSetup(bool isViewCamera)
+        {
+            IsAViewCamera = isViewCamera;
+        }
+
+        public bool IsAViewCamera { get; set; }
+
+
         public event EventHandler<EventArgs> AttributeChangedEvent;
 
         public void ResetCamera()
@@ -83,8 +91,6 @@ namespace Framefield.Tooll.Rendering
             }
         }
 
-
-
         public void GetViewDirections(out Vector3 viewDir, out Vector3 sideDir, out Vector3 upDir)
         {
             GetViewDirections(Target, Position, Roll, out viewDir, out sideDir, out upDir);
@@ -108,6 +114,12 @@ namespace Framefield.Tooll.Rendering
             upDir.Normalize();
         }
 
+
+        public void SetCameraAfterExternalChanges(Vector3 newPosition, Vector3 newTarget)
+        {
+            _viewerCameraPosition = newPosition;
+            _viewerCameraTarget = newTarget;
+        }
 
 
         #region Implement ICameraProvider
