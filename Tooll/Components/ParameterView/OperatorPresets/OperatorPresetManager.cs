@@ -347,6 +347,9 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         private void HighlightActivePreset()
         {
             var preset = TryToCreatePresetFromCurrentOperator();
+            if (preset == null)
+                return;
+
             foreach (var p in CurrentOperatorPresets)
             {
                 bool matching = true;
