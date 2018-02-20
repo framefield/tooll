@@ -1502,6 +1502,21 @@
       "Id": "39b64f31-f304-4e87-a16a-be89acf2fa24"
     }
   ],
+  "115ba98b-331d-4079-b476-3f62816e15d2": [
+    {
+      "ValuesByParameterID": {
+        "92de345c-4819-465b-a596-882d6f32ebbe": 0.26,
+        "cb521dc1-5ce7-457a-ab44-213794ae1f31": 0.66,
+        "da8d3d37-e30c-419f-89d9-2eecba7e8fe1": 1.0,
+        "dfd4c70d-7391-4729-be0b-9b95e1afa859": 0.18
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "115ba98b-331d-4079-b476-3f62816e15d2",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "1d4d69b3-09ad-4827-9e35-12ca72666da4"
+    }
+  ],
   "119c4183-f69a-4570-bb35-ebd0168a2e11": [
     {
       "ValuesByParameterID": {
@@ -21241,6 +21256,21 @@
       "IsInstancePreset": false,
       "Name": null,
       "Id": "c3aa8a61-3fac-4539-a081-0c48fcb6a2cb"
+    }
+  ],
+  "ed2269c5-b758-4c46-b3cb-ae943812eaa4": [
+    {
+      "ValuesByParameterID": {
+        "37809cad-f5a1-4c5d-8d8d-3376950e4477": 0.18,
+        "581ecbcc-1643-45bc-b87b-fafcfadc547c": 0.66,
+        "61e207d1-facb-4760-a0da-63a54afc1cb2": 1.0,
+        "c811f1dd-ba10-4341-9339-e06395b14359": 0.26
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "ed2269c5-b758-4c46-b3cb-ae943812eaa4",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "fdbfba99-2c04-4b7a-b77e-8d4bbd08d399"
     }
   ],
   "f0cd6528-fb54-475b-a712-e2d9686c194e": [
