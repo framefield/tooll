@@ -75,6 +75,7 @@ namespace Framefield.Core
         Matrix DiffuseR { get; }
         Matrix DiffuseG { get; }
         Matrix DiffuseB { get; }
+        float Brightness { get; }
     }
 
     public struct DefaultPbrImageBasedLightingSetup : IPbrImageBasedLightingSetup
@@ -84,5 +85,6 @@ namespace Framefield.Core
         public Matrix DiffuseR => Matrix.Identity;
         public Matrix DiffuseG => Matrix.Identity;
         public Matrix DiffuseB => Matrix.Identity;
+        public float Brightness => 1.0f;
     }
 }
