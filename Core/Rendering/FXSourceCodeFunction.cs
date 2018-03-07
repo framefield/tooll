@@ -59,7 +59,7 @@ namespace Framefield.Core.Rendering
                     _effect = new Effect(D3DDevice.Device, compilationResult);
                     if (compilationResult.Message != null)
                     {
-                        Logger.Warn("HLSL compile warning in '{0}':\n{1}", OperatorPart?.Name , compilationResult.Message);
+                        Logger.Warn("HLSL compile warning in '{0}':\n{1}", OperatorPart?.Name, compilationResult.Message);
                     }
                 }
             }
@@ -120,7 +120,7 @@ namespace Framefield.Core.Rendering
             {
                 Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to  scalar {1}", variableName, value);
                 return;
-                
+
             }
             scalarVariable.Set(value);
         }
@@ -142,9 +142,28 @@ namespace Framefield.Core.Rendering
             vector.Set(vectorValue);
         }
 
+
+        protected void SetMatrix(String variableName, Matrix matrixValue)
+        {
+            var variable = _effect.GetVariableByName(variableName);
+            if (variable == null)
+            {
+                Logger.Error(this, "Can't set undefined ShaderEffectVariable '{0}' to Matrix {1}", variableName, matrixValue);
+                return;
+            }
+            var matrixVariable = variable.AsMatrix();
+            if (matrixVariable == null)
+            {
+                Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to Matrix {1}", variableName, matrixValue);
+                return;
+            }
+            matrixVariable.SetMatrix(matrixValue);
+        }
+
+
         protected void SetColor(String variableName, Color4 color)
         {
-            SetVector4(variableName,  color.ToVector4());
+            SetVector4(variableName, color.ToVector4());
         }
 
         protected void SetVector4(String variableName, Vector4 vectorValue)
