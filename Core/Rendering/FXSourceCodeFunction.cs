@@ -125,23 +125,37 @@ namespace Framefield.Core.Rendering
             scalarVariable.Set(value);
         }
 
-        protected void SetVector(String variableName, Vector3 vectorValue)
+        protected void SetVector<T>(string variableName, T value) where T : struct
         {
             var variable = _effect.GetVariableByName(variableName);
             if (variable == null)
             {
-                Logger.Error(this, "Can't set undefined ShaderEffectVariable '{0}' to {1}", variableName, vectorValue);
+                Logger.Error(this, "Can't set undefined ShaderEffectVariable '{0}' to {1}", variableName, value);
                 return;
             }
             var vector = variable.AsVector();
             if (vector == null)
             {
-                Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to Vector {1}", variableName, vectorValue);
+                Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to Vector4 {1}", variableName, value);
                 return;
             }
-            vector.Set(vectorValue);
+            vector.Set(value);
         }
 
+        protected void SetColor(string variableName, Color4 color)
+        {
+            SetVector(variableName, color);
+        }
+
+        protected void SetVector2(string variableName, Vector2 value)
+        {
+            SetVector(variableName, value);
+        }
+
+        protected void SetVector4(string variableName, Vector4 value)
+        {
+            SetVector(variableName, value);
+        }
 
         protected void SetMatrix(String variableName, Matrix matrixValue)
         {
@@ -158,46 +172,6 @@ namespace Framefield.Core.Rendering
                 return;
             }
             matrixVariable.SetMatrix(matrixValue);
-        }
-
-
-        protected void SetColor(String variableName, Color4 color)
-        {
-            SetVector4(variableName, color.ToVector4());
-        }
-
-        protected void SetVector4(String variableName, Vector4 vectorValue)
-        {
-            var variable = _effect.GetVariableByName(variableName);
-            if (variable == null)
-            {
-                Logger.Error(this, "Can't set undefined ShaderEffectVariable '{0}' to {1}", variableName, vectorValue);
-                return;
-            }
-            var vector = variable.AsVector();
-            if (vector == null)
-            {
-                Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to Vector4 {1}", variableName, vectorValue);
-                return;
-            }
-            vector.Set(vectorValue);
-        }
-
-        protected void SetVector2(String variableName, Vector2 vectorValue)
-        {
-            var variable = _effect.GetVariableByName(variableName);
-            if (variable == null)
-            {
-                Logger.Error(this, "Can't set undefined ShaderEffectVariable '{0}' to {1}", variableName, vectorValue);
-                return;
-            }
-            var vector = variable.AsVector();
-            if (vector == null)
-            {
-                Logger.Error(this, "Can't set ShaderEffectVariable '{0}' to Vector2 {1}", variableName, vectorValue);
-                return;
-            }
-            vector.Set(vectorValue);
         }
 
         protected Effect _effect = null;
