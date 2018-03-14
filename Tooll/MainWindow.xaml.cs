@@ -601,7 +601,7 @@ namespace Framefield.Tooll
 
             var originRef = git.GetRepository().GetRef("remotes/origin/" + repository.Branch);
             var log = git.Log().Add(originRef.GetObjectId()).Call();
-            var amend = true;
+            var amend = App.Current.UserSettings.GetOrSetDefault("Git.AmendCommits", true); ;
             foreach (var logEntry in log)
             {
                 if (logEntry.Name == localSha1)
