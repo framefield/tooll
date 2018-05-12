@@ -144,16 +144,7 @@ namespace Framefield.Tooll.Components.Helper
                 var level = 0f;
 
                 var startIndex = (int)Utilities.Lerp(0, SPECTRUM_LENGTH, Utilities.Clamp(this.lowerLimit, 0, 1));
-                var endIndex = (int)Math.Min(SPECTRUM_LENGTH, Utilities.Lerp(0, SPECTRUM_LENGTH, Utilities.Clamp(this.upperLimit, 0, 1)));
-
-
-
-
-                if (startIndex >= endIndex)
-                {
-                    levels[index] = 0;
-                    return;
-                }
+                var endIndex = (int)Utilities.Lerp(0, SPECTRUM_LENGTH, Utilities.Clamp(this.upperLimit, 0, 1));
 
                 for (int i = startIndex; i < endIndex; i++)
                 {
@@ -173,10 +164,10 @@ namespace Framefield.Tooll.Components.Helper
 
         FftRegion[] REGIONS = new FftRegion[]
         {
-            new FftRegion(){title = "levels", lowerLimit = 0f, upperLimit = 1f,},
-            new FftRegion(){title = "highlevels", lowerLimit = 0.3f, upperLimit = 1f,},
-            new FftRegion(){title = "midlevels", lowerLimit = 0.06f, upperLimit = 0.3f,},
-            new FftRegion(){title = "lowlevels", lowerLimit = 0.0f, upperLimit = 0.06f,},
+            new FftRegion(){title = "levels", lowerLimit = 0f, upperLimit = 1f},
+            new FftRegion(){title = "highlevels", lowerLimit = 0.3f, upperLimit = 1f},
+            new FftRegion(){title = "midlevels", lowerLimit = 0.06f, upperLimit = 0.3f},
+            new FftRegion(){title = "lowlevels", lowerLimit = 0.0f, upperLimit = 0.02f},
         };
 
         const int SPECTRUM_LENGTH = 1024;
