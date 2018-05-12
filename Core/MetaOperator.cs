@@ -1049,6 +1049,31 @@ namespace Framefield.Core
             Changed = true;
         }
 
+        public void UpdateInput(MetaInput input)
+        {
+            int index = Inputs.IndexOf(input);
+            if ((index < 0) || (index > Inputs.Count))
+                throw new IndexOutOfRangeException();
+
+            foreach (var instance in _instances)
+            {
+                var inputInstance = instance.Inputs[index];
+
+                if (inputInstance.Type != input.OpPart.Type)
+                {
+                    OperatorPart newOpPart = input.CreateInstance();
+                    inputInstance.Type = newOpPart.Type;
+                    inputInstance.Func = newOpPart.Func;
+                }
+
+                if (inputInstance.Name != input.Name)
+                    inputInstance.Name = input.Name;
+
+                if (inputInstance.IsMultiInput != input.IsMultiInput)
+                    inputInstance.IsMultiInput = input.IsMultiInput;
+            }
+        }
+
         public void AddInput(MetaInput input)
         {
             InsertInput(Inputs.Count, input);
