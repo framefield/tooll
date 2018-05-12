@@ -1834,10 +1834,5 @@ namespace Framefield.Tooll
         {
             e.CanExecute = Clipboard.ContainsText(TextDataFormat.UnicodeText);
         }
-
-
-
-
     }
-
 }

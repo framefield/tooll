@@ -118,9 +118,12 @@ namespace Framefield.Core
         }
 
         private List<MetaInput> _metaInputs;
-        public List<MetaInput> Inputs {
-            get { return _metaInputs; }
-            internal set {
+
+        public List<MetaInput> Inputs
+        {
+            get => _metaInputs;
+            internal set
+            {
                 _metaInputs = value;
                 ReorderInputsOfOpInstance();
             }

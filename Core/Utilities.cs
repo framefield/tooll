@@ -440,37 +440,29 @@ namespace Framefield.Core
         {
             var noiseSum = Vector3.Zero;
             var period = 1f;
-            var zoom = 1f;
 
             for (var a = 0; a < octaves - 1; a++)
             {
-                var frequency = (float)Math.Pow(2, a);
-                var amplitude = (float)Math.Pow(period, a);
+                var frequency = (float) Math.Pow(2, a);
+                var amplitude = (float) Math.Pow(period, a);
 
-                //var v = u * frequency / zoom + seed * 12.468f;
-                var vInt = (int)(u*frequency);
+                var vInt = (int) (u*frequency);
                 var vInt1 = vInt + 1;
 
                 var n1 = new Vector3(
-                    Noise(vInt, (int)seed),
-                    Noise(vInt, (int)(seed + 12.1f)),
-                    Noise(vInt, (int)(seed + 1314.1f))
-                    );
+                                     Noise(vInt, (int) seed),
+                                     Noise(vInt, (int) (seed + 12.1f)),
+                                     Noise(vInt, (int) (seed + 1314.1f))
+                                    );
                 var n2 = new Vector3(
-                    Noise(vInt1, (int)seed),
-                    Noise(vInt1, (int)(seed + 12.1f)),
-                    Noise(vInt1, (int)(seed + 1314.1f))
-                    );
-                noiseSum += Vector3.Lerp(n1, n2, Fade(u - (float)Math.Floor(u))) * amplitude;
-                //noiseSum += Lerp(
-                //    Noise((int)v, (int)seed),
-                //    Noise((int)v + 1, (int)seed),
-                //    Fade(v - (float)Math.Floor(v))
-                //) * amplitude;
+                                     Noise(vInt1, (int) seed),
+                                     Noise(vInt1, (int) (seed + 12.1f)),
+                                     Noise(vInt1, (int) (seed + 1314.1f))
+                                    );
+                noiseSum += Vector3.Lerp(n1, n2, Fade(u - (float) Math.Floor(u)))*amplitude;
             }
             return noiseSum;
         }
-
     }
 
     public static class CrashReporter
