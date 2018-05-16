@@ -143,12 +143,12 @@ namespace Framefield.Core
                                      WorldToCamera = Matrix.Identity,
                                      ObjectTWorld = Matrix.Identity,
                                      TextureMatrix = Matrix.Identity,
-                                     //BlendState = _blendState// OperatorPartContext.DefaultRenderer.DefaultBlendState, 
                                      BlendState =  OperatorPartContext.DefaultRenderer.DisabledBlendState, 
-                                     //context.
                                  };
             subContext.Renderer.SetupEffect(subContext);
             subContext.Renderer.Render(subContext.Renderer._screenQuadMesh, subContext);
+            // unbind RTs immediately in case the image created here is used without setting new RTs
+            context.D3DDevice.ImmediateContext.OutputMerger.SetTargets((DepthStencilView)null, (RenderTargetView)null);
         }
 
         protected Resource _renderTargetResource = null;
