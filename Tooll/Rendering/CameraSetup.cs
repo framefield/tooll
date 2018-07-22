@@ -143,6 +143,11 @@ namespace Framefield.Tooll.Rendering
             throw new NotImplementedException();
         }
 
+        public Vector2 GetLastNearFarClip()
+        {
+            throw new NotImplementedException();
+        }
+
         public Matrix CalculateWorldToCamera(OperatorPartContext context)
         {
             throw new NotImplementedException();

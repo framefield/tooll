@@ -300,8 +300,7 @@ namespace Framefield.Tooll.Rendering
             var farClipping = (zoomLength * 2) + 5000;
             var nearClipping = zoomLength / 100;
 
-            SetupContextForRenderingCamToBuffer(context, RenderConfig.Operator, _renderer, worldToCamera, (float)nearClipping,
-                (float)farClipping);
+            SetupContextForRenderingCamToBuffer(context, RenderConfig.Operator, _renderer, worldToCamera, nearClipping, farClipping);
 
             RenderConfig.CameraSetup.LastWorldToCamera = context.WorldToCamera;
             RenderConfig.CameraSetup.LastCameraProjection = context.CameraProjection;

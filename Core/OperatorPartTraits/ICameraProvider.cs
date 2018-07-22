@@ -27,6 +27,8 @@ namespace Framefield.Core.OperatorPartTraits
 
         Matrix CalculateCameraToView(OperatorPartContext context);
         Matrix GetLastCameraToView();
+
+        Vector2 GetLastNearFarClip();
     }
 
 }

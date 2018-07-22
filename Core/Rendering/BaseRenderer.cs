@@ -429,6 +429,8 @@ namespace Framefield.Core.Rendering
                 technique.GetPassByIndex(i).Apply(context.D3DDevice.ImmediateContext);
                 context.D3DDevice.ImmediateContext.Draw(mesh.NumTriangles*3, 0);
             }
+            // unbind RTs immediately in case the image created here is used without setting new RTs
+            context.D3DDevice.ImmediateContext.OutputMerger.SetTargets((DepthStencilView)null, (RenderTargetView)null);
         }
 
 
