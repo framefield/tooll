@@ -8659,6 +8659,92 @@
       "Id": "5c24454e-0f01-4518-9b73-975aacf0349d"
     }
   ],
+  "4dc6dd1c-15b1-4b36-b7cb-0940b4932afa": [
+    {
+      "ValuesByParameterID": {
+        "12b0b899-9674-47f9-b3de-c818ff3845bc": 0.5,
+        "1e1b67b3-4476-4b28-8d8a-196b3ebde8a9": 1.65,
+        "2275ceab-218a-46b9-a0a6-ef2ccfad636f": 0.72,
+        "2e0060a8-c3e9-4f5f-8a01-b74bb09db6f8": 1.1,
+        "3b0fc72c-4cca-44b9-a68e-bf608a9a02f8": 5.8,
+        "3de74761-6cb0-4fba-b348-981ea93e317f": -3.14999962,
+        "4f51f1ed-8b7a-4dd1-9fd1-832656d6e26c": -3.43,
+        "574a8ed8-065b-4a76-94bc-dbdd60aa01ca": 261.3,
+        "8352c4bb-d015-49e7-b26f-6c658f6621bc": 0.590000033,
+        "9c3dd55e-7d47-4741-9dd4-fa703bde9dbb": 0.4,
+        "ba88affc-4a1f-45c9-9092-dd852c5c0396": 0.45,
+        "d3a56dc1-31c2-4457-8552-ae223365e60e": 2.01
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "4dc6dd1c-15b1-4b36-b7cb-0940b4932afa",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "70fff39d-db6e-4cce-bb8e-e9af1e5331f5"
+    },
+    {
+      "ValuesByParameterID": {
+        "12b0b899-9674-47f9-b3de-c818ff3845bc": 0.5,
+        "1e1b67b3-4476-4b28-8d8a-196b3ebde8a9": 1.65,
+        "2275ceab-218a-46b9-a0a6-ef2ccfad636f": 0.72,
+        "2e0060a8-c3e9-4f5f-8a01-b74bb09db6f8": 1.1,
+        "3b0fc72c-4cca-44b9-a68e-bf608a9a02f8": 5.8,
+        "3de74761-6cb0-4fba-b348-981ea93e317f": -3.14999962,
+        "4f51f1ed-8b7a-4dd1-9fd1-832656d6e26c": -3.43,
+        "574a8ed8-065b-4a76-94bc-dbdd60aa01ca": 133.2,
+        "8352c4bb-d015-49e7-b26f-6c658f6621bc": 0.590000033,
+        "9c3dd55e-7d47-4741-9dd4-fa703bde9dbb": 0.4,
+        "ba88affc-4a1f-45c9-9092-dd852c5c0396": 0.45,
+        "d3a56dc1-31c2-4457-8552-ae223365e60e": 2.01
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "4dc6dd1c-15b1-4b36-b7cb-0940b4932afa",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "61e3d60c-c716-4342-abaf-e1b4de127efc"
+    },
+    {
+      "ValuesByParameterID": {
+        "12b0b899-9674-47f9-b3de-c818ff3845bc": 0.5,
+        "1e1b67b3-4476-4b28-8d8a-196b3ebde8a9": 1.65,
+        "2275ceab-218a-46b9-a0a6-ef2ccfad636f": 0.72,
+        "2e0060a8-c3e9-4f5f-8a01-b74bb09db6f8": 0.0,
+        "3b0fc72c-4cca-44b9-a68e-bf608a9a02f8": 5.8,
+        "3de74761-6cb0-4fba-b348-981ea93e317f": -7.27500057,
+        "4f51f1ed-8b7a-4dd1-9fd1-832656d6e26c": -3.43,
+        "574a8ed8-065b-4a76-94bc-dbdd60aa01ca": 273.099976,
+        "8352c4bb-d015-49e7-b26f-6c658f6621bc": 1.07999992,
+        "9c3dd55e-7d47-4741-9dd4-fa703bde9dbb": 0.0,
+        "ba88affc-4a1f-45c9-9092-dd852c5c0396": 0.45,
+        "d3a56dc1-31c2-4457-8552-ae223365e60e": 1.52
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "4dc6dd1c-15b1-4b36-b7cb-0940b4932afa",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "89bbafea-b182-41a4-b07e-a89ca4f9a63e"
+    },
+    {
+      "ValuesByParameterID": {
+        "12b0b899-9674-47f9-b3de-c818ff3845bc": 0.5,
+        "1e1b67b3-4476-4b28-8d8a-196b3ebde8a9": 1.65,
+        "2275ceab-218a-46b9-a0a6-ef2ccfad636f": 0.72,
+        "2e0060a8-c3e9-4f5f-8a01-b74bb09db6f8": 0.0,
+        "3b0fc72c-4cca-44b9-a68e-bf608a9a02f8": 5.8,
+        "3de74761-6cb0-4fba-b348-981ea93e317f": -1.08750057,
+        "4f51f1ed-8b7a-4dd1-9fd1-832656d6e26c": -3.43,
+        "574a8ed8-065b-4a76-94bc-dbdd60aa01ca": 250.299988,
+        "8352c4bb-d015-49e7-b26f-6c658f6621bc": 1.07999992,
+        "9c3dd55e-7d47-4741-9dd4-fa703bde9dbb": 0.0,
+        "ba88affc-4a1f-45c9-9092-dd852c5c0396": 0.45,
+        "d3a56dc1-31c2-4457-8552-ae223365e60e": 1.52
+      },
+      "OperatorInstanceID": "00000000-0000-0000-0000-000000000000",
+      "MetaOperatorID": "4dc6dd1c-15b1-4b36-b7cb-0940b4932afa",
+      "IsInstancePreset": false,
+      "Name": null,
+      "Id": "fc6038c3-5957-44db-ad67-b1727261dcbb"
+    }
+  ],
   "4e265e6e-4cc6-4dd1-8a1e-87793c7440bb": [
     {
       "ValuesByParameterID": {

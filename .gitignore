@@ -95,3 +95,11 @@ UITests/obj/*
 /.vscode/settings.json
 /Core.dll
 /Core.UI.dll
+/assets-fastdemo
+/assets-hammers
+assets-storage2
+assets-vj2
+assets-wireline
+Config/MidiPresets
+assets-line-above
+Operators_public

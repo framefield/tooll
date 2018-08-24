@@ -109,8 +109,8 @@ namespace Framefield.Tooll
 
 
             SetupOperatorGitRepository();
+            D3DDevice.Device = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
 
-            D3DDevice.Device = new Device(DriverType.Hardware, DeviceCreationFlags.Debug | DeviceCreationFlags.BgraSupport);
             if (D3DDevice.Device.CreationFlags.HasFlag(DeviceCreationFlags.Debug))
             {
                 D3DDevice.DebugDevice = new DeviceDebug(D3DDevice.Device);
