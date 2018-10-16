@@ -374,7 +374,7 @@ namespace Framefield.Player
             {
                 if (_settings.Looped)
                     Bass.BASS_ChannelSetPosition(_soundStream, 0);
-                else
+                else if (time >= (_soundLength + 2.0))
                     _form.Close();
             }
 
