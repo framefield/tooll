@@ -13,6 +13,7 @@ namespace Framefield.Core
         public bool FullScreen { get; set; }
         public bool Looped { get; set; }
         public bool VSyncEnabled { get; set; }
+        public bool PreCacheEnabled { get; set; }
 
         public ContextSettings()
         {
@@ -22,6 +23,7 @@ namespace Framefield.Core
             FullScreen = true;
             Looped = false;
             VSyncEnabled = true;
+            PreCacheEnabled = true;
         }
     }
 }

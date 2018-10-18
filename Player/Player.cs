@@ -124,6 +124,9 @@ namespace Framefield.Player
             D3DDevice.TouchWidth = 1920;
             D3DDevice.TouchHeight = 1080;
 
+            _operatorLoadEndProgress = 0.3f;
+            _preCacheStartProgress = _settings.PreCacheEnabled ? 0.9f : 1.0f;
+
             return true;
         }
 
@@ -279,7 +282,7 @@ namespace Framefield.Player
             var pv = new ProgressVisualizer(_form, D3DDevice.Device, D3DDevice.SwapChain);
             pv.Update(0.0f);
 
-            MetaManager.InitializeCallback = progress => pv.Update(0.3f*progress);
+            MetaManager.InitializeCallback = progress => pv.Update(_operatorLoadEndProgress * progress);
             MetaManager.Instance.LoadMetaOperators();
 
             _model = new Model();
@@ -326,7 +329,7 @@ namespace Framefield.Player
             int totalNumOpParts = statisticsCollector.NumTotalOpParts;
             int totalNumEvaluations = statisticsCollector.NumTotalEvaluations;
 
-            var initialEvaluator = new InitialEvaluator(totalNumOpParts, context, pv);
+            var initialEvaluator = new InitialEvaluator(totalNumOpParts, context, pv, _operatorLoadEndProgress, _preCacheStartProgress - _operatorLoadEndProgress);
             _model.HomeOperator.Outputs[0].TraverseWithFunction(initialEvaluator, null);
 
             var timeClipEvaluator = new TimeClipEvaluator();
@@ -335,18 +338,21 @@ namespace Framefield.Player
             _model.HomeOperator.Outputs[0].MarkInvalidatables();
             OperatorPart.HasValidInvalidationMarksOnOperatorPartsForTraversing = true;
 
-            // draw the first, last and center frame of each TimeClip
-            // in reverse order to warm up caches
-            var preCacheTimes = timeClipEvaluator.GetResult();
-            int i = 0;
-            foreach (double t in preCacheTimes)
+            if (_settings.PreCacheEnabled)
             {
-                Logger.Debug("pre-rendering frame at t={0}", t);
-                D3DDevice.BeginFrame();
-                DrawFrame((float)t);
-                D3DDevice.EndFrame();
-                i++;
-                pv.Update(0.9f + 0.1f * i / preCacheTimes.Count);
+                // draw the first, last and center frame of each TimeClip
+                // in reverse order to warm up caches
+                var preCacheTimes = timeClipEvaluator.GetResult();
+                int i = 0;
+                foreach (double t in preCacheTimes)
+                {
+                    Logger.Debug("pre-rendering frame at t={0}", t);
+                    D3DDevice.BeginFrame();
+                    DrawFrame((float)t);
+                    D3DDevice.EndFrame();
+                    i++;
+                    pv.Update(_preCacheStartProgress + (1.0f - _preCacheStartProgress) * i / preCacheTimes.Count);
+                }
             }
 
             pv.Dispose();
@@ -493,6 +499,8 @@ namespace Framefield.Player
         private int _currentAveragedElapsedIndex = 0;
 
         private Stopwatch _exitTimer = new Stopwatch();
+        private float _operatorLoadEndProgress;
+        private float _preCacheStartProgress;
     }
 
     public class StatisticsCollector : OperatorPart.IPreTraverseEvaluator
@@ -518,11 +526,13 @@ namespace Framefield.Player
 
     public class InitialEvaluator : OperatorPart.IPreTraverseEvaluator
     {
-        public InitialEvaluator(int totalNumOpParts, OperatorPartContext context, ProgressVisualizer progressVisualizer)
+        public InitialEvaluator(int totalNumOpParts, OperatorPartContext context, ProgressVisualizer progressVisualizer, float progressStart, float progressScale)
         {
             _totalNumOpParts = totalNumOpParts;
             _context = context;
             _progressVisualizer = progressVisualizer;
+            _progressStart = progressStart;
+            _progressScale = progressScale;
         }
 
         public void PreEvaluate(OperatorPart opPart)
@@ -535,7 +545,7 @@ namespace Framefield.Player
                 if (_uniqueOpParts.Count%100 == 0)
                 {
                     float progress = Math.Min((float) _uniqueOpParts.Count/_totalNumOpParts, 1.0f);
-                    _progressVisualizer.Update(0.3f + 0.6f*progress);
+                    _progressVisualizer.Update(_progressStart + _progressScale * progress);
                 }
             }
         }
@@ -544,6 +554,8 @@ namespace Framefield.Player
         private OperatorPartContext _context;
         private ProgressVisualizer _progressVisualizer;
         private HashSet<OperatorPart> _uniqueOpParts = new HashSet<OperatorPart>();
+        private float _progressStart;
+        private float _progressScale;
     }
 
     public class TimeClipEvaluator : OperatorPart.IPreTraverseEvaluator

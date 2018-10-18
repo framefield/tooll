@@ -105,6 +105,7 @@ namespace Framefield.Player
             FullScreenCheckBox.Checked = true;
             LoopedCheckBox.Checked = false;
             VSyncCheckBox.Checked = true;//!isAtiAmdCard;
+            PreCacheCheckBox.Checked = true;
         }
 
         private void StartBtn_Click(object sender, EventArgs e) {
@@ -140,6 +141,10 @@ namespace Framefield.Player
 
         private void VSyncCheckBox_CheckedChanged(object sender, EventArgs e) {
             Settings.VSyncEnabled = VSyncCheckBox.Checked;
+        }
+
+        private void PreCacheCheckBox_CheckedChanged(object sender, EventArgs e) {
+            Settings.PreCacheEnabled = PreCacheCheckBox.Checked;
         }
 
         private Dictionary<int, DisplayMode> _displayModesMap = new Dictionary<int, DisplayMode>();

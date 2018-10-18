@@ -44,13 +44,14 @@ namespace Framefield.Player
             this.SamplingView = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.VSyncCheckBox = new System.Windows.Forms.CheckBox();
+            this.PreCacheCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // StartBtn
             // 
             this.StartBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.StartBtn.Location = new System.Drawing.Point(306, 114);
+            this.StartBtn.Location = new System.Drawing.Point(306, 134);
             this.StartBtn.Name = "StartBtn";
             this.StartBtn.Size = new System.Drawing.Size(75, 23);
             this.StartBtn.TabIndex = 0;
@@ -61,7 +62,7 @@ namespace Framefield.Player
             // CancelBtn
             // 
             this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelBtn.Location = new System.Drawing.Point(306, 143);
+            this.CancelBtn.Location = new System.Drawing.Point(306, 163);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(75, 23);
             this.CancelBtn.TabIndex = 1;
@@ -113,7 +114,7 @@ namespace Framefield.Player
             this.DisplayModesView.Location = new System.Drawing.Point(12, 52);
             this.DisplayModesView.MultiSelect = false;
             this.DisplayModesView.Name = "DisplayModesView";
-            this.DisplayModesView.Size = new System.Drawing.Size(146, 114);
+            this.DisplayModesView.Size = new System.Drawing.Size(146, 134);
             this.DisplayModesView.TabIndex = 2;
             this.DisplayModesView.UseCompatibleStateImageBehavior = false;
             this.DisplayModesView.View = System.Windows.Forms.View.Details;
@@ -152,7 +153,7 @@ namespace Framefield.Player
             this.AspectRatioView.MultiSelect = false;
             this.AspectRatioView.Name = "AspectRatioView";
             this.AspectRatioView.Scrollable = false;
-            this.AspectRatioView.Size = new System.Drawing.Size(65, 114);
+            this.AspectRatioView.Size = new System.Drawing.Size(65, 134);
             this.AspectRatioView.TabIndex = 3;
             this.AspectRatioView.UseCompatibleStateImageBehavior = false;
             this.AspectRatioView.View = System.Windows.Forms.View.Details;
@@ -182,7 +183,7 @@ namespace Framefield.Player
             this.SamplingView.MultiSelect = false;
             this.SamplingView.Name = "SamplingView";
             this.SamplingView.Scrollable = false;
-            this.SamplingView.Size = new System.Drawing.Size(50, 114);
+            this.SamplingView.Size = new System.Drawing.Size(50, 134);
             this.SamplingView.TabIndex = 5;
             this.SamplingView.UseCompatibleStateImageBehavior = false;
             this.SamplingView.View = System.Windows.Forms.View.Details;
@@ -203,6 +204,17 @@ namespace Framefield.Player
             this.VSyncCheckBox.UseVisualStyleBackColor = true;
             this.VSyncCheckBox.CheckedChanged += new System.EventHandler(this.VSyncCheckBox_CheckedChanged);
             // 
+            // PreCacheCheckBox
+            // 
+            this.PreCacheCheckBox.AutoSize = true;
+            this.PreCacheCheckBox.Location = new System.Drawing.Point(306, 112);
+            this.PreCacheCheckBox.Name = "PreCacheCheckBox";
+            this.PreCacheCheckBox.Size = new System.Drawing.Size(72, 17);
+            this.PreCacheCheckBox.TabIndex = 14;
+            this.PreCacheCheckBox.Text = "Precache";
+            this.PreCacheCheckBox.UseVisualStyleBackColor = true;
+            this.PreCacheCheckBox.CheckedChanged += new System.EventHandler(this.PreCacheCheckBox_CheckedChanged);
+            // 
             // StartUpDialog
             // 
             this.AcceptButton = this.StartBtn;
@@ -210,8 +222,9 @@ namespace Framefield.Player
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.CancelBtn;
-            this.ClientSize = new System.Drawing.Size(393, 179);
+            this.ClientSize = new System.Drawing.Size(393, 197);
             this.ControlBox = false;
+            this.Controls.Add(this.PreCacheCheckBox);
             this.Controls.Add(this.VSyncCheckBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.SamplingView);
@@ -256,5 +269,6 @@ namespace Framefield.Player
         private System.Windows.Forms.ListView SamplingView;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.CheckBox VSyncCheckBox;
+        private System.Windows.Forms.CheckBox PreCacheCheckBox;
     }
 }
