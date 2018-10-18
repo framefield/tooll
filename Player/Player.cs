@@ -374,7 +374,9 @@ namespace Framefield.Player
             {
                 if (_settings.Looped)
                     Bass.BASS_ChannelSetPosition(_soundStream, 0);
-                else if (time >= (_soundLength + 2.0))
+                else if (!_exitTimer.IsRunning)
+                    _exitTimer.Restart();
+                else if (_exitTimer.ElapsedMilliseconds >= 2000)
                     _form.Close();
             }
 
@@ -489,6 +491,8 @@ namespace Framefield.Player
         private const int _numMeasureValues = 10;
         private List<Int64> _averagedElapsed = new List<Int64>();
         private int _currentAveragedElapsedIndex = 0;
+
+        private Stopwatch _exitTimer = new Stopwatch();
     }
 
     public class StatisticsCollector : OperatorPart.IPreTraverseEvaluator
