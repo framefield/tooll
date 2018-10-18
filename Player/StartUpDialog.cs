@@ -41,7 +41,10 @@ namespace Framefield.Player
             Height += (int)(20*dpi/96.0);
             
             foreach (var dm in adapter.GetDisplayModes(Format.X8R8G8B8)) {
-                var item = new ListViewItem(String.Format("{0,4} x {1,4}, {2,3}Hz", dm.Width, dm.Height, dm.RefreshRate));
+                var item = new ListViewItem(String.Format("{0} x {1}   {2} Hz",
+                    dm.Width.ToString().PadLeft(4, 'x').Replace("x", "  "),
+                    dm.Height.ToString().PadLeft(4, 'x').Replace("x", "  "),
+                    dm.RefreshRate.ToString().PadLeft(3, 'x').Replace("x", "  ")));
                 DisplayModesView.Items.Add(item);
                 _displayModesMap.Add(item.Index, dm);
                 if (dm.ToString() == adapter.CurrentDisplayMode.ToString())
@@ -52,18 +55,24 @@ namespace Framefield.Player
             DisplayModesView.EnsureVisible(currentDisplayModeIndex);
 
             //update aspect ratio listview
-            var itm = new ListViewItem("4:3");
+            var itm = new ListViewItem("21:9");
             AspectRatioView.Items.Add(itm);
-            _aspectRatioMap.Add(itm.Index, 4.0/3.0);
-            itm = new ListViewItem("5:4");
-            AspectRatioView.Items.Add(itm);
-            _aspectRatioMap.Add(itm.Index, 5.0/4.0);
+            _aspectRatioMap.Add(itm.Index, 21.0 / 9.0);
             itm = new ListViewItem("16:9");
             AspectRatioView.Items.Add(itm);
-            _aspectRatioMap.Add(itm.Index, 16.0/9.0);
+            _aspectRatioMap.Add(itm.Index, 16.0 / 9.0);
             itm = new ListViewItem("16:10");
             AspectRatioView.Items.Add(itm);
-            _aspectRatioMap.Add(itm.Index, 16.0/10.0);
+            _aspectRatioMap.Add(itm.Index, 16.0 / 10.0);
+            itm = new ListViewItem("3:2");
+            AspectRatioView.Items.Add(itm);
+            _aspectRatioMap.Add(itm.Index, 3.0 / 2.0);
+            itm = new ListViewItem("4:3");
+            AspectRatioView.Items.Add(itm);
+            _aspectRatioMap.Add(itm.Index, 4.0 / 3.0);
+            itm = new ListViewItem("5:4");
+            AspectRatioView.Items.Add(itm);
+            _aspectRatioMap.Add(itm.Index, 5.0 / 4.0);
 
             double minimalAspectDistance = 9999.0;
             int minimalAspectIndex = -1;
@@ -85,15 +94,18 @@ namespace Framefield.Player
             itm = new ListViewItem("Disabled");
             SamplingView.Items.Add(itm);
             _samplingMap.Add(itm.Index, 0);
-            itm = new ListViewItem("2x");
+            itm = new ListViewItem("  2x");
             SamplingView.Items.Add(itm);
             _samplingMap.Add(itm.Index, 2);
-            itm = new ListViewItem("4x");
+            itm = new ListViewItem("  4x");
             SamplingView.Items.Add(itm);
             _samplingMap.Add(itm.Index, 4);
-            itm = new ListViewItem("8x");
+            itm = new ListViewItem("  8x");
             SamplingView.Items.Add(itm);
             _samplingMap.Add(itm.Index, 8);
+            itm = new ListViewItem("16x");
+            SamplingView.Items.Add(itm);
+            _samplingMap.Add(itm.Index, 16);
             SamplingView.Items[1].Selected = true;
             SamplingView.EnsureVisible(1);
 
