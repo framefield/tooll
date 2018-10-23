@@ -17,13 +17,25 @@ namespace Framefield.Core
 
         public ContextSettings()
         {
-            DisplayMode = new DisplayMode() { Width = 1920, Height = 1080, RefreshRate = 60, Format = Format.A8R8G8B8 };
-            Sampling = 0;
-            AspectRatio = DisplayMode.AspectRatio;
+            DisplayMode = new DisplayMode() { Width = 0, Height = 0, RefreshRate = 60, Format = Format.A8R8G8B8 };
+            Sampling = 2;
+            AspectRatio = 0;
             FullScreen = true;
             Looped = false;
             VSyncEnabled = true;
             PreCacheEnabled = true;
+        }
+
+        public void Validate()
+        {
+            if (DisplayMode.Width < 1 || DisplayMode.Height < 1)
+            {
+                DisplayMode = new DisplayMode() { Width = 1920, Height = 1080, RefreshRate = 60, Format = Format.A8R8G8B8 };
+            }
+            if (AspectRatio < 0.1)
+            {
+                AspectRatio = DisplayMode.AspectRatio;
+            }
         }
     }
 }

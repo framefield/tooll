@@ -21,8 +21,8 @@ namespace Framefield.Player
         public ContextSettings Settings { get; private set; }
         public bool Accepted { get; private set; }
 
-        public StartUpDialog() {
-            Settings = new ContextSettings();
+        public StartUpDialog(ContextSettings settings) {
+            Settings = settings;
             InitializeComponent();
             
         }
@@ -34,7 +34,7 @@ namespace Framefield.Player
 
             //update the display listview
             var adapter = d3d.Adapters[0];
-            int currentDisplayModeIndex = 0;
+            int currentDisplayModeIndex = 0, selectedDisplayModeIndex = -1;
             int i = 0;
             float dpi = this.CreateGraphics().DpiX;
             DisplayModesView.Columns[0].Width = DisplayModesView.Width- (int)(25.0f * (dpi/96));
@@ -49,10 +49,19 @@ namespace Framefield.Player
                 _displayModesMap.Add(item.Index, dm);
                 if (dm.ToString() == adapter.CurrentDisplayMode.ToString())
                     currentDisplayModeIndex = i;
+                if (dm.Width  == Settings.DisplayMode.Width
+                &&  dm.Height == Settings.DisplayMode.Height
+                &&  (selectedDisplayModeIndex < 1
+                ||  dm.RefreshRate == Settings.DisplayMode.RefreshRate))
+                    selectedDisplayModeIndex = i;
                 ++i;
             }
-            DisplayModesView.Items[currentDisplayModeIndex].Selected = true;
-            DisplayModesView.EnsureVisible(currentDisplayModeIndex);
+            if (selectedDisplayModeIndex < 0)
+                selectedDisplayModeIndex = currentDisplayModeIndex;
+            DisplayModesView.Items[selectedDisplayModeIndex].Selected = true;
+            DisplayModesView.EnsureVisible(selectedDisplayModeIndex);
+            Settings.DisplayMode = _displayModesMap[selectedDisplayModeIndex];
+            Settings.Validate();  // set aspect ratio (if not already done so)
 
             //update aspect ratio listview
             var itm = new ListViewItem("21:9");
@@ -75,18 +84,16 @@ namespace Framefield.Player
             _aspectRatioMap.Add(itm.Index, 5.0 / 4.0);
 
             double minimalAspectDistance = 9999.0;
-            int minimalAspectIndex = -1;
+            int minimalAspectIndex = 0;
             i = 0;
             foreach (var el in _aspectRatioMap) {
-                var currentAspectDistance = Math.Abs(el.Value - adapter.CurrentDisplayMode.AspectRatio);
+                var currentAspectDistance = Math.Abs(el.Value - Settings.AspectRatio);
                 if (currentAspectDistance < minimalAspectDistance) {
                     minimalAspectDistance = currentAspectDistance;
                     minimalAspectIndex = i;
                 }
                 ++i;
             }
-            if (minimalAspectIndex < 0)
-                minimalAspectIndex = 0;
             AspectRatioView.Items[minimalAspectIndex].Selected = true;
             AspectRatioView.EnsureVisible(minimalAspectIndex);
 
@@ -106,18 +113,27 @@ namespace Framefield.Player
             itm = new ListViewItem("16x");
             SamplingView.Items.Add(itm);
             _samplingMap.Add(itm.Index, 16);
-            SamplingView.Items[1].Selected = true;
-            SamplingView.EnsureVisible(1);
 
-            //const int VENDOR_NVIDIA = 4318;
-            //const int VENDOR_ATI_AMD = 4098;
+            int minimalSamplingDistance = 9999;
+            int minimalSamplingIndex = 0;
+            i = 0;
+            foreach (var el in _samplingMap)
+            {
+                var currentSamplingDistance = Math.Abs(el.Value - Settings.Sampling);
+                if (currentSamplingDistance < minimalSamplingDistance)
+                {
+                    minimalSamplingDistance = currentSamplingDistance;
+                    minimalSamplingIndex = i;
+                }
+                ++i;
+            }
+            SamplingView.Items[minimalSamplingIndex].Selected = true;
+            SamplingView.EnsureVisible(minimalSamplingIndex);
 
-            //bool isAtiAmdCard = adapter.Details.VendorId == VENDOR_ATI_AMD;
-
-            FullScreenCheckBox.Checked = true;
-            LoopedCheckBox.Checked = false;
-            VSyncCheckBox.Checked = true;//!isAtiAmdCard;
-            PreCacheCheckBox.Checked = true;
+            FullScreenCheckBox.Checked = Settings.FullScreen;
+            LoopedCheckBox.Checked = Settings.Looped;
+            VSyncCheckBox.Checked = Settings.VSyncEnabled;
+            PreCacheCheckBox.Checked = Settings.PreCacheEnabled;
         }
 
         private void StartBtn_Click(object sender, EventArgs e) {
