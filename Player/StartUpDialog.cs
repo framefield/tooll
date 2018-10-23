@@ -61,10 +61,12 @@ namespace Framefield.Player
             DisplayModesView.Items[selectedDisplayModeIndex].Selected = true;
             DisplayModesView.EnsureVisible(selectedDisplayModeIndex);
             Settings.DisplayMode = _displayModesMap[selectedDisplayModeIndex];
-            Settings.Validate();  // set aspect ratio (if not already done so)
 
             //update aspect ratio listview
-            var itm = new ListViewItem("21:9");
+            var itm = new ListViewItem("Auto");
+            AspectRatioView.Items.Add(itm);
+            _aspectRatioMap.Add(itm.Index, 0);
+            itm = new ListViewItem("21:9");
             AspectRatioView.Items.Add(itm);
             _aspectRatioMap.Add(itm.Index, 21.0 / 9.0);
             itm = new ListViewItem("16:9");
