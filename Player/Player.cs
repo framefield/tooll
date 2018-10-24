@@ -124,6 +124,9 @@ namespace Framefield.Player
             D3DDevice.TouchWidth = 1920;
             D3DDevice.TouchHeight = 1080;
 
+            _operatorLoadEndProgress = 0.3f;
+            _preCacheStartProgress = _settings.PreCacheEnabled ? 0.9f : 1.0f;
+
             return true;
         }
 
@@ -238,13 +241,48 @@ namespace Framefield.Player
             e.Handled = true;
         }
 
+        private OperatorPartContext GetNewContext(float t = 0.0f)
+        {
+            var context = new OperatorPartContext(_defaultContext, t);
+            context.D3DDevice = D3DDevice.Device;
+            context.Effect = _renderer.SceneDefaultEffect;
+            context.InputLayout = _renderer.SceneDefaultInputLayout;
+            context.RenderTargetView = _renderTargetView;
+            context.DepthStencilView = _renderTargetDepthView;
+            context.DepthStencilState = _renderer.DefaultDepthStencilState;
+            context.BlendState = _renderer.DefaultBlendState;
+            context.BlendFactor = _renderer.DefaultBlendFactor;
+            context.RasterizerState = _renderer.DefaultRasterizerState;
+            context.SamplerState = _renderer.DefaultSamplerState;
+            context.Viewport = _viewport;
+            context.Texture0 = _texture;
+            return context;
+        }
+
+        private void DrawFrame(float t)
+        {
+            _model.GlobalTime = t;
+
+            D3DDevice.Device.ImmediateContext.ClearDepthStencilView(_renderTargetDepthView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1.0f, 0);
+            D3DDevice.Device.ImmediateContext.ClearRenderTargetView(_renderTargetView, new SharpDX.Color4(0.0f, 0.0f, 0.0f, 1.0f));
+            D3DDevice.Device.ImmediateContext.InputAssembler.InputLayout = _renderer.SceneDefaultInputLayout;
+
+            //invalidate all time accessors
+            var invalidator = new OperatorPart.InvalidateInvalidatables();
+            _model.HomeOperator.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
+
+            var context = GetNewContext((float)_model.GlobalTime);
+
+            _model.HomeOperator.Outputs[0].Eval(context);
+        }
+
         public void Precalc() {
             Logger.Info("Precalculating ...");
 
             var pv = new ProgressVisualizer(_form, D3DDevice.Device, D3DDevice.SwapChain);
             pv.Update(0.0f);
 
-            MetaManager.InitializeCallback = progress => pv.Update(0.3f*progress);
+            MetaManager.InitializeCallback = progress => pv.Update(_operatorLoadEndProgress * progress);
             MetaManager.Instance.LoadMetaOperators();
 
             _model = new Model();
@@ -284,31 +322,40 @@ namespace Framefield.Player
             }
 
             //update everything
-            var context = new OperatorPartContext(_defaultContext, 0.0f);
-            context.D3DDevice = D3DDevice.Device;
-            context.Effect = _renderer.SceneDefaultEffect;
-            context.InputLayout = _renderer.SceneDefaultInputLayout;
-            context.RenderTargetView = _renderTargetView;
-            context.DepthStencilView = _renderTargetDepthView;
-            context.DepthStencilState = _renderer.DefaultDepthStencilState;
-            context.BlendState = _renderer.DefaultBlendState;
-            context.BlendFactor = _renderer.DefaultBlendFactor;
-            context.RasterizerState = _renderer.DefaultRasterizerState;
-            context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = _viewport;
-            context.Texture0 = _texture;
+            var context = GetNewContext();
 
             var statisticsCollector = new StatisticsCollector();
             _model.HomeOperator.Outputs[0].TraverseWithFunction(statisticsCollector, null);
             int totalNumOpParts = statisticsCollector.NumTotalOpParts;
             int totalNumEvaluations = statisticsCollector.NumTotalEvaluations;
 
-            var initialEvaluator = new InitialEvaluator(totalNumOpParts, context, pv);
+            var initialEvaluator = new InitialEvaluator(totalNumOpParts, context, pv, _operatorLoadEndProgress, _preCacheStartProgress - _operatorLoadEndProgress);
             _model.HomeOperator.Outputs[0].TraverseWithFunction(initialEvaluator, null);
-            pv.Dispose();
+
+            var timeClipEvaluator = new TimeClipEvaluator();
+            _model.HomeOperator.Outputs[0].TraverseWithFunction(timeClipEvaluator, null);
 
             _model.HomeOperator.Outputs[0].MarkInvalidatables();
             OperatorPart.HasValidInvalidationMarksOnOperatorPartsForTraversing = true;
+
+            if (_settings.PreCacheEnabled)
+            {
+                // draw the first, last and center frame of each TimeClip
+                // in reverse order to warm up caches
+                var preCacheTimes = timeClipEvaluator.GetResult();
+                int i = 0;
+                foreach (double t in preCacheTimes)
+                {
+                    Logger.Debug("pre-rendering frame at t={0}", t);
+                    D3DDevice.BeginFrame();
+                    DrawFrame((float)t);
+                    D3DDevice.EndFrame();
+                    i++;
+                    pv.Update(_preCacheStartProgress + (1.0f - _preCacheStartProgress) * i / preCacheTimes.Count);
+                }
+            }
+
+            pv.Dispose();
 
             Logger.Info("Statistics: number of operator parts: {0}, total evaluations: {1}, number of time accessors: {2}",
                               totalNumOpParts, totalNumEvaluations, _timeAccessorOpPartFunctions.Count);
@@ -333,7 +380,9 @@ namespace Framefield.Player
             {
                 if (_settings.Looped)
                     Bass.BASS_ChannelSetPosition(_soundStream, 0);
-                else
+                else if (!_exitTimer.IsRunning)
+                    _exitTimer.Restart();
+                else if (_exitTimer.ElapsedMilliseconds >= 2000)
                     _form.Close();
             }
 
@@ -345,35 +394,10 @@ namespace Framefield.Player
 //            }
 
             //double time = (double)_globalTime.ElapsedTicks / Stopwatch.Frequency;
-            _model.GlobalTime = time;
             TimeLogger.BeginFrame(time);
             D3DDevice.BeginFrame();
 
-//            ResourceManager.CheckResources();
-
-            D3DDevice.Device.ImmediateContext.ClearDepthStencilView(_renderTargetDepthView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1.0f, 0);
-            D3DDevice.Device.ImmediateContext.ClearRenderTargetView(_renderTargetView, new SharpDX.Color4(0.0f, 0.0f, 0.0f, 1.0f));
-            D3DDevice.Device.ImmediateContext.InputAssembler.InputLayout = _renderer.SceneDefaultInputLayout;
-
-            //invalidate all time accessors
-            var invalidator = new OperatorPart.InvalidateInvalidatables();
-            _model.HomeOperator.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
-
-            var context = new OperatorPartContext(_defaultContext, (float)_model.GlobalTime);
-            context.D3DDevice = D3DDevice.Device;
-            context.Effect = _renderer.SceneDefaultEffect;
-            context.InputLayout = _renderer.SceneDefaultInputLayout;
-            context.RenderTargetView = _renderTargetView;
-            context.DepthStencilView = _renderTargetDepthView;
-            context.DepthStencilState = _renderer.DefaultDepthStencilState;
-            context.BlendState = _renderer.DefaultBlendState;
-            context.BlendFactor = _renderer.DefaultBlendFactor;
-            context.RasterizerState = _renderer.DefaultRasterizerState;
-            context.SamplerState = _renderer.DefaultSamplerState;
-            context.Viewport = _viewport;
-            context.Texture0 = _texture;
-
-            _model.HomeOperator.Outputs[0].Eval(context);
+            DrawFrame((float)time);
 
             D3DDevice.SwapChain.Present(_settings.VSyncEnabled ? 1 : 0, PresentFlags.None);
 
@@ -473,6 +497,10 @@ namespace Framefield.Player
         private const int _numMeasureValues = 10;
         private List<Int64> _averagedElapsed = new List<Int64>();
         private int _currentAveragedElapsedIndex = 0;
+
+        private Stopwatch _exitTimer = new Stopwatch();
+        private float _operatorLoadEndProgress;
+        private float _preCacheStartProgress;
     }
 
     public class StatisticsCollector : OperatorPart.IPreTraverseEvaluator
@@ -498,11 +526,13 @@ namespace Framefield.Player
 
     public class InitialEvaluator : OperatorPart.IPreTraverseEvaluator
     {
-        public InitialEvaluator(int totalNumOpParts, OperatorPartContext context, ProgressVisualizer progressVisualizer)
+        public InitialEvaluator(int totalNumOpParts, OperatorPartContext context, ProgressVisualizer progressVisualizer, float progressStart, float progressScale)
         {
             _totalNumOpParts = totalNumOpParts;
             _context = context;
             _progressVisualizer = progressVisualizer;
+            _progressStart = progressStart;
+            _progressScale = progressScale;
         }
 
         public void PreEvaluate(OperatorPart opPart)
@@ -515,7 +545,7 @@ namespace Framefield.Player
                 if (_uniqueOpParts.Count%100 == 0)
                 {
                     float progress = Math.Min((float) _uniqueOpParts.Count/_totalNumOpParts, 1.0f);
-                    _progressVisualizer.Update(0.3f + 0.7f*progress);
+                    _progressVisualizer.Update(_progressStart + _progressScale * progress);
                 }
             }
         }
@@ -524,5 +554,53 @@ namespace Framefield.Player
         private OperatorPartContext _context;
         private ProgressVisualizer _progressVisualizer;
         private HashSet<OperatorPart> _uniqueOpParts = new HashSet<OperatorPart>();
+        private float _progressStart;
+        private float _progressScale;
+    }
+
+    public class TimeClipEvaluator : OperatorPart.IPreTraverseEvaluator
+    {
+        public TimeClipEvaluator()
+        {
+            _times.Add(0.0);
+        }
+
+        public void PreEvaluate(OperatorPart opPart)
+        {
+            Framefield.Core.OperatorPartTraits.ITimeClip clip = opPart.Func as Framefield.Core.OperatorPartTraits.ITimeClip;
+            if ((clip != null) && !_uniqueClips.Contains(clip)) {
+                _times.Add(clip.StartTime);
+                _times.Add(0.5 * (clip.StartTime + clip.EndTime));
+                _times.Add(clip.EndTime - 1.0/60);
+                _uniqueClips.Add(clip);
+            }
+        }
+
+        public List<double> GetResult()
+        {
+            _times.Sort();
+            // remove double timestamps and those that are too close together;
+            // this algorithm is quite slow, but we're usually dealing with
+            // significantly less than ~100 TimeClips, so we should be fine
+            double next = 0.0;
+            int i = 0;
+            while (i < _times.Count)
+            {
+                if (_times[i] >= next)
+                {
+                    next = _times[i] + 0.5 / 60;
+                    ++i;
+                }
+                else
+                {
+                    _times.RemoveAt(i);
+                }
+            }
+            _times.Reverse();
+            return _times;
+        }
+
+        private HashSet<Framefield.Core.OperatorPartTraits.ITimeClip> _uniqueClips = new HashSet<Framefield.Core.OperatorPartTraits.ITimeClip>();
+        private List<double> _times = new List<double>();
     }
 }

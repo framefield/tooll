@@ -25,7 +25,8 @@ namespace Framefield.Player
         private static void RunPlayer(string[] args)
         {
             Logger.Initialize(Dispatcher.CurrentDispatcher);
-            var commandLineOptions = new CommandLineOptions(args);
+            var settings = new ContextSettings();
+            var commandLineOptions = new CommandLineOptions(settings, args);
 
             try
             {
@@ -45,18 +46,21 @@ namespace Framefield.Player
 
                     try
                     {
-                        var startUpDlg = new StartUpDialog();
+                        var startUpDlg = new StartUpDialog(settings);
                         if (!commandLineOptions.HideDialog)
                         {
                             startUpDlg.ShowDialog();
                             if (!startUpDlg.Accepted)
                                 return;
                         }
+                        settings.Validate();
 
-                        if (player.Initialize(startUpDlg.Settings))
+                        if (player.Initialize(settings))
                         {
                             TimeLogger.Enabled = commandLineOptions.TimeLoggingEnabled;
                             player.Precalc();
+                            if (commandLineOptions.PrecalcOnly)
+                                return;
                             player.Run();
                         }
                     }

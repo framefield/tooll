@@ -347,7 +347,7 @@ namespace Framefield.Core
             JsonSerializer serializer = new JsonSerializer();
             serializer.NullValueHandling = NullValueHandling.Ignore;
 
-            using (StreamWriter sw = new StreamWriter("Textures.bin"))
+            using (StreamWriter sw = new StreamWriter("logs/ResourceDescriptions.json"))
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 writer.Formatting = Formatting.Indented;
