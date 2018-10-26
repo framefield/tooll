@@ -23,10 +23,10 @@ using Matrix = System.Windows.Media.Matrix;
 using Path = System.Windows.Shapes.Path;
 using Point = System.Windows.Point;
 using Utilities = Framefield.Core.Utilities;
+using Framefield.Tooll.Utils;
 
 namespace Framefield.Tooll
 {
-
     /// <summary>
     /// Interaction logic for CompositionGraphView.xaml
     /// </summary>
@@ -41,7 +41,7 @@ namespace Framefield.Tooll
 
         /**
          * Selected Operators
-         * 
+         *
          * Note by pixtur: This property is quite important and couple of other components rely on it.
          * The relationship between this property, the FirstSelectedChanged event and m_selectionHandler
          * seems not obvious and should be refactored to something like an ObservableCollection
@@ -90,45 +90,57 @@ namespace Framefield.Tooll
             Unloaded += CompositionGraphView_Unloaded;
         }
 
-        void CompositionGraphView_Loaded(object sender, RoutedEventArgs e)
+
+        private void CompositionGraphView_Loaded(object sender, RoutedEventArgs e)
         {
-            CV.XCompositionToolBar.XBreadCrumbs.JumpOutEvent += XBreadCrumbs_JumpOutEvent;
+            CV.XCompositionToolBar.XBreadCrumbsView.JumpOutEvent += XBreadCrumbs_JumpOutEvent;
             SelectionHandler.SelectionChanged += SelectionChangedHandler;
             KeyUp += KeyUpHandler;
             SizeChanged += CompositionGraphView_SizeChanged;
 
             var annotationBinding = new Binding()
-                                        {
-                                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                                            Source = App.Current.MainWindow.CompositionView.CompositionGraphView,
-                                            Path = new PropertyPath("Annotations")
-                                        };
+            {
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Source = App.Current.MainWindow.CompositionView.CompositionGraphView,
+                Path = new PropertyPath("Annotations")
+            };
 
             BindingOperations.SetBinding(XAnnotationsControl, ItemsControl.ItemsSourceProperty, annotationBinding);
 
             ConnectionDragHelper = new ConnectionDragHelper(this);
         }
 
-        void CompositionGraphView_SizeChanged(object sender, SizeChangedEventArgs e)
+
+
+
+
+
+
+        private void CompositionGraphView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             UpdateConnectionsFromInputs();
             UpdateConnectionsToOutputs();
         }
 
+
         private void CompositionGraphView_Unloaded(object sender, RoutedEventArgs e)
         {
-            CV.XCompositionToolBar.XBreadCrumbs.JumpOutEvent -= XBreadCrumbs_JumpOutEvent;
+            CV.XCompositionToolBar.XBreadCrumbsView.JumpOutEvent -= XBreadCrumbs_JumpOutEvent;
             SelectionHandler.SelectionChanged -= SelectionChangedHandler;
             KeyUp -= KeyUpHandler;
             SizeChanged -= CompositionGraphView_SizeChanged;
+
         }
+
+
+
+
 
         private void SelectionChangedHandler(object sender, SelectionHandler.SelectionChangedEventArgs e)
         {
             ResetAllOperatorVisuals();
             HighlightConnectionsOfSelectedOperators();
         }
-
 
         private void XBreadCrumbs_JumpOutEvent(object sender, EventArgs e)
         {
@@ -141,7 +153,49 @@ namespace Framefield.Tooll
             CV.XTimeView.ApplyState(level.TimeViewState);
         }
 
+
+
+        public void ReorderInputs()
+        {
+            var inputsSortedByPosition = new List<InputWidget>();
+            foreach (var iw in InputView.Panel.Children)
+            {
+                if (iw is InputWidget x)
+                {
+                    inputsSortedByPosition.Add(x);
+                }
+            }
+            inputsSortedByPosition.Sort((a, b) => (a.Position.X.CompareTo(b.Position.X)));
+
+            var needsReorder = false;
+            for (int index = 0; index < InputView.Panel.Children.Count; index++)
+            {
+                if (inputsSortedByPosition[index].OperatorPart != CompositionOperator.Inputs[index])
+                {
+                    needsReorder = true;
+                    break;
+                }
+            }
+            if (!needsReorder)
+                return;
+
+            var reorderedMetaInputIds = new List<Guid>();
+            foreach (var i in inputsSortedByPosition)
+            {
+                var opPart = i.OperatorPart;
+                var metaInput = CompositionOperator.GetMetaInput(opPart);
+                reorderedMetaInputIds.Add(metaInput.ID);
+            }
+            var reorderCommand = new ReorderInputsCommand(CompositionOperator, reorderedMetaInputIds);
+            App.Current.UndoRedoStack.AddAndExecute(reorderCommand);
+
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+            SelectionHandler.SetElements(SelectionHandler.SelectedElements);
+            SetCompositionOperator(CompositionOperator);
+        }
+
         #region public command methods
+
         public void CopySelectionToClipboard()
         {
             var owsToDuplicate = (from el in SelectionHandler.SelectedElements
@@ -195,9 +249,9 @@ namespace Framefield.Tooll
 
                     AutoSelectAddedOperators = false;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Logger.Error( String.Format("Pasting clipboard failed:\n {0}", ex));
+                    Logger.Error(String.Format("Pasting clipboard failed:\n {0}", ex));
                 }
             }
         }
@@ -208,7 +262,7 @@ namespace Framefield.Tooll
             {
                 var m = ViewMatrix;
                 m.Invert();
-                return m.Transform(new Point(XBackgroundGrid.ActualWidth*0.5, XBackgroundGrid.ActualWidth*0.5));
+                return m.Transform(new Point(XBackgroundGrid.ActualWidth * 0.5, XBackgroundGrid.ActualWidth * 0.5));
             }
         }
 
@@ -221,7 +275,7 @@ namespace Framefield.Tooll
                 this._CV.XTimeView.XAnimationCurveEditor.DeleteSelectedKeys();
                 return;
             }
-            
+
             SelectionHandler.Enabled = false;
             // Make a copy because removing elements causes a change of the SelectedElements
             var selectedElements = new HashSet<IConnectableWidget>();
@@ -260,10 +314,12 @@ namespace Framefield.Tooll
             SelectCompositionOperator();
         }
 
-        public void CenterSelectedElements()
+        public void CenterAllOrSelectedElements()
         {
             var operatorWidgetsToCenter = new List<OperatorWidget>();
-            if (SelectionHandler.SelectedElements.Count > 0 && !SelectionHandler.SelectedElements.Contains(this))
+            var someAreSelected = SelectionHandler.SelectedElements.Count > 0
+                                  && !SelectionHandler.SelectedElements.Contains(this);
+            if (someAreSelected)
             {
                 operatorWidgetsToCenter.AddRange(from e in SelectionHandler.SelectedElements
                                                  let opWidget = e as OperatorWidget
@@ -285,17 +341,17 @@ namespace Framefield.Tooll
             var newCanvasCenter = new Point(0, 0);
             foreach (var ow in operatorWidgetsToCenter)
             {
-                newCanvasCenter.X += ow.Operator.Position.X + ow.Operator.Width*0.5;
+                newCanvasCenter.X += ow.Operator.Position.X + ow.Operator.Width * 0.5;
                 newCanvasCenter.Y += ow.Operator.Position.Y;
             }
             newCanvasCenter.X /= operatorWidgetsToCenter.Count;
             newCanvasCenter.Y /= operatorWidgetsToCenter.Count;
 
             // Compute new center-matrix
-            var newMatrix = new Matrix();            
-            var halfCanvasSize = new Point(XOperatorCanvas.ActualWidth*0.5, XOperatorCanvas.ActualHeight*0.5);
-            var newTopLeft = newCanvasCenter-halfCanvasSize;
-            newMatrix.Translate(-newTopLeft.X, -newTopLeft.Y);           
+            var newMatrix = new Matrix();
+            var halfCanvasSize = new Point(XOperatorCanvas.ActualWidth * 0.5, XOperatorCanvas.ActualHeight * 0.5);
+            var newTopLeft = newCanvasCenter - halfCanvasSize;
+            newMatrix.Translate(-newTopLeft.X, -newTopLeft.Y);
             _viewMatrixSmoother.SetTransitionTarget(newMatrix);
 
             UpdateConnectionsFromInputs();
@@ -309,15 +365,15 @@ namespace Framefield.Tooll
 
         public void StickySelectedElement()
         {
-            if (!SelectionHandler.SelectedElements.Any()) 
+            if (!SelectionHandler.SelectedElements.Any())
                 return;
 
             var ow = SelectionHandler.SelectedElements[0] as OperatorWidget;
             if (ow != null)
             {
-                App.Current.MainWindow.XRenderView.XStickyCheckbox.IsChecked = false;
+                App.Current.MainWindow.XRenderView.XLockedButton.IsChecked = false;
                 App.Current.MainWindow.XRenderView.SetOperatorWidget(ow);
-                App.Current.MainWindow.XRenderView.XStickyCheckbox.IsChecked = true;
+                App.Current.MainWindow.XRenderView.XLockedButton.IsChecked = true;
             }
         }
 
@@ -334,6 +390,15 @@ namespace Framefield.Tooll
 
         public void AddOperatorAtPosition(MetaOperator metaOp, Point mousePos)
         {
+            foreach (var level in CV.XCompositionToolBar.XBreadCrumbsView.Hierarchy)
+            {
+                if (level.Operator.Definition == metaOp)
+                {
+                    MessageBox.Show("You cannot create an Operator within itself");
+                    return;
+                }
+            }
+
             var oldSelectedOperators = (from op in SelectedElements
                                         where op is OperatorWidget
                                         select (op as OperatorWidget).Operator);
@@ -352,13 +417,12 @@ namespace Framefield.Tooll
             SetShadowOpOpacity(0.0);
         }
 
-        #endregion
+        #endregion public command methods
 
         #region UI update handlers
 
-
         /**
-         * This update handler is called on every frame to interpolate the _ViewMatrix into 
+         * This update handler is called on every frame to interpolate the _ViewMatrix into
          * the _ViewMatrixInterpolationTarget.
          */
 
@@ -370,9 +434,15 @@ namespace Framefield.Tooll
                 UpdateConnectionsFromInputs();
                 UpdateConnectionsToOutputs();
             }
+
+            if (_opWidgetToFocusAfterRender != null)
+            {
+                FocusNewlyAddedAnnotation(_opWidgetToFocusAfterRender);
+                _opWidgetToFocusAfterRender = null;
+            }
         }
 
-        #endregion
+        #endregion UI update handlers
 
         #region Selection Event handling
 
@@ -395,7 +465,7 @@ namespace Framefield.Tooll
             if (isLibOperator && !App.Current.UserSettings.GetOrSetDefault("UI.SkipLibOperatorWarnings", false))
             {
                 var dialog = new Components.Dialogs.OpenLockedOperatorDialog();
-                dialog.XText.Text= dialog.XText.Text.Replace("[OperatorName]", opWidget.Operator.Definition.Namespace + "."+  opWidget.Operator.Definition.Name); 
+                dialog.XText.Text = dialog.XText.Text.Replace("[OperatorName]", opWidget.Operator.Definition.Namespace + "." + opWidget.Operator.Definition.Name);
 
                 var opUsages = App.Current.MainWindow.GetUsagesOfOperator(opWidget.Operator.Definition);
                 dialog.XText.Text = dialog.XText.Text.Replace("[Count]", String.Format("{0}", opUsages.Count()));
@@ -413,7 +483,7 @@ namespace Framefield.Tooll
                 }
             }
 
-            CV.XCompositionToolBar.XBreadCrumbs.Push(opWidget.Operator);
+            CV.XCompositionToolBar.XBreadCrumbsView.Push(opWidget.Operator);
 
             CompositionOperator = opWidget.Operator;
 
@@ -423,9 +493,9 @@ namespace Framefield.Tooll
                 const double margin = 0.1;
                 CV.XTimeView.StartTime = timeClip.StartTime;
                 CV.XTimeView.EndTime = timeClip.EndTime;
-                var scale = CV.XTimeView.ActualWidth/(timeClip.EndTime - timeClip.StartTime);
-                CV.XTimeView.TimeOffset = timeClip.StartTime - CV.XTimeView.ActualWidth/scale*margin;
-                CV.XTimeView.TimeScale = CV.XTimeView.ActualWidth/((timeClip.EndTime - timeClip.StartTime)*(1.0 + 2*margin));
+                var scale = CV.XTimeView.ActualWidth / (timeClip.EndTime - timeClip.StartTime);
+                CV.XTimeView.TimeOffset = timeClip.StartTime - CV.XTimeView.ActualWidth / scale * margin;
+                CV.XTimeView.TimeScale = CV.XTimeView.ActualWidth / ((timeClip.EndTime - timeClip.StartTime) * (1.0 + 2 * margin));
             }
         }
 
@@ -452,7 +522,6 @@ namespace Framefield.Tooll
             return null;
         }
 
-
         private void ConnectionLine_SelectedHandler(object sender, RoutedEventArgs e)
         {
             SelectElement(sender as ConnectionLine);
@@ -467,9 +536,10 @@ namespace Framefield.Tooll
         {
             SelectElement(sender as OutputWidget);
         }
-        #endregion
 
-        #region model change event handles
+        #endregion Selection Event handling
+
+        #region model change event handlers
 
         private void CompositionOperator_OperatorAddedHandler(object sender, OperatorChangedEventArgs e)
         {
@@ -482,6 +552,7 @@ namespace Framefield.Tooll
         private void CompositionOperator_OperatorRemovedHandler(object sender, OperatorChangedEventArgs e)
         {
             var opWidgetToRemove = FindCorrespondingWidget(e.Operator);
+            RemoveEventHandlersFromOpWidget(opWidgetToRemove);
             XOperatorCanvas.Children.Remove(opWidgetToRemove);
             SelectionHandler.RemoveElement(opWidgetToRemove);
 
@@ -506,15 +577,15 @@ namespace Framefield.Tooll
                         Annotations.Remove(anvm);
                 }
             }
-        }
 
+        }
 
         private void CompositionOperator_ConnectionInsertedHandler(object sender, ConnectionChangedEventArgs e)
         {
             AddConnectionLine(e.Connection);
         }
 
-        private void CompositionOperator_ConnectionRemovedHandler(object sender, ConnectionChangedEventArgs e) 
+        private void CompositionOperator_ConnectionRemovedHandler(object sender, ConnectionChangedEventArgs e)
         {
             IConnectionLineSource source = null;
             if (e.Connection.SourceOp != null)
@@ -541,7 +612,6 @@ namespace Framefield.Tooll
             SelectionHandler.RemoveElement(connectionToRemove);
         }
 
-
         private void CompositionOperator_InputAddedHandler(object sender, OperatorPartChangedEventArgs e)
         {
             var op = sender as Operator;
@@ -554,7 +624,6 @@ namespace Framefield.Tooll
                 //XCodeEditor.MetaOperator= op.Definition;
             }
         }
-
 
         private void CompositionOperator_InputRemovedHandler(object sender, OperatorPartChangedEventArgs e)
         {
@@ -572,7 +641,10 @@ namespace Framefield.Tooll
         {
             AddOutputAndSelect(e.OperatorPart);
         }
-        #endregion
+
+        #endregion model change event handles
+
+
 
         #region XAML event handlers
 
@@ -585,15 +657,13 @@ namespace Framefield.Tooll
             Point p = e.MouseDevice.GetPosition(XOperatorCanvas);
             Point p2 = m.Transform(p);
 
-            double scale = (e.Delta > 0) ? MOUSE_WHEEL_ZOOM_SPEED : 1.0/MOUSE_WHEEL_ZOOM_SPEED;
+            double scale = (e.Delta > 0) ? MOUSE_WHEEL_ZOOM_SPEED : 1.0 / MOUSE_WHEEL_ZOOM_SPEED;
             m.ScaleAt(scale, scale, p2.X, p2.Y);
 
             _viewMatrixSmoother.SetTransitionTarget(m);
             UpdateConnectionsFromInputs();
             UpdateConnectionsToOutputs();
         }
-
-
 
         // Fence selection
         private void OnDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -624,6 +694,28 @@ namespace Framefield.Tooll
             UpdateConnectionsToOutputs();
         }
 
+        private List<AnnotationViewModel> FindAnnotationsInsideSelectionFence()
+        {
+            var visualParent = this.VisualParent as UIElement;
+
+            var selectedAnnotations = new List<AnnotationViewModel>();
+            var fenceBounds = m_FenceSelection.Bounds;
+
+            foreach (var a in Annotations)
+            {
+                var bounds = new Rect(
+                    point1: XOperatorCanvas.TranslatePoint(a.Position, XBackgroundGrid),
+                    point2: XOperatorCanvas.TranslatePoint(a.Position + new Vector(a.Width, a.Height), XBackgroundGrid)
+                );
+
+                if (fenceBounds.Contains(bounds))
+                {
+                    selectedAnnotations.Add(a);
+                }
+            }
+            return selectedAnnotations;
+        }
+
         private void OnDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (_isRightMouseDragging)
@@ -635,8 +727,8 @@ namespace Framefield.Tooll
             else
             {
                 m_FenceSelection.HandleDragCompleted(sender, e);
-
-                if ((Math.Abs(e.HorizontalChange) + Math.Abs(e.VerticalChange)) < SystemParameters.MinimumHorizontalDragDistance)
+                var dragWasClick = (Math.Abs(e.HorizontalChange) + Math.Abs(e.VerticalChange)) < SystemParameters.MinimumHorizontalDragDistance;
+                if (dragWasClick)
                 {
                     Point pointInCanvas = new Point(m_DragStartPosition.X + e.HorizontalChange, m_DragStartPosition.Y + e.VerticalChange);
                     Point pointInCompositionView = (sender as UIElement).TranslatePoint(pointInCanvas, XOperatorCanvas);
@@ -651,6 +743,13 @@ namespace Framefield.Tooll
                         e.Handled = false;
                     }
                 }
+                else
+                {
+                    foreach (var a in FindAnnotationsInsideSelectionFence())
+                    {
+                        SelectionHandler.AddElement(a.OperatorWidget);
+                    }
+                }
             }
         }
 
@@ -658,7 +757,6 @@ namespace Framefield.Tooll
         private bool m_IsRightMouseZoom = false;
         private Point m_DragStartPosition;
         private Matrix m_MatrixOnDragStart;
-
 
         private void OnMouseRightDown(object sender, MouseButtonEventArgs e)
         {
@@ -679,7 +777,6 @@ namespace Framefield.Tooll
             }
         }
 
-
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (_isRightMouseDragging)
@@ -693,7 +790,7 @@ namespace Framefield.Tooll
                     Point p2 = m_DragStartPosition;
                     double scale = deltaY == 0
                                        ? 1.0
-                                       : Math.Max(0.2, Math.Min(10.0, Math.Pow(1.1, -deltaY*0.06)));
+                                       : Math.Max(0.2, Math.Min(10.0, Math.Pow(1.1, -deltaY * 0.06)));
 
                     Matrix m = m_MatrixOnDragStart;
                     m.ScaleAt(scale, scale, p2.X, p2.Y);
@@ -709,6 +806,7 @@ namespace Framefield.Tooll
         }
 
         private Point _contextMenuPosition;
+
         private void OnMouseRightUp(object sender, MouseButtonEventArgs e)
         {
             _isRightMouseDragging = false;
@@ -729,7 +827,6 @@ namespace Framefield.Tooll
             }
         }
 
-
         protected void OnMouseDoubleClick(object sender, MouseButtonEventArgs args)
         {
             SelectedElements.Clear();
@@ -741,7 +838,7 @@ namespace Framefield.Tooll
             UpdateConnectionsFromInputs();
         }
 
-        #endregion
+        #endregion XAML event handlers
 
         #region XAML Drop handling
 
@@ -761,7 +858,7 @@ namespace Framefield.Tooll
                 var position = e.GetPosition(XOperatorCanvas);
 
                 // NOTE by Pixtur: The command pattern now prevents us from selecting the newly created operator.
-                App.Current.UndoRedoStack.AddAndExecute(new AddOperatorCommand(CompositionOperator, metaOp.ID, (int) position.X, (int) position.Y));
+                App.Current.UndoRedoStack.AddAndExecute(new AddOperatorCommand(CompositionOperator, metaOp.ID, (int)position.X, (int)position.Y));
 
                 // Close QuickCreateWindow
                 foreach (var w in App.Current.Windows)
@@ -776,13 +873,13 @@ namespace Framefield.Tooll
             }
         }
 
-        // This is only a stub to later potentially update the newConnection line 
+        // This is only a stub to later potentially update the newConnection line
         // currently constructed. The problem is caused by the fact, that during
         // "real" drag and drop operations between different controls, the
         // mouse position can't be easily captured. So far, this event is the
         // only handler that is been updated on mouse move. However, this updated position
         // still has to be feed back to the original OperatorWidget triggering
-        // the new Connection to be constructed. 
+        // the new Connection to be constructed.
         //
         // This mess needs to be cleaned up once we refactor the CompositionGraph
         // view together with the drag and drop implementation.
@@ -797,7 +894,7 @@ namespace Framefield.Tooll
             }
         }
 
-        #endregion
+        #endregion XAML Drop handling
 
         #region command event handlers
 
@@ -830,7 +927,7 @@ namespace Framefield.Tooll
                 Point newPos = new Point(0, 0);
                 foreach (var ow in owsToCombine)
                 {
-                    newPos.X += ow.Operator.Position.X + ow.Operator.Width*0.5;
+                    newPos.X += ow.Operator.Position.X + ow.Operator.Width * 0.5;
                     newPos.Y += ow.Operator.Position.Y;
                 }
                 newPos.X /= owsToCombine.Count;
@@ -915,7 +1012,7 @@ namespace Framefield.Tooll
             }
         }
 
-        #endregion
+        #endregion command event handlers
 
         #region private helper methods for UI
 
@@ -936,7 +1033,7 @@ namespace Framefield.Tooll
 
             /**
              * List list of timeClips in the current compositionOperator needs to be updated
-             * every time we enter/leave a sub operator. This will will then automatically
+             * every time we enter/leave a sub operator. This will then automatically
              * update the TimeClipEditor.
              */
             TimeClips.Clear();
@@ -945,18 +1042,18 @@ namespace Framefield.Tooll
 
             ClearGUI();
 
-
             if (_compositionOperator.Parent == null)
             {
-                CV.XCompositionToolBar.XBreadCrumbs.Clear();
-                CV.XCompositionToolBar.XBreadCrumbs.Push(_compositionOperator);
+                CV.XCompositionToolBar.XBreadCrumbsView.Clear();
+                CV.XCompositionToolBar.XBreadCrumbsView.Push(_compositionOperator);
             }
 
             _compositionOperator.InternalOps.ForEach(op => AddOperatorWidget(op));
-            _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
             _compositionOperator.Outputs.ForEach(opPart => AddOutput(opPart));
-
             LayoutOutputOperatorWidgets();
+
+
+            _compositionOperator.Inputs.ForEach(opPart => AddInput(opPart));
 
 
             if (_compositionOperator.InternalParts.Count > 0)
@@ -975,7 +1072,6 @@ namespace Framefield.Tooll
                 XCodeEditor.Operator = null;
                 XCodeEditor.Visibility = Visibility.Hidden;
             }
-
 
             _compositionOperator.OperatorAddedEvent += CompositionOperator_OperatorAddedHandler;
             _compositionOperator.OperatorRemovedEvent += CompositionOperator_OperatorRemovedHandler;
@@ -999,7 +1095,7 @@ namespace Framefield.Tooll
             }
             else
             {
-                CenterSelectedElements();
+                CenterAllOrSelectedElements();
             }
         }
 
@@ -1014,7 +1110,6 @@ namespace Framefield.Tooll
             }
         }
 
-
         private void SetupZoomOutTransition(Core.Operator originalCompOp)
         {
             var originalView = ViewMatrix;
@@ -1024,9 +1119,9 @@ namespace Framefield.Tooll
             Matrix zoomInView = new Matrix();
             Point p1 = new Point(originalCompOp.Position.X, originalCompOp.Position.Y);
 
-            zoomInView.Translate(-p1.X - 0.5*originalCompOp.Width, -p1.Y - 0.5*GRID_SIZE);
+            zoomInView.Translate(-p1.X - 0.5 * originalCompOp.Width, -p1.Y - 0.5 * GRID_SIZE);
             zoomInView.Scale(10, 10);
-            zoomInView.Translate(XOperatorCanvas.ActualWidth*0.5, XOperatorCanvas.ActualHeight*0.5);
+            zoomInView.Translate(XOperatorCanvas.ActualWidth * 0.5, XOperatorCanvas.ActualHeight * 0.5);
             ViewMatrix = zoomInView;
             _viewMatrixSmoother.SetMatrix(zoomInView);
             _viewMatrixSmoother.SetTransitionTarget(originalView);
@@ -1058,17 +1153,21 @@ namespace Framefield.Tooll
             SelectElement(input);
         }
 
+        //private List<InputWidget> _inputsWidgets = new List<InputWidget>();
+
         private InputWidget AddInput(OperatorPart opPart)
         {
-            var input = new InputWidget(opPart);
-            InputView.Panel.Children.Add(input);
+            var newInputWidget = new InputWidget(opPart);
+            var inputIndex = InputView.Panel.Children.Count;
 
-            int numInputs = InputView.Panel.Children.Count;
-            double x = 10 + (numInputs - 1)*(input.Width + 5);
-            input.Position = new Point(x, 0);
+            InputView.Panel.Children.Add(newInputWidget);
 
-            input.Selected += OnInputSelected;
-            return input;
+
+            var posX = 10 + inputIndex * (newInputWidget.Width + 5);
+            newInputWidget.Position = new Point(posX, 0);
+
+            newInputWidget.Selected += OnInputSelected;
+            return newInputWidget;
         }
 
         private void RemoveOutput(OperatorPart opPart)
@@ -1077,7 +1176,6 @@ namespace Framefield.Tooll
             OutputView.Panel.Children.Remove(output);
             SelectionHandler.RemoveElement(output);
         }
-
 
         private List<OperatorWidget> GetHiddenWidgetsConnectedToInputs(OperatorWidget ow, bool ignoreVisibilityOfCurrentWidget)
         {
@@ -1162,7 +1260,6 @@ namespace Framefield.Tooll
                     select ow).FirstOrDefault();
         }
 
-
         public void UpdateConnectionsFromInputs()
         {
             foreach (var child in InputView.Panel.Children)
@@ -1189,41 +1286,41 @@ namespace Framefield.Tooll
             SelectionHandler.AddElement(this);
         }
 
-
         private OperatorWidget AddOperatorWidget(Operator op)
         {
-            var opWidget = new OperatorWidget(op);
-            opWidget.SelectedEvent += OpWidget_OperatorSelectedHandler;
-            opWidget.OpenedEvent += OpWidget_OperatorOpenedHandler;
+            var newOpWidget = new OperatorWidget(op);
+            AddSelectionHandlersToNewOpWidget(newOpWidget);
+            AddHoverHandlersToNewOpWidget(newOpWidget);
+            _opWidgets.Add(newOpWidget);
 
-            XOperatorCanvas.Children.Add(opWidget);
+            XOperatorCanvas.Children.Add(newOpWidget);
 
             if (op.InternalParts.Count > 0)
             {
                 ITimeClip tc = op.InternalParts[0].Func as ITimeClip;
                 if (tc != null)
                 {
-                    TimeClipViewModel tcvm = TimeClips.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    TimeClipViewModel tcvm = TimeClips.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (tcvm == null)
-                        TimeClips.Add(new TimeClipViewModel(opWidget));
+                        TimeClips.Add(new TimeClipViewModel(newOpWidget));
                 }
                 ITimeMarker tm = op.InternalParts[0].Func as ITimeMarker;
                 if (tm != null)
                 {
-                    TimeMarkerViewModel tmvm = TimeMarkers.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    TimeMarkerViewModel tmvm = TimeMarkers.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (tmvm == null)
-                        TimeMarkers.Add(new TimeMarkerViewModel(opWidget));
+                        TimeMarkers.Add(new TimeMarkerViewModel(newOpWidget));
                 }
 
                 IAnnotation an = op.InternalParts[0].Func as IAnnotation;
                 if (an != null)
                 {
-                    AnnotationViewModel anvm = Annotations.FirstOrDefault(el => el.OperatorWidget == opWidget);
+                    AnnotationViewModel anvm = Annotations.FirstOrDefault(el => el.OperatorWidget == newOpWidget);
                     if (anvm == null)
-                        Annotations.Add(new AnnotationViewModel(opWidget));
+                        Annotations.Add(new AnnotationViewModel(newOpWidget));
                 }
             }
-            return opWidget;
+            return newOpWidget;
         }
 
         private void AddConnectionLine(Connection connection)
@@ -1246,13 +1343,13 @@ namespace Framefield.Tooll
             ConnectionLine cl = new ConnectionLine(connection.ID, _compositionOperator, source, target, connection.SourceOpPart, connection.TargetOpPart);
             source.ConnectionsOut.Add(cl);
             target.ConnectionsIn.Insert(connection.Index, cl);
-            if(!_preventUIUpdates)
+            if (!_preventUIUpdates)
                 target.UpdateConnections();
             var targetWidget = target as OperatorWidget;
             if (targetWidget != null)
             {
                 targetWidget.GetAndDrawInputZones();
-                targetWidget.UpdateColors();            
+                targetWidget.UpdateColors();
             }
             cl.SelectedEvent += ConnectionLine_SelectedHandler;
 
@@ -1333,7 +1430,9 @@ namespace Framefield.Tooll
             }
         }
 
-        #endregion
+        #endregion private helper methods for UI
+
+
 
         #region interface IConnectableWidget
 
@@ -1348,7 +1447,7 @@ namespace Framefield.Tooll
         }
 
         public Point Position { get { return new Point(); } set { } }
-        public Point PositionOnCanvas { get { return new Point(); }  }
+        public Point PositionOnCanvas { get { return new Point(); } }
 
         private bool m_IsSelected = false;
 
@@ -1398,7 +1497,7 @@ namespace Framefield.Tooll
         {
         }
 
-        #endregion
+        #endregion interface IConnectableWidget
 
         #region interface IElementView
 
@@ -1410,8 +1509,7 @@ namespace Framefield.Tooll
             {
                 foreach (UIElement child in XOperatorCanvas.Children)
                 {
-                    var cl = child as ConnectionLine;
-                    if (cl != null && cl.ConnectionPath == r.VisualHit as Path)
+                    if (child is ConnectionLine cl && cl.ConnectionPath == r.VisualHit as Path)
                     {
                         cl.HandleClicked();
                         eventWasHandled = true;
@@ -1421,15 +1519,18 @@ namespace Framefield.Tooll
             return eventWasHandled;
         }
 
+
         private void ClearGUI()
         {
+            RemoveEventHandlersFromAllOpWidgets();
             XOperatorCanvas.Children.Clear();
             InputView.Panel.Children.Clear();
             OutputView.Panel.Children.Clear();
             SelectionHandler.Clear();
         }
 
-        #endregion
+
+        #endregion interface IElementView
 
         #region private members
 
@@ -1450,13 +1551,14 @@ namespace Framefield.Tooll
 
         //private Matrix _ViewMatrixInterpolationTarget = new Matrix();
         private Components.ViewMatrixSmoother _viewMatrixSmoother = new ViewMatrixSmoother();
+
         private CompositionView _CV;
         private Operator _compositionOperator = Utilities.CreateEmptyOperator();
 
         private FenceSelection m_FenceSelection;
         //private BreadCrumbHandler _BreadCrumbsHandler = new BreadCrumbHandler();
 
-        #endregion
+        #endregion private members
 
         public const double CLICK_THRESHOLD = 2;
         public const double MOUSE_WHEEL_ZOOM_SPEED = 1.7;
@@ -1498,6 +1600,11 @@ namespace Framefield.Tooll
                     AlignSelectedOperators();
                     e.Handled = true;
                     break;
+
+                case Key.A:
+                    AddAnnotation(Mouse.GetPosition(this));
+                    e.Handled = true;
+                    break;
             }
         }
 
@@ -1506,7 +1613,7 @@ namespace Framefield.Tooll
 
         private void AlignSelectedOperators()
         {
-            _newlySelectedOpWidgets.Clear();            
+            _newlySelectedOpWidgets.Clear();
             _freshlySnappedOpWidgets.Clear();
 
             foreach (var widget in SelectedElements)
@@ -1553,17 +1660,15 @@ namespace Framefield.Tooll
             UpdateConnections();
         }
 
-
         private double RecursivelyAlignChildrenOfSelectedOps(OperatorWidget selectedOrSnappedWidget)
-        {                                                                                                          
+        {
             _freshlySnappedOpWidgets.Add(selectedOrSnappedWidget);
             var widthOffset = 0.0;
             var inputConnectionsFromLeftToRight = selectedOrSnappedWidget.ConnectionsIn.OrderBy(cl => cl.m_TargetPoint.X);
-            
+
             // Snap sourceOps
             foreach (var cl in inputConnectionsFromLeftToRight)
             {
-                
                 var sourceOp = cl.Source as OperatorWidget;
                 if (sourceOp == null)
                 {
@@ -1604,12 +1709,11 @@ namespace Framefield.Tooll
             return Math.Max(widthOffset, OP_WIDTH);
         }
 
-        private const double OP_WIDTH = GRID_SIZE *4;
+        private const double OP_WIDTH = GRID_SIZE * 4;
 
+        #region navigate with selection through graph
 
-        #region navigate with selection through graph 
-
-        private void SelectConnectedOutputWidget()
+        public void SelectConnectedOutputWidget()
         {
             SelectConnectedWidget(ow => ow.GetOpsConnectedToOutputs());
         }
@@ -1635,8 +1739,8 @@ namespace Framefield.Tooll
                     selectedOps.First().Focus();
                 }
             }
-            CenterSelectedElements();
-        }        
+            CenterAllOrSelectedElements();
+        }
 
         private List<OperatorWidget> GetSiblingsOfSelectedOperator()
         {
@@ -1651,13 +1755,12 @@ namespace Framefield.Tooll
             return opsAbove[0].GetOpsConnectedToInputs();
         }
 
-        #endregion
+        #endregion navigate with selection through graph
 
         private void DisableHandler(object sender, RoutedEventArgs e)
         {
             ToggleDisabledForSelectedOperators();
         }
-
 
         public void ToggleDisabledForSelectedOperators()
         {
@@ -1683,14 +1786,97 @@ namespace Framefield.Tooll
             }
         }
 
-        private static readonly Guid ANNOTATION_OP_META_ID = Guid.Parse("{e65cc223-c1cf-4b68-9d79-d6356e6546a4}");
+        private void AddAnnotation(Point position)
+        {
+            var selectedOps = GetSelectedOps();
+            Rect bounds = new Rect(
+                x: _contextMenuPosition.X,
+                y: _contextMenuPosition.Y,
+                width: 200,
+                height: 200
+            );
+
+            if (selectedOps.Any())
+            {
+                bounds = selectedOps[0].Bounds;
+                for (int i = 1; i < selectedOps.Count(); i++)
+                {
+                    bounds.Union(selectedOps[i].Bounds);
+                }
+                bounds.Inflate(new Size(50, 50));
+            }
+
+            // Note: We only provide the width here, because the height will be stored as Op-Parameter
+            var addOpCommand = new AddOperatorCommand(
+                CompositionOperator,
+                SpecialOperators.ANNOTATION,
+                bounds.X,
+                bounds.Y,
+                bounds.Width,
+                false);
+
+            App.Current.UndoRedoStack.AddAndExecute(addOpCommand);
+
+            // Set Height
+            var newOpWidget = FindOperatorWidgetById(addOpCommand.AddedInstanceID);
+            _opWidgetToFocusAfterRender = newOpWidget;
+            foreach (var param in newOpWidget.Operator.Inputs)
+            {
+                if (param.Name != "Height")
+                    continue;
+
+                var setHeightCommand = new SetFloatValueCommand(
+                    param,
+                    (float)bounds.Height
+                    );
+                App.Current.UndoRedoStack.AddAndExecute(setHeightCommand);
+                break;
+            }
+
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+        private OperatorWidget _opWidgetToFocusAfterRender = null;
+
+        private void FocusNewlyAddedAnnotation(OperatorWidget newOpWidget)
+        {
+            for (int i = 0; i < XAnnotationsControl.Items.Count; i++)
+            {
+                var item = XAnnotationsControl.Items[i] as AnnotationViewModel;
+                if (item.OperatorWidget != newOpWidget)
+                    continue;
+
+                var element = (UIElement)XAnnotationsControl.ItemContainerGenerator.ContainerFromIndex(i);
+
+                if (element != null)
+                {
+                    var annotationControl = UIHelper.FindVisualChild<AnnotationControl>(element);
+                    if (annotationControl != null)
+                    {
+                        annotationControl.EnableTextEdit();
+                    }
+                }
+            }
+        }
 
         private void AddAnnotationEventHandler(object sender, RoutedEventArgs e)
         {
-            var command = new AddOperatorCommand(CompositionOperator, ANNOTATION_OP_META_ID, (int)_contextMenuPosition.X, (int)_contextMenuPosition.Y, 200, false);
-            App.Current.UndoRedoStack.AddAndExecute(command);
+            AddAnnotation(_contextMenuPosition);
+        }
 
-            App.Current.UpdateRequiredAfterUserInteraction = true;            
+        private List<OperatorWidget> GetSelectedOps()
+        {
+            var operatorWidgetsToCenter = new List<OperatorWidget>();
+            var someAreSelected = SelectionHandler.SelectedElements.Count > 0
+                                  && !SelectionHandler.SelectedElements.Contains(this);
+            if (someAreSelected)
+            {
+                operatorWidgetsToCenter.AddRange(from e in SelectionHandler.SelectedElements
+                                                 let opWidget = e as OperatorWidget
+                                                 where opWidget != null && opWidget.Operator.Visible
+                                                 select opWidget);
+            }
+            return operatorWidgetsToCenter;
         }
 
         private void SaveAsIngredientHandler(object sender, RoutedEventArgs e)
@@ -1705,18 +1891,125 @@ namespace Framefield.Tooll
                 MessageBox.Show("Please select a single Operator to add as ingredient");
                 return;
             }
-            var opWidget =
-            SelectionHandler.SelectedElements.First() as OperatorWidget;
-            if (opWidget != null)
+
+            if (SelectionHandler.SelectedElements.First() is OperatorWidget opWidget)
             {
-                var hasBeenAdded= IngredientsManager.TryAddOperatorAsIngredientToDefaultPalette(opWidget.Operator);
+                var hasBeenAdded = IngredientsManager.TryAddOperatorAsIngredientToDefaultPalette(opWidget.Operator);
                 if (!hasBeenAdded)
                 {
                     MessageBox.Show("Couldn't add this to default Palette.");
                 }
-            }            
+            }
         }
 
+        public void SelectOperators(List<Operator> ops, bool center = false)
+        {
+            var opWidgetsToSelect = new List<ISelectable>();
+
+            foreach (var el in XOperatorCanvas.Children)
+            {
+                if (el is OperatorWidget opWidget)
+                {
+                    if (ops.Contains(opWidget.Operator))
+                    {
+                        opWidgetsToSelect.Add(opWidget);
+                    }
+                }
+            }
+            if (opWidgetsToSelect.Count == 0)
+                return;
+
+            if (center)
+            {
+                SelectionHandler.SetElements(opWidgetsToSelect);
+            }
+            CenterAllOrSelectedElements();
+        }
+
+
+        #region events for OpWidgets
+        private void AddEventHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            AddSelectionHandlersToNewOpWidget(opWidget);
+            AddHoverHandlersToNewOpWidget(opWidget);
+        }
+
+        private void RemoveEventHandlersFromAllOpWidgets()
+        {
+            foreach (var opWidget in _opWidgets)
+            {
+                RemoveEventHandlersFromOpWidget(opWidget);
+            }
+        }
+
+        private void RemoveEventHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            RemoveSelectionHandlersFromOpWidget(opWidget);
+            RemoveHoverHandlersFromOpWidget(opWidget);
+
+        }
+        #endregion
+
+
+        #region Operator Widget Selection handling
+        private void AddSelectionHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.SelectedEvent += OpWidget_OperatorSelectedHandler;
+            opWidget.OpenedEvent += OpWidget_OperatorOpenedHandler;
+        }
+
+        private void RemoveSelectionHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.SelectedEvent -= OpWidget_OperatorSelectedHandler;
+            opWidget.OpenedEvent -= OpWidget_OperatorOpenedHandler;
+        }
+
+
+        #endregion
+
+
+        #region operator hovering
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverStartEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverUpdateEvent;
+        public event EventHandler<OperatorWidget.HoverEventsArgs> OperatorHoverEndEvent;
+
+
+        // Forward events
+        private void OperatorHoverStartHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverStartEvent?.Invoke(sender, e);
+        }
+
+        private void OperatorHoverUpdateHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverUpdateEvent?.Invoke(sender, e);
+        }
+
+        private void OperatorHoverEndHandler(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            OperatorHoverEndEvent?.Invoke(sender, e);
+        }
+
+        private void AddHoverHandlersToNewOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.OperatorHoverStartEvent += OperatorHoverStartHandler;
+            opWidget.OperatorHoverUpdateEvent += OperatorHoverUpdateHandler;
+            opWidget.OperatorHoverEndEvent += OperatorHoverEndHandler;
+        }
+
+        /** This needs to be called on remove */
+        private void RemoveHoverHandlersFromOpWidget(OperatorWidget opWidget)
+        {
+            opWidget.OperatorHoverStartEvent -= OperatorHoverStartHandler;
+            opWidget.OperatorHoverUpdateEvent -= OperatorHoverUpdateHandler;
+            opWidget.OperatorHoverEndEvent -= OperatorHoverEndHandler;
+        }
+        #endregion
+
+
         public ConnectionDragHelper ConnectionDragHelper;
+
+        /** Keep track of all created opWidgets to remove event-handlers on cleanup */
+        private List<OperatorWidget> _opWidgets = new List<OperatorWidget>();
     }
 }

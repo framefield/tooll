@@ -9,7 +9,7 @@ using SharpDX.Direct3D9;
 
 namespace Framefield.Tooll
 {
-    class D3DImageSharpDX : D3DImage, IDisposable
+    public class D3DImageSharpDX : D3DImage, IDisposable
     {
         [DllImport("user32.dll", SetLastError = false)]
         static extern IntPtr GetDesktopWindow();
@@ -18,16 +18,19 @@ namespace Framefield.Tooll
         static Direct3DEx D3DContext;
         static DeviceEx D3DDevice;
 
-        Texture SharedTexture;
+        public Texture SharedTexture;
 
-        public D3DImageSharpDX() {
+        public D3DImageSharpDX()
+        {
             InitD3D9();
             NumActiveImages++;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             SetBackBufferSharpDX(null);
-            if (SharedTexture != null) {
+            if (SharedTexture != null)
+            {
                 SharedTexture.Dispose();
                 SharedTexture = null;
             }
@@ -36,29 +39,36 @@ namespace Framefield.Tooll
             ShutdownD3D9();
         }
 
-        public void InvalidateD3DImage() {
-            if (SharedTexture != null) {
+        public void InvalidateD3DImage()
+        {
+            if (SharedTexture != null)
+            {
                 Lock();
                 AddDirtyRect(new Int32Rect(0, 0, PixelWidth, PixelHeight));
                 Unlock();
             }
         }
 
-        public void SetBackBufferSharpDX(SharpDX.Direct3D11.Texture2D Texture) {
-            if (SharedTexture != null) {
+        public void SetBackBufferSharpDX(SharpDX.Direct3D11.Texture2D Texture)
+        {
+            if (SharedTexture != null)
+            {
                 SharedTexture.Dispose();
                 SharedTexture = null;
             }
 
-            if (Texture == null) {
-                if (SharedTexture != null) {
+            if (Texture == null)
+            {
+                if (SharedTexture != null)
+                {
                     SharedTexture = null;
                     Lock();
                     SetBackBuffer(D3DResourceType.IDirect3DSurface9, IntPtr.Zero);
                     Unlock();
                 }
             }
-            else if (IsShareable(Texture)) {
+            else if (IsShareable(Texture))
+            {
                 Format format = TranslateFormat(Texture);
                 if (format == Format.Unknown)
                     throw new ArgumentException("Texture format is not compatible with OpenSharedResource");
@@ -68,7 +78,8 @@ namespace Framefield.Tooll
                     throw new ArgumentNullException("Handle");
 
                 SharedTexture = new Texture(D3DDevice, Texture.Description.Width, Texture.Description.Height, 1, Usage.RenderTarget, format, Pool.Default, ref Handle);
-                using (Surface Surface = SharedTexture.GetSurfaceLevel(0)) {
+                using (Surface Surface = SharedTexture.GetSurfaceLevel(0))
+                {
                     Lock();
                     SetBackBuffer(D3DResourceType.IDirect3DSurface9, Surface.NativePointer);
                     Unlock();
@@ -78,8 +89,10 @@ namespace Framefield.Tooll
                 throw new ArgumentException("Texture must be created with ResourceOptionFlags.Shared");
         }
 
-        void InitD3D9() {
-            if (NumActiveImages == 0) {
+        void InitD3D9()
+        {
+            if (NumActiveImages == 0)
+            {
                 D3DContext = new Direct3DEx();
 
                 PresentParameters presentparams = new PresentParameters();
@@ -94,26 +107,32 @@ namespace Framefield.Tooll
             }
         }
 
-        void ShutdownD3D9() {
-            if (NumActiveImages == 0) {
-                if (SharedTexture != null) {
+        void ShutdownD3D9()
+        {
+            if (NumActiveImages == 0)
+            {
+                if (SharedTexture != null)
+                {
                     SharedTexture.Dispose();
                     SharedTexture = null;
                 }
 
-                if (D3DDevice != null) {
+                if (D3DDevice != null)
+                {
                     D3DDevice.Dispose();
                     D3DDevice = null;
                 }
 
-                if (D3DContext != null) {
+                if (D3DContext != null)
+                {
                     D3DContext.Dispose();
                     D3DContext = null;
                 }
             }
         }
 
-        IntPtr GetSharedHandle(SharpDX.Direct3D11.Texture2D Texture) {
+        IntPtr GetSharedHandle(SharpDX.Direct3D11.Texture2D Texture)
+        {
             SharpDX.DXGI.Resource resource = Texture.QueryInterface<SharpDX.DXGI.Resource>();
             IntPtr result = resource.SharedHandle;
 
@@ -122,8 +141,13 @@ namespace Framefield.Tooll
             return result;
         }
 
-        public static Format TranslateFormat(SharpDX.Direct3D11.Texture2D Texture) {
-            switch (Texture.Description.Format) {
+        public static Format TranslateFormat(SharpDX.Direct3D11.Texture2D Texture)
+        {
+            if (Texture == null)
+                return SharpDX.Direct3D9.Format.Unknown;
+
+            switch (Texture.Description.Format)
+            {
                 case SharpDX.DXGI.Format.R10G10B10A2_UNorm:
                     return SharpDX.Direct3D9.Format.A2B10G10R10;
 
@@ -138,7 +162,8 @@ namespace Framefield.Tooll
             }
         }
 
-        bool IsShareable(SharpDX.Direct3D11.Texture2D Texture) {
+        bool IsShareable(SharpDX.Direct3D11.Texture2D Texture)
+        {
             return (Texture.Description.OptionFlags & SharpDX.Direct3D11.ResourceOptionFlags.Shared) != 0;
         }
     }

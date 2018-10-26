@@ -117,7 +117,40 @@ namespace Framefield.Core
             }
         }
 
-        public List<MetaInput> Inputs { get; internal set; }
+        private List<MetaInput> _metaInputs;
+
+        public List<MetaInput> Inputs
+        {
+            get => _metaInputs;
+            internal set
+            {
+                _metaInputs = value;
+                ReorderInputsOfOpInstance();
+            }
+        }
+
+        public void ReorderInputsOfOpInstance()
+        {
+            foreach (var instance in _instances)
+            {
+                var newList = new List<OperatorPart>();
+
+                for (int index = 0; index < _metaInputs.Count; index++)
+                {
+                    foreach (var input in instance.Inputs)
+                    {
+                        if (input.ID == _metaInputs[index].ID)
+                        {
+                            newList.Add(input);
+                            break; // there should be no 2 inputs with same id
+                        }
+                    }
+                }
+                instance.Inputs = newList;
+            }
+            Changed = true; 
+        }
+
         public List<MetaOutput> Outputs { get; internal set; }
         internal Dictionary<Guid, Tuple<MetaOperator, InstanceProperties>> Operators { get; set; }
 
@@ -1014,6 +1047,31 @@ namespace Framefield.Core
                 InsertConnectionAt(new MetaConnection(Guid.Empty, input.ID, Guid.Empty, OperatorParts.First().Item1), index);
 
             Changed = true;
+        }
+
+        public void UpdateInput(MetaInput input)
+        {
+            int index = Inputs.IndexOf(input);
+            if ((index < 0) || (index > Inputs.Count))
+                throw new IndexOutOfRangeException();
+
+            foreach (var instance in _instances)
+            {
+                var inputInstance = instance.Inputs[index];
+
+                if (inputInstance.Type != input.OpPart.Type)
+                {
+                    OperatorPart newOpPart = input.CreateInstance();
+                    inputInstance.Type = newOpPart.Type;
+                    inputInstance.Func = newOpPart.Func;
+                }
+
+                if (inputInstance.Name != input.Name)
+                    inputInstance.Name = input.Name;
+
+                if (inputInstance.IsMultiInput != input.IsMultiInput)
+                    inputInstance.IsMultiInput = input.IsMultiInput;
+            }
         }
 
         public void AddInput(MetaInput input)

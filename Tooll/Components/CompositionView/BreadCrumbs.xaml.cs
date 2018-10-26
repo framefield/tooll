@@ -36,7 +36,8 @@ namespace Framefield.Tooll
 
 
 
-        public void Clear() {
+        public void Clear()
+        {
             Children.Clear();
             _nestingHierachy.Clear();
         }
@@ -46,17 +47,20 @@ namespace Framefield.Tooll
         {
             public Operator Operator { get; set; }
             public Operator SubOperator { get; set; }
-            public TimeView.State TimeViewState { get; set; }            
+            public TimeView.State TimeViewState { get; set; }
             public Button Button { get; set; }
         }
         private List<Level> _nestingHierachy = new List<Level>();
         public event EventHandler<System.EventArgs> JumpOutEvent = (o, a) => { };
 
-        public void Push(Operator op) 
+        public List<Level> Hierarchy { get { return _nestingHierachy; } }
+
+        public void Push(Operator op)
         {
-            if( _nestingHierachy.Count > 0) {
-                _nestingHierachy.Last().TimeViewState= CV.XTimeView.CreateState();
-                _nestingHierachy.Last().SubOperator= op;
+            if (_nestingHierachy.Count > 0)
+            {
+                _nestingHierachy.Last().TimeViewState = CV.XTimeView.CreateState();
+                _nestingHierachy.Last().SubOperator = op;
             }
 
             var newButton = new Button();
@@ -64,10 +68,10 @@ namespace Framefield.Tooll
                 ? op.Definition.Name
                 : op.Name;
             Children.Add(newButton);
-            newButton.Click +=new RoutedEventHandler(newButton_Click);
+            newButton.Click += new RoutedEventHandler(newButton_Click);
 
-            _nestingHierachy.Add( new Level(){ Operator= op, Button= newButton } );
-            
+            _nestingHierachy.Add(new Level() { Operator = op, Button = newButton });
+
             UpdateHighlight();
             return;
         }
@@ -80,18 +84,23 @@ namespace Framefield.Tooll
             }
         }
 
-        void newButton_Click(object sender, RoutedEventArgs e) 
+        void newButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            if (button != null) {
-                if (button != _nestingHierachy.Last().Button) {
-                    while (_nestingHierachy.Count >= 1) {
-                        var level= _nestingHierachy.Last();
-                        if (level.Button != button) {
+            if (button != null)
+            {
+                if (button != _nestingHierachy.Last().Button)
+                {
+                    while (_nestingHierachy.Count >= 1)
+                    {
+                        var level = _nestingHierachy.Last();
+                        if (level.Button != button)
+                        {
                             _nestingHierachy.Remove(level);
                             Children.Remove(level.Button);
                         }
-                        else {
+                        else
+                        {
                             JumpOutEvent(level, new RoutedEventArgs());
                             level.TimeViewState = null;
                             level.SubOperator = null;
@@ -99,66 +108,79 @@ namespace Framefield.Tooll
                         }
                     }
                     UpdateHighlight();
-                    e.Handled= true;
+                    e.Handled = true;
                 }
-            }            
+            }
         }
 
-        private void UpdateHighlight() {
-            for (int i=0; i < Children.Count -1; ++i) {
+        private void UpdateHighlight()
+        {
+            for (int i = 0; i < Children.Count - 1; ++i)
+            {
                 var crumb = Children[i] as Button;
-                if (crumb != null) {
+                if (crumb != null)
+                {
                     crumb.IsDefault = false;
                 }
             }
-            if (Children.Count > 0) {
-                var crumb = Children[Children.Count -1] as Button;
-                if (crumb != null) {
+            if (Children.Count > 0)
+            {
+                var crumb = Children[Children.Count - 1] as Button;
+                if (crumb != null)
+                {
                     crumb.IsDefault = true;
                 }
             }
         }
 
-        protected override Size MeasureOverride(Size constraint) {
+        protected override Size MeasureOverride(Size constraint)
+        {
             if (Children.Count < 1) return new Size(0, 0);
 
-            foreach (UIElement child in Children) {
+            foreach (UIElement child in Children)
+            {
                 child.Measure(new Size(Double.PositiveInfinity, constraint.Height));
             }
-            return new Size(Math.Min( constraint.Width, 1200), Children[0].DesiredSize.Height);
+            return new Size(Math.Min(constraint.Width, 1200), Children[0].DesiredSize.Height);
         }
 
-        protected override Size ArrangeOverride(Size arrangeSize) {
+        protected override Size ArrangeOverride(Size arrangeSize)
+        {
 
             // Collect requested widths
             List<double> widths = new List<double>();
-            double sumRequested= 0;
-            for (int i= 0; i<Children.Count; ++i) {
+            double sumRequested = 0;
+            for (int i = 0; i < Children.Count; ++i)
+            {
                 var crumb = Children[i] as Button;
-                if (crumb != null) {
-                    double w= crumb.DesiredSize.Width;
+                if (crumb != null)
+                {
+                    double w = crumb.DesiredSize.Width;
                     widths.Add(w);
-                    sumRequested+= w;
+                    sumRequested += w;
                 }
             }
 
-            if (sumRequested > arrangeSize.Width) {
-                double newLastWidth = Math.Min(widths.Last(), arrangeSize.Width * 0.6);              
+            if (sumRequested > arrangeSize.Width)
+            {
+                double newLastWidth = Math.Min(widths.Last(), arrangeSize.Width * 0.6);
 
-                double shrinkFactor=   (arrangeSize.Width - newLastWidth)/ (sumRequested - widths.Last());
-                widths[widths.Count-1] = newLastWidth;
+                double shrinkFactor = (arrangeSize.Width - newLastWidth) / (sumRequested - widths.Last());
+                widths[widths.Count - 1] = newLastWidth;
 
-                for (int ii=0; ii < widths.Count-1; ++ii) {
-                    widths[ii]*= shrinkFactor;
+                for (int ii = 0; ii < widths.Count - 1; ++ii)
+                {
+                    widths[ii] *= shrinkFactor;
                 }
             }
 
 
-            int j=0;
-            double x=0;
-            foreach (UIElement child in Children) {
+            int j = 0;
+            double x = 0;
+            foreach (UIElement child in Children)
+            {
                 child.Arrange(new Rect(x, 0, widths[j], arrangeSize.Height));
-                x+= widths[j];
+                x += widths[j];
                 j++;
             }
 
@@ -166,8 +188,10 @@ namespace Framefield.Tooll
             return arrangeSize;
         }
 
-        private CompositionView CV {
-            get {
+        private CompositionView CV
+        {
+            get
+            {
                 if (_CV == null)
                     _CV = UIHelper.FindParent<CompositionView>(this);
                 return _CV;

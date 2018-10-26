@@ -157,7 +157,7 @@ namespace Framefield.Tooll.Components.QuickCreate
 
             var vm = DataContext as IngredientViewModel;
 
-            _quickCreateWindow.EndShowOpDescription(vm == null ? null : vm.MetaOperator);
+            _quickCreateWindow.EndShowOpPreview(vm == null ? null : vm.MetaOperator);
         }
 
         #region dirty stuff

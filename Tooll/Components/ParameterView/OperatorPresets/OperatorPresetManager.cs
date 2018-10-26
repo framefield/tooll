@@ -13,120 +13,101 @@ using Newtonsoft.Json;
 using Framefield.Core;
 using Framefield.Core.Commands;
 using Framefield.Core.Rendering;
+using Framefield.Tooll.Rendering;
+using SharpDX.Direct3D11;
 
-namespace Framefield.Tooll
+namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     [JsonObject(MemberSerialization.OptIn)]
+    /**
+     * The preset manager handles the creation, display and application of operator presets
+     * in the ParamaterView. It users the following components:
+     * 
+     * OperatorPreset - Model of a preset, gets serialized into a long list serialized to Config folder
+     * PresetImageManager - Loads and saves preset-images to disks
+     * PresetThumb - UserControl that handles rendering of a preset and forwards interaction to Manager
+     * 
+    */
     public class OperatorPresetManager : DependencyObject, INotifyPropertyChanged
     {
-        private static readonly string PRESETS_FILENAME = @"Config/Presets.json";
 
-        public ObservableCollection<OperatorPreset> CurrentOperatorPresets { get; private set; }
 
         public OperatorPresetManager()
         {
             CurrentOperatorPresets = new ObservableCollection<OperatorPreset>();
-            if (File.Exists(PRESETS_FILENAME))
-            {
-                using (var reader = new StreamReader(PRESETS_FILENAME))
-                {
-                    var json = reader.ReadToEnd();
-                    _operatorPresetsByMetaOpID = JsonConvert.DeserializeObject<SortedDictionary<Guid, List<OperatorPreset>>>(json);
-                }
-            }
-            else
-            {
-                _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
-            }
+
+            LoadPresetsFromDisk();
         }
+
 
         public bool LivePreviewEnabled { get; set; }
 
-        private OperatorPreset CreatePresetFromCurrentOperator()
+        /** This is called from Parameter-View on selection change */
+        public void FindAndShowPresetsForSelectedOp()
         {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
-            if (op == null)
-                return null;
-            return CreatePresetFromOperator(op);
-        }
-
-        public void SavePresetFromCurrentlyShownOperator()
-        {
-            var newPreset = CreatePresetFromCurrentOperator();
-            RenderAndSaveThumbnail(newPreset);
-
-            if (newPreset.ValuesByParameterID.Count > 0)
-            {
-                AddPreset(newPreset, 0);
-                FilterPresetsForSelectedOperator();
-                SavePresets();
-            }
-        }
-
-        public void UpdateAllThumbnails()
-        {
-            var keepList = CurrentOperatorPresets.ToArray();
-            CurrentOperatorPresets.Clear(); // We rebuild the list to trigger update notification of the observable collection
-
-            foreach (var preset in keepList)
-            {
-                PreviewPreset(preset);
-                RenderAndSaveThumbnail(preset);
-                RestorePreviewPreset();
-                CurrentOperatorPresets.Add(preset);
-            }
-        }
-
-        private const int THUMB_WIDTH = 133;
-        private const int THUMB_HEIGHT = (int) (THUMB_WIDTH*9.0/16.0);
-
-        public void RenderAndSaveThumbnail(OperatorPreset preset)
-        {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
-            if (op == null || !op.Outputs.Any())
+            var op = App.Current.MainWindow.XParameterView.ShownOperator;
+            if (op == null || op.Definition == null || _operatorPresetsByMetaOpID == null)
                 return;
 
-            var output = op.Outputs.First();
+            if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
+            {
+                CurrentOperatorPresets.Clear();
+                foreach (var p in _operatorPresetsByMetaOpID[op.Definition.ID])
+                {
+                    if (p.IsInstancePreset && p.OperatorInstanceID != op.ID)
+                    {
+                        continue;
+                    }
+                    CurrentOperatorPresets.Add(p); // FIXME: This triggers update events for each preset. Needs refactoring to new custom observable collection that enables range setting
+                }
+                HighlightActivePreset();
+            }
+            else
+            {
+                CurrentOperatorPresets.Clear();
+            }
+
             if (LivePreviewEnabled)
             {
-                if (App.Current.MainWindow.XRenderView.Operator != null && App.Current.MainWindow.XRenderView.Operator.Outputs.Any())
-                    output = App.Current.MainWindow.XRenderView.Operator.Outputs[0];
-            }
-
-            var currentTime = App.Current.Model.GlobalTime;
-            var filePath = preset.BuildImagePath();
-            var result = Regex.Match(filePath, @"(.*)/(.*)\.png");
-            if (result == null)
-                throw new Exception("Invalid filepath format for thumbnails:" + filePath);
-
-            var directory = result.Groups[1].Value;
-            var filename = result.Groups[2].Value;
-
-            using (var sequenceCreator = new SequenceCreator())
-            {
-                sequenceCreator.Setup(output,
-                                      height: THUMB_HEIGHT,
-                                      width: THUMB_WIDTH,
-                                      startTime: currentTime,
-                                      endTime: currentTime,
-                                      frameRate: 10000,
-                                      fileExtension: "png",
-                                      skipExistingFiles: false,
-                                      directory: directory,
-                                      filenameFormat: filename);
-                sequenceCreator.RenderFrame();
+                RerenderThumbnails();
             }
         }
 
-        private void AddPreset(OperatorPreset newPreset, int idx)
+
+
+        /** Called when pressing the "save global preset"-button in preview region of parameter view */
+        public void SavePresetFromCurrentlyShownOperatorType()
         {
-            if (!_operatorPresetsByMetaOpID.ContainsKey(newPreset.MetaOperatorID))
-            {
-                _operatorPresetsByMetaOpID[newPreset.MetaOperatorID] = new List<OperatorPreset>();
-            }
-            _operatorPresetsByMetaOpID[newPreset.MetaOperatorID].Insert(idx, newPreset);
+            var newPreset = TryToCreatePresetFromCurrentOperator();
+            if (newPreset == null)
+                return;
+
+            InsertAndSavePreset(newPreset);
         }
 
+
+        /** Called when pressing the "save local preset"-button in preview region of parameter view */
+        public void SavePresetFromCurrentlyShownOperatorInstance()
+        {
+            var newPreset = TryToCreatePresetFromCurrentOperator();
+            if (newPreset == null)
+                return;
+
+            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
+            if (op == null)
+                return;
+
+            newPreset.IsInstancePreset = true;
+            newPreset.OperatorInstanceID = op.ID;
+
+            PresetImageManager.RenderAndSaveThumbnail(newPreset);
+
+            InsertAndSavePreset(newPreset);
+        }
+
+
+
+        /** Should be used when duplicating an Operator-Definition */
         public void CopyPresetsOfOpToAnother(MetaOperator source, MetaOperator target)
         {
             int idx = 0;
@@ -155,51 +136,26 @@ namespace Framefield.Tooll
                         Logger.Debug("Skipped a preset without any matching parameters");
                 }
             }
-            FilterPresetsForSelectedOperator();
-            SavePresets();
+            FindAndShowPresetsForSelectedOp();
+            SaveAllPresets();
         }
 
-        public void SavePresets()
-        {
-            SavePresetsAs(PRESETS_FILENAME);
-        }
 
+        /** This is a left-over from autobackup */
         public void SavePresetsAs(string filePath)
         {
-            var serializedPresets = JsonConvert.SerializeObject(_operatorPresetsByMetaOpID, Formatting.Indented);
-            using (var sw = new StreamWriter(filePath))
-            {
-                sw.Write(serializedPresets);
-            }
+            //FIXME: Implement to fix saving preset in autobackup
         }
 
-        public void FilterPresetsForSelectedOperator()
-        {
-            var op = App.Current.MainWindow.XParameterView.ShownOperator;
-            if (op == null || op.Definition == null || _operatorPresetsByMetaOpID == null)
-                return;
 
-            if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
-            {
-                CurrentOperatorPresets.Clear();
-                foreach (var p in _operatorPresetsByMetaOpID[op.Definition.ID])
-                {
-                    CurrentOperatorPresets.Add(p); // FIXME: This triggers update events for each preset. Needs refactoring to new custom observable collection that enables range setting
-                }
-                SelectActivePreset();
-            }
-            else
-            {
-                CurrentOperatorPresets.Clear();
-            }
-        }
 
-        // Called after click
+        #region showing and using a preset
+        /** Called after click */
         public void ApplyPreset(OperatorPreset preset)
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
 
-            _blending = false;
+            _isBlending = false;
             Operator op = App.Current.MainWindow.XParameterView.ShownOperator;
             if (op == null || _setValueGroupCommand == null || op.Definition.ID != preset.MetaOperatorID)
                 return;
@@ -208,14 +164,14 @@ namespace Framefield.Tooll
             _tempOperatorPresetBeforePreview = null;
             _setValueGroupCommand = null;
             App.Current.UpdateRequiredAfterUserInteraction = true;
-            SelectActivePreset();
+            HighlightActivePreset();
         }
 
-        private bool _blending = false;
+        private bool _isBlending = false;
 
         public void StartBlending()
         {
-            _blending = true;
+            _isBlending = true;
         }
 
         public void BlendPreset(OperatorPreset preset, float factor)
@@ -233,8 +189,8 @@ namespace Framefield.Tooll
                     float presetValue = preset.ValuesByParameterID[metaInput.ID];
                     float opValue = _tempOperatorPresetBeforePreview.ValuesByParameterID[metaInput.ID];
                     var newFloatValue = opValue + factor * (presetValue - opValue);
-                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);                    
-                    index ++;
+                    _setValueGroupCommand.UpdateFloatValueAtIndex(index, newFloatValue);
+                    index++;
                 }
             }
 
@@ -245,8 +201,8 @@ namespace Framefield.Tooll
         public void CompleteBlendPreset(OperatorPreset preset)
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
-            _blending = false;
-            SelectActivePreset();
+            _isBlending = false;
+            HighlightActivePreset();
             if (_setValueGroupCommand == null)
                 return;
 
@@ -255,19 +211,12 @@ namespace Framefield.Tooll
         }
 
 
-        private SetValueGroupCommand _setValueGroupCommand;
-        private OperatorPreset _tempOperatorPresetBeforePreview;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="preset"></param>
-        /// <returns>false if preview was refused</returns>
-        public bool PreviewPreset(OperatorPreset preset)        
+        /** Returns false if preview was prevevent (e.g. because we're blending another preset with virutal slider) */
+        public bool PreviewPreset(OperatorPreset preset)
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = true;
 
-            if (_blending)
+            if (_isBlending)
                 return false;
 
             var entries = new List<SetValueGroupCommand.Entry>();
@@ -289,15 +238,17 @@ namespace Framefield.Tooll
             }
             _setValueGroupCommand = new SetValueGroupCommand(entries, App.Current.Model.GlobalTime);
             _setValueGroupCommand.Do();
-            SelectActivePreset();
+            HighlightActivePreset();
             return true;
         }
 
+
+        /** Invoked after mouse leaves the thumbnail */
         public void RestorePreviewPreset()
         {
             App.Current.MainWindow.CompositionView.XTimeView.XAnimationCurveEditor.DisableCurveUpdatesOnModifiedEvent = false;
 
-            if (_blending)
+            if (_isBlending)
                 return;
 
             if (_setValueGroupCommand != null)
@@ -308,27 +259,97 @@ namespace Framefield.Tooll
             }
         }
 
+
+        public void RerenderThumbnails()
+        {
+            PresetImageManager.ReleasePreviousImages();
+            var keepList = CurrentOperatorPresets.ToArray();
+            CurrentOperatorPresets.Clear(); // We rebuild the list to trigger update notification of the observable collection
+
+            foreach (var preset in keepList)
+            {
+                PreviewPreset(preset);
+                if (!LivePreviewEnabled)
+                {
+                    PresetImageManager.RenderAndSaveThumbnail(preset);
+                }
+                else
+                {
+                    PresetImageManager.RenderImageForPreset(preset);
+                }
+                RestorePreviewPreset();
+                CurrentOperatorPresets.Add(preset);
+            }
+        }
+
+
         public void DeletePreset(OperatorPreset preset)
         {
             Operator op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view
             if (op != null && op.Definition.ID == preset.MetaOperatorID)
             {
-                _blending = false;
+                _isBlending = false;
                 RestorePreviewPreset();
 
                 if (_operatorPresetsByMetaOpID.ContainsKey(op.Definition.ID))
                 {
                     _operatorPresetsByMetaOpID[op.Definition.ID].Remove(preset);
-                    FilterPresetsForSelectedOperator();
-                    SavePresets();
+                    FindAndShowPresetsForSelectedOp();
+                    SaveAllPresets();
                     App.Current.UpdateRequiredAfterUserInteraction = true;
                 }
             }
         }
+        #endregion
 
-        public void SelectActivePreset()
+
+
+        #region internal implementation
+
+        /** Tries to create a new preset from the current selection.
+         * will return NULL if selection is not valid or preset would be empty
+         * because the Operators does not include any floats */
+        private OperatorPreset TryToCreatePresetFromCurrentOperator()
         {
-            var preset = CreatePresetFromCurrentOperator();
+            var op = App.Current.MainWindow.XParameterView.ShownOperator; // todo: remove access to parameter view!
+            if (op == null)
+                return null;
+
+            var newPreset = CreatePresetFromOperator(op);
+            var hasParameters = newPreset.ValuesByParameterID.Count > 0;
+            if (!hasParameters)
+                return null;
+
+            return newPreset;
+        }
+
+
+        private void InsertAndSavePreset(OperatorPreset newPreset)
+        {
+            PresetImageManager.RenderAndSaveThumbnail(newPreset);
+
+            AddPreset(newPreset, 0);
+            FindAndShowPresetsForSelectedOp();
+            SaveAllPresets();
+        }
+
+
+        private void AddPreset(OperatorPreset newPreset, int idx)
+        {
+            if (!_operatorPresetsByMetaOpID.ContainsKey(newPreset.MetaOperatorID))
+            {
+                _operatorPresetsByMetaOpID[newPreset.MetaOperatorID] = new List<OperatorPreset>();
+            }
+            _operatorPresetsByMetaOpID[newPreset.MetaOperatorID].Insert(idx, newPreset);
+        }
+
+
+        private void HighlightActivePreset()
+        {
+            var preset = TryToCreatePresetFromCurrentOperator();
+            if (preset == null)
+                return;
+
             foreach (var p in CurrentOperatorPresets)
             {
                 bool matching = true;
@@ -348,9 +369,6 @@ namespace Framefield.Tooll
         }
 
 
-        [JsonProperty]
-        private SortedDictionary<Guid, List<OperatorPreset>> _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
-
         private OperatorPreset CreatePresetFromOperator(Operator op)
         {
             var newPreset = new OperatorPreset { MetaOperatorID = op.Definition.ID };
@@ -366,6 +384,91 @@ namespace Framefield.Tooll
             }
             return newPreset;
         }
+        #endregion
+
+
+
+        #region serialization to disk
+
+
+        private void LoadPresetsFromDisk()
+        {
+            var localPresets = DeserializePresetDict(LOCAL_PRESETS_FILEPATH);
+            var globalPresets = DeserializePresetDict(PRESETS_FILEPATH);
+
+            // merge into united dict
+            _operatorPresetsByMetaOpID = new SortedDictionary<Guid, List<OperatorPreset>>();
+            SortPresetsFromAIntoB(localPresets, _operatorPresetsByMetaOpID);
+            SortPresetsFromAIntoB(globalPresets, _operatorPresetsByMetaOpID);
+        }
+
+
+        private SortedDictionary<Guid, List<OperatorPreset>> DeserializePresetDict(string filePath)
+        {
+            var dict = new SortedDictionary<Guid, List<OperatorPreset>>();
+            if (File.Exists(filePath))
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    var json = reader.ReadToEnd();
+                    dict = JsonConvert.DeserializeObject<SortedDictionary<Guid, List<OperatorPreset>>>(json);
+                }
+            }
+            return dict;
+        }
+
+        private void SortPresetsFromAIntoB(SortedDictionary<Guid, List<OperatorPreset>> set, SortedDictionary<Guid, List<OperatorPreset>> combinedDict)
+        {
+            foreach (var list in set.Values)
+            {
+                foreach (var preset in list)
+                {
+                    SortPresetIntoDict(preset, combinedDict);
+                }
+            }
+        }
+
+
+        /** Serialize all preset into two files (local and global). This avoid later merge conflicts */
+        public void SaveAllPresets()
+        {
+            var localPresets = new SortedDictionary<Guid, List<OperatorPreset>>();
+            var globalPresets = new SortedDictionary<Guid, List<OperatorPreset>>();
+
+            foreach (var list in _operatorPresetsByMetaOpID.Values)
+            {
+                foreach (var preset in list)
+                {
+                    SortPresetIntoDict(preset, preset.IsInstancePreset ? localPresets
+                                                                       : globalPresets);
+                }
+            }
+
+            SerializePresetDict(localPresets, LOCAL_PRESETS_FILEPATH);
+            SerializePresetDict(globalPresets, PRESETS_FILEPATH);
+        }
+
+        private void SortPresetIntoDict(OperatorPreset preset, SortedDictionary<Guid, List<OperatorPreset>> sortedDict)
+        {
+            if (!sortedDict.ContainsKey(preset.MetaOperatorID))
+            {
+                sortedDict[preset.MetaOperatorID] = new List<OperatorPreset>();
+            }
+            sortedDict[preset.MetaOperatorID].Add(preset);
+        }
+
+
+        private void SerializePresetDict(SortedDictionary<Guid, List<OperatorPreset>> dict, string filePath)
+        {
+            var serializedPresets = JsonConvert.SerializeObject(dict, Formatting.Indented);
+            using (var sw = new StreamWriter(filePath))
+            {
+                sw.Write(serializedPresets);
+            }
+        }
+        #endregion
+
+
 
         #region notifier
 
@@ -373,12 +476,23 @@ namespace Framefield.Tooll
 
         protected void NotifyPropertyChanged(string propName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
-
         #endregion
+
+        public ObservableCollection<OperatorPreset> CurrentOperatorPresets { get; private set; }
+
+        [JsonProperty]
+        private SortedDictionary<Guid, List<OperatorPreset>> _operatorPresetsByMetaOpID
+            = new SortedDictionary<Guid, List<OperatorPreset>>();
+
+
+        private SetValueGroupCommand _setValueGroupCommand;
+        private OperatorPreset _tempOperatorPresetBeforePreview;
+
+        internal PresetImageManager PresetImageManager = new PresetImageManager();
+
+        private static readonly string PRESETS_FILEPATH = @"Config/Presets.json";
+        private static readonly string LOCAL_PRESETS_FILEPATH = @"Config/UserPresets.json";
     }
 }

@@ -284,21 +284,25 @@ namespace Framefield.Core
             }
         }
 
-        public MetaOperatorPart GetMetaOperatorPart(Guid id) {
-            MetaOperatorPart metaOpPart;
-            if (!_metaOpParts.TryGetValue(id, out metaOpPart)) {
+        public MetaOperatorPart GetMetaOperatorPart(Guid id)
+        {
+            if (!_metaOpParts.TryGetValue(id, out var metaOpPart))
+            {
                 Logger.Error("Part of operator definition not found ({0}). Trying to patch this part with a new generic definition...", id.ToString());
 
                 var type = FunctionType.Generic;
-                Func<Guid, OperatorPart.Function, bool, string, OperatorPart> createFunc = (lid, defaultFunction, isMultiInput, name) => {
-                    var lopPart = Utilities.CreateValueOpPart(lid, null, isMultiInput);
-                    lopPart.Type = type;
-                    lopPart.Name = name;
-                    return lopPart;
-                };
-                metaOpPart = new MetaOperatorPart(id) { CreateFunc = createFunc, Type = type };
+                Func<Guid, OperatorPart.Function, bool, string, OperatorPart> createFunc;
+                createFunc = (lid, defaultFunction, isMultiInput, name) =>
+                             {
+                                 var lopPart = Utilities.CreateValueOpPart(lid, null, isMultiInput);
+                                 lopPart.Type = type;
+                                 lopPart.Name = name;
+                                 return lopPart;
+                             };
+                metaOpPart = new MetaOperatorPart(id) {CreateFunc = createFunc, Type = type};
                 AddMetaOperatorPart(metaOpPart);
             }
+
             return metaOpPart;
         }
 

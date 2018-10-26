@@ -51,23 +51,23 @@ namespace Framefield.Tooll
 
             CreateBindings();
         }
-        
+
         void TimeSnapHandler_SnappedEventHandler(object sender, ValueSnapHandler.SnapEventArgs e)
         {
             XTimeSnapMarker.Visibility = Visibility.Visible;
-            
+
             var _snapMarkerAnimation = new DoubleAnimation() { From = 0.8, To = 0, Duration = TimeSpan.FromSeconds(0.4) };
             _snapMarkerAnimation.BeginAnimation(UIElement.OpacityProperty, _snapMarkerAnimation);
-            
+
             XTimeSnapMarker.RenderTransform = new TranslateTransform(TimeToX(e.Value), 0);
             XTimeSnapMarker.Opacity = 1;
-            
-            
+
+
             XTimeSnapMarker.BeginAnimation(UIElement.OpacityProperty, _snapMarkerAnimation);
         }
 
 
-        
+
         #region Properties        
         public static readonly DependencyProperty TimeOffsetProperty = DependencyProperty.Register(
           "TimeOffset",
@@ -78,8 +78,9 @@ namespace Framefield.Tooll
         );
         public double TimeOffset
         {
-            get { return (double) GetValue(TimeOffsetProperty); }
-            set {
+            get { return (double)GetValue(TimeOffsetProperty); }
+            set
+            {
                 SetValue(TimeOffsetProperty, value);
                 //force to update playhead position
                 //App.Current.Model.GlobalTime = App.Current.Model.GlobalTime;
@@ -87,45 +88,47 @@ namespace Framefield.Tooll
         }
 
 
-        public static readonly DependencyProperty TimeScaleProperty = DependencyProperty.Register("TimeScale", typeof(double), typeof(TimeView),  
-            new FrameworkPropertyMetadata(5.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender)  
+        public static readonly DependencyProperty TimeScaleProperty = DependencyProperty.Register("TimeScale", typeof(double), typeof(TimeView),
+            new FrameworkPropertyMetadata(5.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender)
         );
         public double TimeScale
         {
-            get { return (double) GetValue(TimeScaleProperty); }
+            get { return (double)GetValue(TimeScaleProperty); }
             set
             {
                 SetValue(TimeScaleProperty, value);
                 //App.Current.Model.GlobalTime = App.Current.Model.GlobalTime;
-             }
+            }
         }
 
         public static readonly DependencyProperty StartTimeProperty = DependencyProperty.Register("StartTime", typeof(double), typeof(TimeView), new UIPropertyMetadata(0.0));
         public double StartTime
         {
-            get { return (double) GetValue(StartTimeProperty); }
+            get { return (double)GetValue(StartTimeProperty); }
             set { SetValue(StartTimeProperty, value); }
         }
 
         public static readonly DependencyProperty EndTimeProperty = DependencyProperty.Register("EndTime", typeof(double), typeof(TimeView), new UIPropertyMetadata(30.0));
         public double EndTime
         {
-            get { return (double) GetValue(EndTimeProperty); }
+            get { return (double)GetValue(EndTimeProperty); }
             set { SetValue(EndTimeProperty, value); }
         }
 
         public static readonly DependencyProperty LoopModeProperty = DependencyProperty.Register("LoopMode", typeof(bool), typeof(TimeView), new UIPropertyMetadata(false));
         public bool LoopMode
         {
-            get { return (bool) GetValue(LoopModeProperty); }
+            get { return (bool)GetValue(LoopModeProperty); }
             set { SetValue(LoopModeProperty, value); }
         }
         #endregion
 
-        
 
-        public State CreateState() {
-            return new State() {
+
+        public State CreateState()
+        {
+            return new State()
+            {
                 StartTime = StartTime,
                 EndTime = EndTime,
                 TimeOffset = TimeOffset,
@@ -134,7 +137,8 @@ namespace Framefield.Tooll
             };
         }
 
-        public void ApplyState(State state) {
+        public void ApplyState(State state)
+        {
             StartTime = state.StartTime;
             EndTime = state.EndTime;
             TimeOffset = state.TimeOffset;
@@ -150,13 +154,15 @@ namespace Framefield.Tooll
         public SnapResult CheckForSnap(double time)
         {
             double distanceToTime = Math.Abs(time - App.Current.Model.GlobalTime) * TimeScale;
-            if (distanceToTime < SNAP_THRESHOLD) {
-                return new SnapResult() { SnapToValue= App.Current.Model.GlobalTime, Force=distanceToTime };
+            if (distanceToTime < SNAP_THRESHOLD)
+            {
+                return new SnapResult() { SnapToValue = App.Current.Model.GlobalTime, Force = distanceToTime };
             }
 
             double distanceToOrigin = Math.Abs(time) * TimeScale;
-            if (distanceToOrigin < SNAP_THRESHOLD) {
-                return new SnapResult() { SnapToValue= 0.0, Force=distanceToOrigin };
+            if (distanceToOrigin < SNAP_THRESHOLD)
+            {
+                return new SnapResult() { SnapToValue = 0.0, Force = distanceToOrigin };
             }
 
             return null;
@@ -194,7 +200,7 @@ namespace Framefield.Tooll
             multiBinding.Bindings.Add(new Binding("TimeScale") { Source = timeView });
             multiBinding.Bindings.Add(new Binding("TimeOffset") { Source = timeView });
             multiBinding.Bindings.Add(new Binding("ActualWidth") { Source = timeView });
-            multiBinding.Mode= BindingMode.TwoWay;
+            multiBinding.Mode = BindingMode.TwoWay;
             BindingOperations.SetBinding(XStartTimeMarker, Canvas.MarginProperty, multiBinding);
 
             // EndTimeMarker
@@ -232,38 +238,47 @@ namespace Framefield.Tooll
 
 
         #region eventhandlers
-        private void OnDragTimelineStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) {
+        private void OnDragTimelineStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
             m_DragStartPosition = new Point(e.HorizontalOffset, e.VerticalOffset);
             m_DragStartTimeOffset = TimeOffset;
 
             double currentTime = XToTime(e.HorizontalOffset);
-            var TV= App.Current.MainWindow.CompositionView.XTimeView;
-            if (Keyboard.Modifiers == ModifierKeys.Shift) {
-                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() {this,XPlayhead });
-                if (!Double.IsNaN(snapTime)) {
+            var TV = App.Current.MainWindow.CompositionView.XTimeView;
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() { this, XPlayhead });
+                if (!Double.IsNaN(snapTime))
+                {
                     currentTime = snapTime;
                 }
             }
             App.Current.MainWindow.CompositionView.XCompositionToolBar.ManipulateTime(currentTime);
         }
 
-        private void OnDragTimelineDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e) {
+        private void OnDragTimelineDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
             double currentTime = XToTime(m_DragStartPosition.X + e.HorizontalChange);
 
-            var TV= App.Current.MainWindow.CompositionView.XTimeView;
-            if (Keyboard.Modifiers == ModifierKeys.Shift) {
-                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() {this,XPlayhead });
-                if (!Double.IsNaN(snapTime)) {
+            var TV = App.Current.MainWindow.CompositionView.XTimeView;
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() { this, XPlayhead });
+                if (!Double.IsNaN(snapTime))
+                {
                     currentTime = snapTime;
                 }
             }
             App.Current.MainWindow.CompositionView.XCompositionToolBar.ManipulateTime(currentTime);
         }
 
-        private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-            if (e.RightButton == MouseButtonState.Pressed) {
+        private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.RightButton == MouseButtonState.Pressed)
+            {
                 UIElement el = sender as UIElement;
-                if (el != null) {
+                if (el != null)
+                {
                     el.CaptureMouse();
                     m_DragStartPosition = e.GetPosition(this);
                     m_DragStartTimeOffset = TimeOffset;
@@ -272,18 +287,23 @@ namespace Framefield.Tooll
             }
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e) {
-            if (m_IsRightMouseDragging) {
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (m_IsRightMouseDragging)
+            {
                 TimeOffset = m_DragStartTimeOffset + (m_DragStartPosition.X - e.GetPosition(this).X) / TimeScale;
                 TriggerRepaint();
             }
-            else if (m_IsLeftMouseDragging) {
+            else if (m_IsLeftMouseDragging)
+            {
                 double currentTime = XToTime(m_DragStartPosition.X + e.GetPosition(this).X - m_DragStartPosition.X);
 
-                var TV= App.Current.MainWindow.CompositionView.XTimeView;
-                if (Keyboard.Modifiers == ModifierKeys.Shift) {
-                    double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() {this,XPlayhead });
-                    if (!Double.IsNaN(snapTime)) {
+                var TV = App.Current.MainWindow.CompositionView.XTimeView;
+                if (Keyboard.Modifiers == ModifierKeys.Shift)
+                {
+                    double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() { this, XPlayhead });
+                    if (!Double.IsNaN(snapTime))
+                    {
                         currentTime = snapTime;
                     }
                 }
@@ -291,28 +311,32 @@ namespace Framefield.Tooll
             }
         }
 
-        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
             m_IsRightMouseDragging = false;
             UIElement el = sender as UIElement;
             if (el != null)
                 el.ReleaseMouseCapture();
         }
 
-        private void OnMouseWheel(object sender, MouseWheelEventArgs e) {
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
             double mouseWheelZoomSpeed = 1.15;
             double scale = (e.Delta > 0) ? mouseWheelZoomSpeed : 1.0 / mouseWheelZoomSpeed;
             TimeScale *= scale;
             TimeOffset += (scale - 1.0) * (XToTime(ActualWidth) - XToTime(0)) * (e.GetPosition(this).X / ActualWidth);
-            TriggerRepaint();                       
+            TriggerRepaint();
         }
         #endregion
 
 
-        public double XToTime(double x) {
+        public double XToTime(double x)
+        {
             return m_TimeToXConverter.XToTime(x);
         }
 
-        public double TimeToX(double t) {
+        public double TimeToX(double t)
+        {
             return m_TimeToXConverter.TimeToX(t);
         }
 
@@ -336,13 +360,14 @@ namespace Framefield.Tooll
         {
             public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
             {
-                if (values.Count() != 3 || values.Contains(DependencyProperty.UnsetValue)) {
+                if (values.Count() != 3 || values.Contains(DependencyProperty.UnsetValue))
+                {
                     return "binding error";
                 }
 
-                double time = (double) values[0];
-                double timeScale = (double) values[1];
-                double timeOffset = (double) values[2];
+                double time = (double)values[0];
+                double timeScale = (double)values[1];
+                double timeOffset = (double)values[2];
 
                 double x = (time - timeOffset) * timeScale;
                 return new Thickness(x, 0, 0, 0);
@@ -357,16 +382,19 @@ namespace Framefield.Tooll
 
         #endregion
 
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
             m_IsLeftMouseDragging = true;
             m_DragStartPosition = e.GetPosition(this);
             m_DragStartTimeOffset = TimeOffset;
 
             double currentTime = XToTime(m_DragStartPosition.X);
-            var TV= App.Current.MainWindow.CompositionView.XTimeView;
-            if (Keyboard.Modifiers == ModifierKeys.Shift) {
-                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() {this,XPlayhead });
-                if (!Double.IsNaN(snapTime)) {
+            var TV = App.Current.MainWindow.CompositionView.XTimeView;
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                double snapTime = TV.TimeSnapHandler.CheckForSnapping(currentTime, new List<IValueSnapAttractor>() { this, XPlayhead });
+                if (!Double.IsNaN(snapTime))
+                {
                     currentTime = snapTime;
                 }
             }
@@ -377,7 +405,8 @@ namespace Framefield.Tooll
                 el.CaptureMouse();
         }
 
-        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
             m_IsLeftMouseDragging = false;
             UIElement el = sender as UIElement;
             if (el != null)
@@ -400,8 +429,8 @@ namespace Framefield.Tooll
 
         private async void XTimelineThumb_OnDrop(object sender, DragEventArgs e)
         {
-            var fileList = ((DataObject) e.Data).GetFileDropList();
-            if (fileList == null || fileList.Count !=1)
+            var fileList = ((DataObject)e.Data).GetFileDropList();
+            if (fileList == null || fileList.Count != 1)
                 return;
 
             var soundFilePath = fileList[0];
@@ -411,7 +440,7 @@ namespace Framefield.Tooll
                 MessageBox.Show("You can only drop .mp3, .ogg, and timeline-images here.");
                 return;
             }
-            
+
             var imageFilePath = await GenerateSoundImageInBackground(soundFilePath);
             if (imageFilePath == null)
             {
@@ -428,9 +457,8 @@ namespace Framefield.Tooll
                     XBeatMarker.BPM = bpm;
                     XBeatMarker.BPMTimeOffset = 0;
 
-                    App.Current.ProjectSettings["Soundtrack.BPM"]= bpm;
+                    App.Current.ProjectSettings["Soundtrack.BPM"] = bpm;
                     App.Current.ProjectSettings["Soundtrack.BPMOffset"] = 0;
-                    App.Current.ProjectSettings.Save();
                     //App.Current.UpdateRequiredAfterUserInteraction = true;
                     this.InvalidateVisual();
                 }
@@ -439,19 +467,23 @@ namespace Framefield.Tooll
             XTimeImage.SetTimelineImagePath(imageFilePath);
             App.Current.SetProjectSoundFile(soundFilePath);
             Logger.Info("Sound-Image completed");
+            App.Current.ProjectSettings.Save();
         }
 
         async Task<string> GenerateSoundImageInBackground(string filename)
         {
-            return await Task.Run(() => {
-                                            var imageFilePath = Components.Helper.GenerateSoundImage.GenerateSoundSprectrumAndVolume(filename);
+            return await Task.Run(() =>
+            {
+                var imageGenerator = new Components.Helper.SoundImageGenerator();
 
-                                            if (imageFilePath == null)
-                                            {               
-                                                return null;
-                                            }                                        
-                                            return imageFilePath;
-                                        });
+                var imageFilePath = imageGenerator.GenerateSoundSpectrumAndVolume(filename);
+
+                if (imageFilePath == null)
+                {
+                    return null;
+                }
+                return imageFilePath;
+            });
         }
     }
 
@@ -460,23 +492,28 @@ namespace Framefield.Tooll
     [ValueConversion(typeof(double), typeof(double))]
     public class TimeToXConverter : IValueConverter
     {
-        public TimeToXConverter(TimeView cv) {
+        public TimeToXConverter(TimeView cv)
+        {
             m_TimeView = cv;
         }
 
-        public double TimeToX(double t) {
+        public double TimeToX(double t)
+        {
             return (t - m_TimeView.TimeOffset) * m_TimeView.TimeScale;
         }
 
-        public double XToTime(double x) {
+        public double XToTime(double x)
+        {
             return x / m_TimeView.TimeScale + m_TimeView.TimeOffset;
         }
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
             return TimeToX((double)value);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
             return XToTime((double)value);
         }
 
@@ -484,7 +521,7 @@ namespace Framefield.Tooll
     }
 
 
-    
+
     #endregion
 
 

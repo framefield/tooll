@@ -18,7 +18,10 @@ namespace Framefield.Tooll
 {
     internal static class UIHelper
     {
-        public static Vector ToVector(this Point p) { return new Vector(p.X, p.Y); }
+        public static Vector ToVector(this Point p)
+        {
+            return new Vector(p.X, p.Y);
+        }
 
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -50,7 +53,6 @@ namespace Framefield.Tooll
             return tmp as T;
         }
 
-
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)
@@ -71,8 +73,29 @@ namespace Framefield.Tooll
             }
         }
 
+        public static T FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        return (T)child;
+                    }
 
-        public static List<HitTestResult> HitTestFor<T>(Visual visual, Point pt, double radius) { return HitTestFor<T>(visual, new EllipseGeometry(pt, radius, radius)); }
+                    T childItem = FindVisualChild<T>(child);
+                    if (childItem != null) return childItem;
+                }
+            }
+            return null;
+        }
+
+        public static List<HitTestResult> HitTestFor<T>(Visual visual, Point pt, double radius)
+        {
+            return HitTestFor<T>(visual, new EllipseGeometry(pt, radius, radius));
+        }
 
         public static List<HitTestResult> HitTestFor<T>(Visual visual, Geometry hitTestArea)
         {
@@ -126,7 +149,6 @@ namespace Framefield.Tooll
 
         private static List<HitTestResult> m_HitResultsList = new List<HitTestResult>();
 
-
         public static string PickFileWithDialog(string defaultPath, string startPath, string dialogTitle, string filter = "")
         {
             var path = defaultPath;
@@ -138,11 +160,11 @@ namespace Framefield.Tooll
             }
 
             var dlg = new OpenFileDialog
-                          {
-                              FileName = "Document",
-                              Title = dialogTitle,
-                              DereferenceLinks = false
-                          };
+            {
+                FileName = "Document",
+                Title = dialogTitle,
+                DereferenceLinks = false
+            };
 
             if (filter != string.Empty)
             {
@@ -171,9 +193,9 @@ namespace Framefield.Tooll
 
         public static string ConvertToRelativeFilepath(string absoluteFilePath)
         {
-            var currentApplicationPath = System.IO.Path.GetFullPath(".");            
-            var firstCharUppercase = currentApplicationPath.Substring(0,1).ToUpper();
-            currentApplicationPath = firstCharUppercase + currentApplicationPath.Substring(1, currentApplicationPath.Length-1) + "\\";           
+            var currentApplicationPath = System.IO.Path.GetFullPath(".");
+            var firstCharUppercase = currentApplicationPath.Substring(0, 1).ToUpper();
+            currentApplicationPath = firstCharUppercase + currentApplicationPath.Substring(1, currentApplicationPath.Length - 1) + "\\";
             var relativeFilePath = absoluteFilePath.Replace(currentApplicationPath, "").Replace("\\", "/");
             return relativeFilePath;
         }
@@ -191,6 +213,7 @@ namespace Framefield.Tooll
             if (dialog.DialogResult == false)
                 return null;
 
+            // FIXME: shouldn't this be a command?
             var copiedMetaOp = orgMetaOp.Clone(dialog.XName.Text);
             copiedMetaOp.Description = dialog.XDescription.Text;
             copiedMetaOp.Namespace = dialog.XNamespace.Text;
@@ -210,7 +233,6 @@ namespace Framefield.Tooll
             MessageBox.Show(messageBoxText, caption, button, icon);
         }
 
-
         public static double SubScaleFromKeyboardModifiers()
         {
             double subScale = 1.0;
@@ -225,11 +247,11 @@ namespace Framefield.Tooll
             return subScale;
         }
 
-
         /**
-        * Predefined type colors 
+        * Predefined type colors
         * Also see http://streber.pixtur.de/4982
         **/
+
         public static Color ColorFromType(FunctionType type)
         {
             switch (type)
@@ -238,6 +260,7 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0x3c, 0x4a, 0x30);
                 case FunctionType.Image: return Color.FromRgb(0x4C, 0x34, 0x51);
                 case FunctionType.Generic: return Color.FromRgb(0x4a, 0x47, 0x30);
+                case FunctionType.Mesh: return Color.FromRgb(0x5f, 0x4b, 0x4b);
                 default: return Color.FromRgb(0x4f, 0x4b, 0x4b);
             }
         }
@@ -250,6 +273,7 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0xc4, 0xdd, 0x96);
                 case FunctionType.Image: return Color.FromRgb(0xDF, 0xA8, 0xE2);
                 case FunctionType.Generic: return Color.FromRgb(0xdd, 0xd9, 0x96);
+                case FunctionType.Mesh: return Color.FromRgb(0xd6, 0xbb, 0xbb);
                 default: return Color.FromRgb(0xc6, 0xbb, 0xbb);
             }
         }
@@ -262,6 +286,8 @@ namespace Framefield.Tooll
                 case FunctionType.Text: return Color.FromRgb(0x17, 0x1f, 0x11);
                 case FunctionType.Image: return Color.FromRgb(0x21, 0x13, 0x24);
                 case FunctionType.Generic: return Color.FromRgb(0x1f, 0x1e, 0x11);
+                case FunctionType.Mesh: return Color.FromRgb(0x1e, 0x0b, 0x0b);
+
                 default: return Color.FromRgb(0x0e, 0x0b, 0x0b);
             }
         }
@@ -269,10 +295,10 @@ namespace Framefield.Tooll
         public static Color ColorFromFloatRGBA(float r, float g, float b, float a = 1.0f)
         {
             return Color.FromArgb(
-                (byte) (Utilities.Clamp(a, 0, 1)*255),
-                (byte) (Utilities.Clamp(r, 0, 1)*255),
-                (byte) (Utilities.Clamp(g, 0, 1)*255),
-                (byte) (Utilities.Clamp(b, 0, 1)*255));
+                (byte)(Utilities.Clamp(a, 0, 1) * 255),
+                (byte)(Utilities.Clamp(r, 0, 1) * 255),
+                (byte)(Utilities.Clamp(g, 0, 1) * 255),
+                (byte)(Utilities.Clamp(b, 0, 1) * 255));
         }
     }
 
@@ -280,13 +306,14 @@ namespace Framefield.Tooll
     * Due to the fucked up mouse event handling in WPF
     * we have to directly access the raw input to provide
     * interactive mouse interactions of complex 3d-views.
-    * 
+    *
     * The follow marsheling provides access for the ShowSceneControl
     * interaction update.
-    * 
+    *
     * also refer to
     * https://streber.framefield.com/5381
     */
+
     internal static class Win32RawInput
     {
         public static Point MousePointInUiElement(UIElement uiElement)
@@ -316,14 +343,13 @@ namespace Framefield.Tooll
                 X = x;
                 Y = y;
             }
-        }        
+        }
     }
-
-
 
     /**
      * Throw this exception to shut down tooll, e.g. after showing a fatal-failure message box.
      */
+
     public class ShutDownException : SystemException
     {
         public string Title { get; set; }
@@ -345,7 +371,8 @@ namespace Framefield.Tooll
 
     public static class CustomCursorProvider
     {
-        public enum Cursors {
+        public enum Cursors
+        {
             SlideNormal = 1,
             StartConnection,
             Remove,
@@ -355,7 +382,7 @@ namespace Framefield.Tooll
         private static System.Windows.Input.Cursor LoadCursor(String filename)
         {
             var stream = Application.GetResourceStream(new Uri("Images/cursors/" + filename, UriKind.Relative)).Stream;
-            var cursor = new System.Windows.Input.Cursor( stream );
+            var cursor = new System.Windows.Input.Cursor(stream);
             return cursor;
         }
 
@@ -364,25 +391,25 @@ namespace Framefield.Tooll
             _stremsById = new Dictionary<CustomCursorProvider.Cursors, System.Windows.Input.Cursor>();
 
             // Iterate over cursor-enumeration and load its image files
-            for (var i = 1;; i++)
+            for (var i = 1; ; i++)
             {
-                var cursorEnum = (Cursors) i;
+                var cursorEnum = (Cursors)i;
                 var enumAsString = cursorEnum.ToString();
                 if (enumAsString == i.ToString())   // Completed
                     break;
 
-                _stremsById[cursorEnum] = LoadCursor("Cursor"+enumAsString+".cur");    
+                _stremsById[cursorEnum] = LoadCursor("Cursor" + enumAsString + ".cur");
             }
         }
 
-        public static System.Windows.Input.Cursor GetCursorStream( CustomCursorProvider.Cursors cursor) 
+        public static System.Windows.Input.Cursor GetCursorStream(CustomCursorProvider.Cursors cursor)
         {
-            if( _stremsById == null) 
+            if (_stremsById == null)
                 Initialize();
 
             return _stremsById[cursor];
         }
-        static Dictionary<CustomCursorProvider.Cursors, System.Windows.Input.Cursor> _stremsById;
-    }
 
+        private static Dictionary<CustomCursorProvider.Cursors, System.Windows.Input.Cursor> _stremsById;
+    }
 }

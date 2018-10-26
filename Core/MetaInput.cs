@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace Framefield.Core
 {
-
-
     public class MetaInput
     {
         public enum RelevanceType
@@ -102,7 +100,6 @@ namespace Framefield.Core
                 input.Name = string.Copy(Name);
             return input;
         }
-
 
         public OperatorPart CreateInstance()
         {

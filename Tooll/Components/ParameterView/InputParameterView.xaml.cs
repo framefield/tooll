@@ -33,7 +33,6 @@ namespace Framefield.Tooll
             IsMultiInputComboBox.SelectedIndex = _metaInput.IsMultiInput ? 1 : 0;
             _defaultValue = _metaInput.DefaultValue.Clone();
             RelevanceComboBox.SelectedIndex = (int)_metaInput.Relevance;
-            RelevanceComboBox.SelectionChanged += (o, e) => { _metaInput.Relevance = (MetaInput.RelevanceType)RelevanceComboBox.SelectedIndex; };
             RelevanceComboBox.SelectionChanged += (o, e) =>
                                                   {
                                                       var entry = new UpdateInputParameterCommand.Entry(_metaInput) { Relevance = (MetaInput.RelevanceType)RelevanceComboBox.SelectedIndex };
@@ -42,7 +41,12 @@ namespace Framefield.Tooll
                                                   };
             SetDefaultValue();
 
-            NameTextBox.TextChanged += NameTextBox_TextChanged;
+            NameTextBox.TextChanged += (sender, args) => command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput) { Name = NameTextBox.Text });
+            NameTextBox.LostFocus += (sender, args) =>
+                                     {
+                                         App.Current.UndoRedoStack.AddAndExecute(command);
+                                         App.Current.UpdateRequiredAfterUserInteraction = true;
+                                     };
             TypeComboBox.SelectionChanged += TypeComboBox_SelectionChanged;
             IsMultiInputComboBox.SelectionChanged += IsMultiInputComboBox_SelectionChanged;
 
@@ -53,13 +57,21 @@ namespace Framefield.Tooll
                 Min.ClampToMin = false;
                 Min.ClampToMax = false;
                 Min.ValueChangedEvent += (newVal) => command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput) { Min = newVal });
-                Min.EditingEndedEvent += () => App.Current.UndoRedoStack.AddAndExecute(command);
+                Min.EditingEndedEvent += () =>
+                                         {
+                                             App.Current.UndoRedoStack.AddAndExecute(command);
+                                             App.Current.UpdateRequiredAfterUserInteraction = true;
+                                         };
 
                 Max.Value = _metaInput.Max;
                 Max.ClampToMin = false;
                 Max.ClampToMax = false;
                 Max.ValueChangedEvent += (newVal) => command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput) { Max = newVal });
-                Max.EditingEndedEvent += () => App.Current.UndoRedoStack.AddAndExecute(command);
+                Max.EditingEndedEvent += () =>
+                                         {
+                                             App.Current.UndoRedoStack.AddAndExecute(command);
+                                             App.Current.UpdateRequiredAfterUserInteraction = true;
+                                         };
 
                 Scale.Value = _metaInput.Scale;
                 Scale.ClampToMin = false;
@@ -67,13 +79,18 @@ namespace Framefield.Tooll
                 Scale.Min = 0.001f;
                 Scale.Scale = 0.01f; ;
                 Scale.ValueChangedEvent += (newVal) => command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput) { Scale = newVal });
-                Scale.EditingEndedEvent += () => App.Current.UndoRedoStack.AddAndExecute(command);
+                Scale.EditingEndedEvent += () =>
+                                           {
+                                               App.Current.UndoRedoStack.AddAndExecute(command);
+                                               App.Current.UpdateRequiredAfterUserInteraction = true;
+                                           };
 
                 ScaleTypeComboBox.SelectedIndex = (int)_metaInput.ScaleType;
                 ScaleTypeComboBox.SelectionChanged += (o, e) =>
                                                       {
                                                           command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput) { ScaleType = (MetaInput.Scaling)ScaleTypeComboBox.SelectedIndex });
                                                           App.Current.UndoRedoStack.AddAndExecute(command);
+                                                          App.Current.UpdateRequiredAfterUserInteraction = true;
                                                       };
                 SetVisibilityForFloatParams(Visibility.Visible);
 
@@ -91,11 +108,6 @@ namespace Framefield.Tooll
             DescriptionEdit.Margin = new Thickness(4, 6, 4, 4);
             DescriptionEdit.MinHeight = 40;
             DescriptionEdit.FontSize = 13;
-        }
-
-        private void NameTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            UpdateMetaInput();
         }
 
         private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -138,11 +150,15 @@ namespace Framefield.Tooll
             ICommand[] commands = { removeCommand, command };
 
             App.Current.UndoRedoStack.AddAndExecute(new MacroCommand("Changed Input Type", commands));
+            App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 
         private void IsMultiInputComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UpdateMetaInput();
+            var changeEntry = new UpdateInputParameterCommand.Entry(_metaInput) {IsMultiInput = IsMultiInputComboBox.SelectedIndex == 1};
+            var command = new UpdateInputParameterCommand(_operator, _metaInput.ID, changeEntry);
+            App.Current.UndoRedoStack.AddAndExecute(command);
+            App.Current.UpdateRequiredAfterUserInteraction = true;
         }
 
         private void HandleDescriptionChange(object sender, EventArgs e)
@@ -189,7 +205,7 @@ namespace Framefield.Tooll
             rowEntry.XEnumEntryNameEdit.TextChanged += (o, e) =>
             {
                 var args = e as TextChangedEventArgs;
-                var entry = _metaInput.EnumValues.First(listEntry => { return listEntry.ID == enumEntry.ID; });
+                var entry = _metaInput.EnumValues.First(listEntry => listEntry.ID == enumEntry.ID);
                 entry.Name = rowEntry.XEnumEntryNameEdit.Text;
             };
 
@@ -244,11 +260,17 @@ namespace Framefield.Tooll
                 edit.Min = _metaInput.Min;
                 edit.Max = _metaInput.Max;
                 edit.Default = value;
+                var command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput));
                 edit.ValueChangedEvent += (v) =>
-                {
-                    _defaultValue = new Float(v);
-                    UpdateMetaInput();
-                };
+                                          {
+                                              _defaultValue = new Float(v);
+                                              command.ChangeEntry.DefaultValue = _defaultValue;
+                                          };
+                edit.EditingEndedEvent += () =>
+                                          {
+                                              App.Current.UndoRedoStack.AddAndExecute(command);
+                                              App.Current.UpdateRequiredAfterUserInteraction = true;
+                                          };
                 DefaultValue.Children.Add(edit);
             }
             else if (TypeComboBox.SelectedIndex == (int)FunctionType.Text)
@@ -260,11 +282,17 @@ namespace Framefield.Tooll
                 var edit = new TextBox();
                 edit.Text = value;
                 _defaultValue = new Text(value);
+                var command = new UpdateInputParameterCommand(_operator, _metaInput.ID, new UpdateInputParameterCommand.Entry(_metaInput));
                 edit.TextChanged += (o, e) =>
-                {
-                    _defaultValue = new Text(edit.Text);
-                    UpdateMetaInput();
-                };
+                                    {
+                                        _defaultValue = new Text(edit.Text);
+                                        command.ChangeEntry.DefaultValue = _defaultValue;
+                                    };
+                edit.LostFocus += delegate
+                                  {
+                                      App.Current.UndoRedoStack.AddAndExecute(command);
+                                      App.Current.UpdateRequiredAfterUserInteraction = true;
+                                  };
                 DefaultValue.Children.Add(edit);
             }
             else if (TypeComboBox.SelectedIndex == (int)FunctionType.Scene)
@@ -285,30 +313,31 @@ namespace Framefield.Tooll
             }
         }
 
-        private void UpdateMetaInput()
-        {
-            var opPartDefinition = BasicMetaTypes.GetMetaOperatorPartOf((FunctionType)TypeComboBox.SelectedIndex);
-
-            _metaInput.Name = NameTextBox.Text;
-            _metaInput.OpPart = opPartDefinition;
-            _metaInput.DefaultValue = _defaultValue;
-            _metaInput.IsMultiInput = IsMultiInputComboBox.SelectedIndex == 1 ? true : false;
-
-            OperatorPart newOpPart = _metaInput.CreateInstance();
-
-            if (_operatorPart.Type != newOpPart.Type)
-            {
-                _operatorPart.Type = newOpPart.Type;
-                _operatorPart.Func = newOpPart.Func;
-            }
-            if (_operatorPart.Name != newOpPart.Name)
-                _operatorPart.Name = newOpPart.Name;
-
-            if (_operatorPart.IsMultiInput != newOpPart.IsMultiInput)
-                _operatorPart.IsMultiInput = newOpPart.IsMultiInput;
-
-            App.Current.UpdateRequiredAfterUserInteraction = true;
-        }
+//        private void UpdateMetaInput()
+//        {
+//            var opPartDefinition = BasicMetaTypes.GetMetaOperatorPartOf((FunctionType)TypeComboBox.SelectedIndex);
+//
+//            _metaInput.Name = NameTextBox.Text;
+//            _metaInput.OpPart = opPartDefinition;
+//            _metaInput.DefaultValue = _defaultValue;
+//            _metaInput.IsMultiInput = IsMultiInputComboBox.SelectedIndex == 1;
+//
+//            OperatorPart newOpPart = _metaInput.CreateInstance();
+//
+//            if (_operatorPart.Type != newOpPart.Type)
+//            {
+//                _operatorPart.Type = newOpPart.Type;
+//                _operatorPart.Func = newOpPart.Func;
+//            }
+//
+//            if (_operatorPart.Name != newOpPart.Name)
+//                _operatorPart.Name = newOpPart.Name;
+//
+//            if (_operatorPart.IsMultiInput != newOpPart.IsMultiInput)
+//                _operatorPart.IsMultiInput = newOpPart.IsMultiInput;
+//
+//            App.Current.UpdateRequiredAfterUserInteraction = true;
+//        }
 
         private TextDocument DescriptionDoc { get; set; }
 

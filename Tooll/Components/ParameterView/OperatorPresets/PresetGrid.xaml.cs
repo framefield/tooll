@@ -16,22 +16,25 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace Framefield.Tooll
+namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
     /// <summary>
     /// Interaction logic for PresetGrid.xaml
     /// </summary>
     public partial class PresetGrid : UserControl
     {
-        public PresetGrid() {
+        public PresetGrid()
+        {
             InitializeComponent();
         }
 
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            XPreviewButton.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
+            XLiveViewToggle.IsChecked = App.Current.OperatorPresetManager.LivePreviewEnabled;
 
-            var binding= new Binding() {
+            var binding = new Binding()
+            {
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 Source = App.Current.OperatorPresetManager,
                 Path = new PropertyPath("CurrentOperatorPresets")
@@ -39,23 +42,30 @@ namespace Framefield.Tooll
             BindingOperations.SetBinding(XPresetGrid, ItemsControl.ItemsSourceProperty, binding);
         }
 
-        private void SaveClicked_Handler(object sender, RoutedEventArgs e) {
-            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperator();
+
+        private void SaveClicked_Handler(object sender, RoutedEventArgs e)
+        {
+            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperatorInstance();
         }
 
-        private void XPreviewButton_OnChecked(object sender, RoutedEventArgs e)
+
+        private void SaveForTypeClicked_Handler(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.LivePreviewEnabled = true;
+            App.Current.OperatorPresetManager.SavePresetFromCurrentlyShownOperatorType();
         }
 
-        private void XPreviewButton_OnUnchecked(object sender, RoutedEventArgs e)
+
+        private void RebuildAllButton_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.LivePreviewEnabled = false;
+            App.Current.OperatorPresetManager.RerenderThumbnails();
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+
+        private void LivePreview_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Current.OperatorPresetManager.UpdateAllThumbnails();
+            App.Current.OperatorPresetManager.LivePreviewEnabled = !App.Current.OperatorPresetManager.LivePreviewEnabled;
+            App.Current.OperatorPresetManager.RerenderThumbnails();
         }
     }
 }
+

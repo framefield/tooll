@@ -21,6 +21,7 @@ namespace Framefield.Core
         float End { get; }
         FogMode Mode { get; }
         float Density { get; }
+        float Exponent { get; }
     }
 
     public class DefaultFogSettings : IFogSettings
@@ -30,6 +31,7 @@ namespace Framefield.Core
         public float End { get { return 1000.0f; } }
         public FogMode Mode { get { return FogMode.LINEAR; } }
         public float Density { get { return 1.0f; } }
+        public float Exponent { get { return 1.0f; } }
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 32)]
@@ -41,6 +43,7 @@ namespace Framefield.Core
             Start = fogSettings.Start;
             End = fogSettings.End;
             Scale = 1.0f/(End - Start);
+            Exponent = fogSettings.Exponent;
         }
         [FieldOffset(0)]
         public Color4 Color;
@@ -50,6 +53,8 @@ namespace Framefield.Core
         public float End;
         [FieldOffset(24)]
         public float Scale;
+        [FieldOffset(28)]
+        public float Exponent;
     }
 
 

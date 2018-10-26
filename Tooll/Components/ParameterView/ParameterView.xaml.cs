@@ -24,7 +24,8 @@ namespace Framefield.Tooll
     /// </summary>
     public partial class ParameterView : UserControl
     {
-        public ParameterView() {
+        public ParameterView()
+        {
             InitializeComponent();
         }
 
@@ -37,31 +38,31 @@ namespace Framefield.Tooll
             if (PreventUIUpdate)
                 return;
 
-            var cgv = e.Element as CompositionGraphView;
-            if (cgv != null) {
+            if (e.Element is CompositionGraphView cgv)
+            {
                 ShownOperator = cgv.CompositionOperator;
                 Content = new OperatorParameterView(ShownOperator);
                 return;
             }
 
-            var opWidget = e.Element as OperatorWidget;
-            if (opWidget != null) {
-                ShownOperator= opWidget.Operator;
+            if (e.Element is OperatorWidget opWidget)
+            {
+                ShownOperator = opWidget.Operator;
                 Content = new OperatorParameterView(ShownOperator);
                 return;
             }
-            ShownOperator=null;
+            ShownOperator = null;
 
-            var inputWidget = e.Element as InputWidget;
-            if (inputWidget != null) {
+            if (e.Element is InputWidget inputWidget)
+            {
                 MainWindow mainWindow = App.Current.MainWindow;
                 var op = mainWindow.CompositionView.CompositionGraphView.CompositionOperator;
                 Content = new InputParameterView(op, inputWidget.OperatorPart);
                 return;
             }
 
-            var outputWidget = e.Element as OutputWidget;
-            if (outputWidget != null) {
+            if (e.Element is OutputWidget outputWidget)
+            {
                 MainWindow mainWindow = App.Current.MainWindow;
                 var op = mainWindow.CompositionView.CompositionGraphView.CompositionOperator;
                 Content = new OutputParameterView(op, outputWidget.OperatorPart);
@@ -71,11 +72,12 @@ namespace Framefield.Tooll
             Content = null;
         }
 
-        public void FocusNameField() {
-            var opv = Content as OperatorParameterView;
-            if (opv != null) {
+        public void FocusNameField()
+        {
+            if (Content is OperatorParameterView opv)
+            {
                 opv.XNameTextBox.Focus();
-                opv.XNameTextBox.EnableTextEdit();                
+                opv.XNameTextBox.EnableTextEdit();
             }
         }
     }

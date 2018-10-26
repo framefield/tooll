@@ -1,14 +1,14 @@
-﻿<UserControl x:Class="Framefield.Tooll.PresetThumb"
+﻿<UserControl x:Class="Framefield.Tooll.Components.ParameterView.OperatorPresets.PresetThumb"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                          xmlns:local="clr-namespace:Framefield.Tooll"
+            
              mc:Ignorable="d" 
              Width="80" Height="50" 
              Background="#444"
              BorderBrush="Black"
-             
+              
              BorderThickness="0"
              Margin="0 0 0 0"
              d:DesignHeight="300" d:DesignWidth="300"
@@ -25,6 +25,7 @@
         	DragStarted="Thumb_DragStarted"
         	DragDelta="Thumb_DragDelta"
         	DragCompleted="Thumb_DragCompleted"        
+            ToolTip="Hover to preview&#x0a;Click to set&#x0a;Click and drag to apply partially&#x0a;Shift-Click to save new thumbnail&#x0a;CTRL+click to delete"
         >
             <Thumb.Template>
                 <ControlTemplate>
@@ -43,6 +44,13 @@
                 </ControlTemplate>
             </Thumb.Template>
         </Thumb>
+        <TextBlock x:Name="XForInstanceText"                   
+            TextAlignment="Center" 
+                   VerticalAlignment="Bottom"  
+                   Background="#33000000" 
+                   Foreground="White" 
+                   FontSize="9" 
+                   FontFamily="Segoe UI Light" HorizontalAlignment="Left">LOCAL</TextBlock>
         <TextBlock x:Name="XBlendInfoText"
                    Visibility="Collapsed"
             TextAlignment="Center" VerticalAlignment="Bottom"  Background="#99000000" Foreground="White" FontSize="24" FontFamily="Segoe UI Light">asdf</TextBlock>

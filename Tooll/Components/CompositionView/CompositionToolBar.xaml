@@ -19,7 +19,7 @@
             <ColumnDefinition Width="210"/>
         </Grid.ColumnDefinitions>
 
-        <local:BreadCrumbsView x:Name="XBreadCrumbs" Grid.Column="1"/>
+        <local:BreadCrumbsView x:Name="XBreadCrumbsView" Grid.Column="1"/>
 
 
         <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -32,9 +32,9 @@
 
             <Button VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  Click="OnSplitTimeClipClicked" Width="30"
                     ToolTip="Split current timeclip">
-                <Path  Data="M 0 -0 L 5 0 L 5 10 L0 10  M 15 0 L 10 0 L 10 10 L 15 10 M 7.5 -2 L 7.4 12" Fill="#5888" Stroke="#888"/>                
+                <Path  Data="M 0 -0 L 5 0 L 5 10 L0 10  M 15 0 L 10 0 L 10 10 L 15 10 M 7.5 -2 L 7.4 12" Fill="#5888" Stroke="#888"/>
             </Button>
-            
+
             <local:FloatEditButton x:Name="XTimeEdit" Grid.Column="0" VerticalAlignment="Stretch" 
                              ToolTip="Current time. Drag to change. Click to edit."  Width="60"/>
 
@@ -69,13 +69,13 @@
                 <Grid>
                     <Path Name="playIconPath" Data="M 0 0 L 10 6 L 0 12" Fill="#888" HorizontalAlignment="Center" />
                     <TextBlock Name="playSpeedText" HorizontalAlignment="Left" Width="11" TextAlignment="Right">
-                    <TextBlock.RenderTransform>
-                        <TranslateTransform X="6" Y="4" />
-                    </TextBlock.RenderTransform>                        
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform X="6" Y="4" />
+                        </TextBlock.RenderTransform>
                     </TextBlock>
-                </Grid>                
+                </Grid>
             </Button>
         </StackPanel>
-            
+
     </Grid>
 </UserControl>

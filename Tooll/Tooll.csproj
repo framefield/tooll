@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Framefield.Tooll</RootNamespace>
     <AssemblyName>Tooll</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -316,6 +316,7 @@
     <Compile Include="Components\ParameterView\OperatorPresets\PresetGrid.xaml.cs">
       <DependentUpon>PresetGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\ParameterView\OperatorPresets\PresetImageManager.cs" />
     <Compile Include="Components\ParameterView\OperatorPresets\PresetThumb.xaml.cs">
       <DependentUpon>PresetThumb.xaml</DependentUpon>
     </Compile>
@@ -366,6 +367,8 @@
     <Compile Include="Components\ParameterView\SceneParameterValue.xaml.cs">
       <DependentUpon>SceneParameterValue.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\CameraSetup.cs" />
+    <Compile Include="Components\SelectionView\ShowScene\CameraInteraction\ViewCameraSetupProvider.cs" />
     <Compile Include="Components\SelectionView\ShowAsTextControl.xaml.cs">
       <DependentUpon>ShowAsTextControl.xaml</DependentUpon>
     </Compile>
@@ -448,6 +451,8 @@
     <Compile Include="Components\SelectionView\FullScreenView.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Rendering\RenderViewConfiguration.cs" />
+    <Compile Include="Utils\DirectoryManager.cs" />
     <Compile Include="Utils\ImportFbxScene.cs" />
     <Compile Include="ISelectable.cs" />
     <Compile Include="Components\CodeEditor\CodeEditor.xaml.cs">
@@ -462,7 +467,7 @@
       <DependentUpon>RenderUpdateDebugViz.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\CompositionView\ConnectionDragHelper.cs" />
-    <Compile Include="D3DImageSlimDX.cs" />
+    <Compile Include="Rendering\D3DImageSharpDX.cs" />
     <Compile Include="GradientPath\GradientMode.cs" />
     <Compile Include="GradientPath\GradientPath.cs" />
     <Compile Include="IConnectableWidget.cs" />
@@ -506,7 +511,7 @@
     <Compile Include="Components\ParameterView\ParameterView.xaml.cs">
       <DependentUpon>ParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="D3DRenderSetup.cs" />
+    <Compile Include="Rendering\D3DRenderSetup.cs" />
     <Compile Include="SelectionHandler.cs" />
     <Compile Include="Components\CompositionView\ShakeDetector.cs" />
     <Compile Include="Components\CompositionView\OperatorSnappingHelper.cs" />
@@ -549,13 +554,15 @@
     <Compile Include="Components\Dialogs\UserNameDialog.xaml.cs">
       <DependentUpon>UserNameDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SelectionView\ShowSceneControl.xaml.cs">
-      <DependentUpon>ShowSceneControl.xaml</DependentUpon>
+    <Compile Include="Components\SelectionView\ShowContentControl.xaml.cs">
+      <DependentUpon>ShowContentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ParameterView\VectorNParameterValue.xaml.cs">
       <DependentUpon>VectorNParameterValue.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\OpUtils.cs" />
     <Compile Include="Utils\SetWaitCursor.cs" />
+    <Compile Include="Utils\SpecialOperators.cs" />
     <Page Include="Components\AdditionalAssembliesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -904,7 +911,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\SelectionView\ShowSceneControl.xaml">
+    <Page Include="Components\SelectionView\ShowContentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1047,6 +1054,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\components\color-circle-quad.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\view-icons\gamma-correction.png" />
+    <Resource Include="Images\view-icons\grid.png" />
+    <Resource Include="Images\view-icons\view-hover.png" />
+    <Resource Include="Images\view-icons\view-locked.png" />
+    <Resource Include="Images\view-icons\view-selected.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

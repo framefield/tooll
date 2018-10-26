@@ -10,10 +10,12 @@ namespace Framefield.Core.Commands
     public class UpdateInputParameterCommand : ICommand
     {
         public string Name { get; private set; }
-        public bool IsUndoable { get { return true; } }
+        public bool IsUndoable => true;
 
         public class Entry
         {
+            public FunctionType FunctionType;
+            public string Name;
             public IValue DefaultValue;
             public MetaInput.RelevanceType Relevance;
             public bool IsMultiInput;
@@ -22,6 +24,8 @@ namespace Framefield.Core.Commands
 
             public Entry(MetaInput input)
             {
+                FunctionType = input.OpPart.Type;
+                Name = input.Name;
                 DefaultValue = input.DefaultValue;
                 Relevance = input.Relevance;
                 IsMultiInput = input.IsMultiInput;
@@ -41,34 +45,41 @@ namespace Framefield.Core.Commands
         {
             Name = "Update Input Parameter";
             InitPreviousProperties(compOp, metaInputID);
-            _changeEntry = changes;
+            ChangeEntry = changes;
         }
 
         private void InitPreviousProperties(Operator compOp, Guid metaInputID)
         {
             _metaOpID = compOp.Definition.ID;
             _inputID = metaInputID;
-            var entry = new Entry(InputToUpdate);
+            var entry = new Entry(GetInputToUpdate());
             _previousEntry = entry;
         }
 
         private void ApplyEntryToInput(Entry entry)
         {
-            InputToUpdate.DefaultValue = entry.DefaultValue;
-            InputToUpdate.Relevance = entry.Relevance;
-            InputToUpdate.IsMultiInput = entry.IsMultiInput;
-            if (InputToUpdate.OpPart.Type == FunctionType.Float)
+            MetaInput inputToUpdate = GetInputToUpdate();
+            inputToUpdate.OpPart = BasicMetaTypes.GetMetaOperatorPartOf(entry.FunctionType);
+            inputToUpdate.Name = entry.Name;
+            inputToUpdate.DefaultValue = entry.DefaultValue;
+            inputToUpdate.Relevance = entry.Relevance;
+            inputToUpdate.IsMultiInput = entry.IsMultiInput;
+
+            if (entry.FunctionType == FunctionType.Float)
             {
                 ApplyFloatEntriesToInput(entry);
             }
+
+            MetaOp.UpdateInput(inputToUpdate);
         }
 
         private void ApplyFloatEntriesToInput(Entry entry)
         {
-            InputToUpdate.Min = entry.Min;
-            InputToUpdate.Max = entry.Max;
-            InputToUpdate.Scale = entry.Scale;
-            InputToUpdate.ScaleType = entry.ScaleType;
+            var inputToUpdate = GetInputToUpdate();
+            inputToUpdate.Min = entry.Min;
+            inputToUpdate.Max = entry.Max;
+            inputToUpdate.Scale = entry.Scale;
+            inputToUpdate.ScaleType = entry.ScaleType;
         }
 
         public void Undo()
@@ -78,21 +89,18 @@ namespace Framefield.Core.Commands
 
         public void Do()
         {
-            ApplyEntryToInput(_changeEntry);    
+            ApplyEntryToInput(ChangeEntry);
         }
 
-        private MetaInput InputToUpdate
+        private MetaInput GetInputToUpdate()
         {
-            get
-            {
-                var inputToUpdate = (from input in MetaOp.Inputs
-                                     where input.ID == _inputID
-                                     select input).SingleOrDefault();
-                return inputToUpdate;
-            }
+            var inputToUpdate = (from input in MetaOp.Inputs
+                                 where input.ID == _inputID
+                                 select input).SingleOrDefault();
+            return inputToUpdate;
         }
 
-        private MetaOperator MetaOp { get { return MetaManager.Instance.GetMetaOperator(_metaOpID); } }
+        private MetaOperator MetaOp => MetaManager.Instance.GetMetaOperator(_metaOpID);
 
         [JsonProperty]
         private Guid _metaOpID;
@@ -101,6 +109,6 @@ namespace Framefield.Core.Commands
         [JsonProperty]
         private Entry _previousEntry;
         [JsonProperty]
-        private Entry _changeEntry;
+        public Entry ChangeEntry { get; private set; }
     }
 }

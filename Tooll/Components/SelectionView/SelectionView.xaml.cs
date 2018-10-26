@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2016 Framefield. All rights reserved.
 // Released under the MIT license. (see LICENSE.txt)
 
-﻿using Framefield.Core.Curve;
+using Framefield.Core.Curve;
 using Framefield.Core;
 using System.Linq;
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,11 +19,91 @@ namespace Framefield.Tooll.Components.SelectionView
             InitializeComponent();
 
             DisplayMode = DisplayAs.Nothing;
+        }
+
+        private void XRenderView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
             ContextMenuOpening += ContextMenuOpening_Handler;
+            CGV.OperatorHoverStartEvent += CGV_OperatorHoverStartEvent;
+            CGV.OperatorHoverUpdateEvent += CGV_OperatorHoverUpdateEvent;
+            CGV.OperatorHoverEndEvent += CGV_OperatorHoverEndEvent;
+
         }
 
 
-        void ContextMenuOpening_Handler(object sender, ContextMenuEventArgs e)
+        private void XRenderView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
+            ContextMenuOpening -= ContextMenuOpening_Handler;
+            CGV.OperatorHoverStartEvent -= CGV_OperatorHoverStartEvent;
+            CGV.OperatorHoverUpdateEvent -= CGV_OperatorHoverUpdateEvent;
+            CGV.OperatorHoverEndEvent -= CGV_OperatorHoverEndEvent;
+        }
+
+
+
+        #region hover event handling
+        private void CGV_OperatorHoverStartEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (e.OpWidget == _shownOperatorWidget)
+            {
+                return;
+            }
+
+            if (_isShowingHover)
+                return;
+
+
+            _selectionBeforeHover = _shownOperatorWidget;
+            _hoverTimeScrubbingOffset = ComputeTimeScrubbingOffset(e);
+            SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+            _isShowingHover = true;
+        }
+
+        private void CGV_OperatorHoverUpdateEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (!_isShowingHover)
+                return;
+
+            _hoverTimeScrubbingOffset = ComputeTimeScrubbingOffset(e);
+            SetOperatorWidget(e.OpWidget, forHoverOnly: true);
+        }
+
+        private double ComputeTimeScrubbingOffset(OperatorWidget.HoverEventsArgs hoverArgs)
+        {
+            return (hoverArgs.HorizontalPosition - 0.5f) * 15f;
+        }
+
+        private void CGV_OperatorHoverEndEvent(object sender, OperatorWidget.HoverEventsArgs e)
+        {
+            if (XHoverButton.IsChecked == false)
+                return;
+
+            if (!_isShowingHover)
+                return;
+
+            _hoverTimeScrubbingOffset = 0;
+            SetOperatorWidget(_selectionBeforeHover);
+            _isShowingHover = false;
+            _selectionBeforeHover = null;
+        }
+
+        bool _isShowingHover = false;
+        double _hoverTimeScrubbingOffset = 0;
+        private OperatorWidget _selectionBeforeHover;
+        #endregion
+
+
+
+
+        private void ContextMenuOpening_Handler(object sender, ContextMenuEventArgs e)
         {
             if (Operator == null || Operator.Outputs.Count < 1 || _displayMode == DisplayAs.Curve)
                 return;
@@ -37,20 +117,59 @@ namespace Framefield.Tooll.Components.SelectionView
             int outputIdx = 0;
             foreach (var output in Operator.Outputs)
             {
+
                 var entryText = string.Format("Show Output: {0} ({1})", output.Name, outputIdx + 1);
-                var menuItem = new MenuItem { Header = entryText, IsChecked = _shownOutputIndex == outputIdx};
+                var menuItem = new MenuItem { Header = entryText, IsChecked = _shownOutputIndex == outputIdx };
                 var outputIdxClosure = outputIdx;
                 menuItem.Click += (o, args) => SelectShownOutput(outputIdxClosure);
                 ContextMenu.Items.Add(menuItem);
+
+                // Add sub menu for cube-map image selection
+                if (output.Type == FunctionType.Image)
+                {
+                    if (XShowContentControl.RenderedImageIsACubemap)
+                    {
+                        for (var cubeMapSideIndex = 0; cubeMapSideIndex < 6; ++cubeMapSideIndex)
+                        {
+                            var cubeMapSelectionItem = new MenuItem()
+                            {
+                                Header = "Cube Map Side " + (cubeMapSideIndex + 1),
+                                IsChecked = XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex == cubeMapSideIndex
+                            };
+                            var cubeMapSideIndexClosure = cubeMapSideIndex;
+                            menuItem.Items.Add(cubeMapSelectionItem);
+                            cubeMapSelectionItem.Click +=
+                                (o, args) =>
+                                {
+                                    XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex = cubeMapSideIndexClosure;
+                                };
+                        }
+
+                        // Entry for rendering as sphere
+                        var cubeMapAsSphereItem = new MenuItem()
+                        {
+                            Header = "Cube Map as Sphere ",
+                            IsChecked = XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex == CUBE_MAP_AS_SPHERE_SIDE
+                        };
+                        menuItem.Items.Add(cubeMapAsSphereItem);
+                        cubeMapAsSphereItem.Click +=
+                            (o, args) =>
+                            {
+                                XShowContentControl.RenderConfiguration.PreferredCubeMapSideIndex = CUBE_MAP_AS_SPHERE_SIDE;
+                            };
+                    }
+                }
                 outputIdx++;
             }
-            ContextMenu.IsOpen = true;            
+            ContextMenu.IsOpen = true;
         }
+
+        private const int CUBE_MAP_AS_SPHERE_SIDE = 6;
 
         public bool TimeLoggingSourceEnabled
         {
-            get { return XShowSceneControl.TimeLoggingSourceEnabled; }
-            set { XShowSceneControl.TimeLoggingSourceEnabled = value; }
+            get { return XShowContentControl.TimeLoggingSourceEnabled; }
+            set { XShowContentControl.TimeLoggingSourceEnabled = value; }
         }
 
 
@@ -67,8 +186,7 @@ namespace Framefield.Tooll.Components.SelectionView
 
         enum DisplayAs
         {
-            Scene,
-            Image,
+            SceneContent,
             Text,
             Curve,
             Nothing,
@@ -83,7 +201,7 @@ namespace Framefield.Tooll.Components.SelectionView
                 var needsUpdate = (value != _displayMode);
                 _displayMode = value;
 
-                if(needsUpdate)
+                if (needsUpdate)
                     UpdateControlVisibility();
             }
         }
@@ -92,29 +210,27 @@ namespace Framefield.Tooll.Components.SelectionView
         private void UpdateControlVisibility()
         {
             var visibilityOfCurve = Visibility.Hidden;
-            var visibilityOfScene = Visibility.Hidden;
+            var visibilityOfSceneContent = Visibility.Hidden;
             var visibilityOfText = Visibility.Hidden;
 
             switch (DisplayMode)
             {
                 case DisplayAs.Curve:
-                    visibilityOfCurve = Visibility.Visible;                    
+                    visibilityOfCurve = Visibility.Visible;
                     break;
-                case DisplayAs.Scene:
-                    visibilityOfScene = Visibility.Visible;
+
+                case DisplayAs.SceneContent:
+                    visibilityOfSceneContent = Visibility.Visible;
                     break;
-                //case DisplayAs.Image:
-                //    visibilityOfImage = Visibility.Visible;
-                //    break;
+
                 case DisplayAs.Text:
                     visibilityOfText = Visibility.Visible;
                     break;
             }
 
             XShowCurveControl.Visibility = visibilityOfCurve;
-            XShowSceneControl.Visibility = visibilityOfScene;
+            XShowContentControl.Visibility = visibilityOfSceneContent;
             XShowAsTextControl.Visibility = visibilityOfText;
-            //XShowImageControl.Visibility = visibilityImage;
         }
 
         private void DiscardShownOperator()
@@ -127,37 +243,46 @@ namespace Framefield.Tooll.Components.SelectionView
 
             _shownOperatorWidget = null;
             XSelectedOperatorName.Text = "?";
-            XStickyCheckbox.IsChecked = false;
+            XLockedButton.IsChecked = false;
 
             XShowCurveControl.Curve = null;
             XShowAsTextControl.SetOperatorAndOutput(null);
-            XShowSceneControl.SetOperatorAndOutputIndex(null);
+            XShowContentControl.SetOperatorAndOutputIndex(null);
         }
 
+
         public Operator Operator
-        {   
-            get
-            {
-                return _shownOperatorWidget == null ? null 
-                                                    : _shownOperatorWidget.Operator;
-            }
+        {
+            get { return _shownOperatorWidget?.Operator; }
         }
 
         private int _shownOutputIndex = 0;
+        private double _lastRenderedHoverTime = 0;
 
-        public void SetOperatorWidget(OperatorWidget opWidget) 
+        /** Tries to select operator widget if view isn't locked. 
+         Returns true if successful. */
+        public bool SetOperatorWidget(OperatorWidget opWidget, bool forHoverOnly = false)
         {
-            if (opWidget == null || opWidget == _shownOperatorWidget)
-                return;
+            if (XLockedButton.IsChecked == true)
+                return false;
+
+            if (!forHoverOnly)
+            {
+                _isShowingHover = false;
+            }
+
+
+            var hasOpWidgetChanged = opWidget != _shownOperatorWidget
+                                || _hoverTimeScrubbingOffset != _lastRenderedHoverTime;
+
+            _lastRenderedHoverTime = _hoverTimeScrubbingOffset;
+
+            if (opWidget == null || !hasOpWidgetChanged)
+                return false;
 
             var op = opWidget.Operator;
-            if (op == null)
-                return;
 
-            if (XStickyCheckbox.IsChecked == true)
-                return;    
-
-            // Remove handler from old op?
+            // Remove handler from old op?  Why do we need this?
             if (_shownOperatorWidget != null)
             {
                 _shownOperatorWidget.Operator.Parent.OperatorRemovedEvent -= Parent_OperatorRemovedEventHandler;
@@ -169,9 +294,12 @@ namespace Framefield.Tooll.Components.SelectionView
             XSelectedOperatorName.Text = op.Definition.Name + "   " + op.Name;
 
             _shownOutputIndex = 0;
-            
+
             UpdateShowControls();
+            return true;
         }
+
+
 
         private void UpdateShowControls()
         {
@@ -190,12 +318,12 @@ namespace Framefield.Tooll.Components.SelectionView
                 XShowCurveControl.Curve = curve;
                 newDisplayMode = DisplayAs.Curve;
             }
-            else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh)
+            else if (output.Type == FunctionType.Image || output.Type == FunctionType.Scene || output.Type == FunctionType.Mesh || output.Type == FunctionType.Float)
             {
-                newDisplayMode = DisplayAs.Scene;
-                XShowSceneControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex);
+                newDisplayMode = DisplayAs.SceneContent;
+                XShowContentControl.SetOperatorAndOutputIndex(Operator, _shownOutputIndex, _hoverTimeScrubbingOffset);
             }
-            else if (output.Type == FunctionType.Float || output.Type == FunctionType.Generic ||
+            else if (output.Type == FunctionType.Generic ||
                      output.Type == FunctionType.Text)
             {
                 newDisplayMode = DisplayAs.Text;
@@ -212,15 +340,17 @@ namespace Framefield.Tooll.Components.SelectionView
             }
         }
 
+
         public void UpdateViewToCurrentSelectionHandler(object sender, SelectionHandler.FirstSelectedChangedEventArgs e)
         {
             SetOperatorWidget(e.Element as OperatorWidget);
         }
 
-        private void CheckBox_StickyClickedHandler(object sender, RoutedEventArgs e)
+
+        private void ToggleLocked_ClickedHandler(object sender, RoutedEventArgs e)
         #region XAML Event handlers
         {
-            if (XStickyCheckbox.IsChecked == true)
+            if (XLockedButton.IsChecked == true)
             {
                 if (_shownOperatorWidget != null)
                 {
@@ -255,9 +385,24 @@ namespace Framefield.Tooll.Components.SelectionView
             this.BorderBrush = Brushes.Black;
         }
 
-        private void XGridButton_Click(object sender, RoutedEventArgs e)
+        private void XGizmoButton_Click(object sender, RoutedEventArgs e)
         {
-            XShowSceneControl.ShowGridAndGizmos = (XGridButton.IsChecked == true);
+            XShowContentControl.RenderConfiguration.ShowGridAndGizmos = (XGizmoButton.IsChecked == true);
+
+            if (_shownOperatorWidget == null)
+                return;
+
+            // FixMe: A more efficient implementation should use InvalidateVariableAccessors()
+            var invalidator = new Framefield.Core.OperatorPart.InvalidateInvalidatables();
+            _shownOperatorWidget.Operator.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
+
+            App.Current.UpdateRequiredAfterUserInteraction = true;
+        }
+
+
+        private void XLinearButton_Click(object sender, RoutedEventArgs e)
+        {
+            XShowContentControl.RenderConfiguration.RenderWithGammaCorrection = (XLinearButton.IsChecked == true);
 
             if (_shownOperatorWidget == null)
                 return;
@@ -278,8 +423,12 @@ namespace Framefield.Tooll.Components.SelectionView
             {
                 var cgv = App.Current.MainWindow.CompositionView.CompositionGraphView;
                 cgv.SelectionHandler.SetElement(_shownOperatorWidget);
-                cgv.CenterSelectedElements();
+                cgv.CenterAllOrSelectedElements();
             }
         }
+
+        public int PreferredCubeMapSideIndex { get; set; }
+
+
     }
 }

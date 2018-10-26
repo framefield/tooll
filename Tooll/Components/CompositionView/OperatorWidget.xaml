@@ -13,6 +13,9 @@
              x:Name="XControl"
              Loaded="OnLoaded"
              Focusable="True"
+             MouseEnter="XControl_MouseEnter"
+             MouseLeave="XControl_MouseLeave"
+             MouseMove="XControl_MouseMove"
              FocusVisualStyle="{x:Null}"
              Unloaded="UnloadedHandler">
     <UserControl.Resources>
@@ -26,7 +29,7 @@
     <UserControl.RenderTransform>
         <TranslateTransform X="{Binding Position.X, ElementName=XControl}" Y="{Binding Position.Y, ElementName=XControl}"/>
     </UserControl.RenderTransform>
-    
+
     <UserControl.Style >
         <Style  TargetType="local:OperatorWidget">
             <Style.Triggers>
@@ -45,7 +48,7 @@
                     <Setter Property="Background" Value="{StaticResource PatternGradient}"/>
                     <Setter Property="BorderThickness" Value="0,4,0,0"/>
                 </Trigger>
-            </Style.Triggers>            
+            </Style.Triggers>
         </Style>
     </UserControl.Style>
 
@@ -55,7 +58,7 @@
         <!-- Actual graphical representation -->
         <Border  x:Name="XOperatorContent"                  
                  Background="#CE0A5858" BorderBrush="{Binding BorderBrush, ElementName=XControl}"  ClipToBounds="True" BorderThickness="1">
-            
+
             <TextBlock Name="XOperatorLabel" 
                         HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="13"  Text="Operator"/>
         </Border>

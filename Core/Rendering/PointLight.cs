@@ -19,7 +19,6 @@ namespace Framefield.Core
         Vector3 Attenuation { get; }
     }
 
-
     [StructLayout(LayoutKind.Explicit, Size = 80)]
     public struct PointLightBufferLayout
     {
@@ -81,6 +80,4 @@ namespace Framefield.Core
         [FieldOffset(176)]
         public PointLightBufferLayout PointLight2;
     }
-
-
 }

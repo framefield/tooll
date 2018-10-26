@@ -11,25 +11,26 @@ using System.Windows;
 
 namespace Framefield.Tooll.Components.CompositionView
 {
-    /* 
+    /*
      * Converts the relative position of a Connection-DropOver-Event above
      * an Operator into a meaningful representation that can be used to
      * highlight the UI and indicate possible drop zones:
-     * 
+     *
      * Is uses the connection and the Operator to compute:
      * - A list of input zones
      * - The currently active input zone
      * - The type and of the currently active input zone
      * - An indication if the "select parameter from list"-zone is active
      */
-    public class OperatorWidgetInputZone 
+
+    public class OperatorWidgetInputZone
     {
         public Core.OperatorPart Input;
         public MetaInput MetaInput;
 
         public double LeftPosition;
-        public double Width =1;
-        public bool IsBelowMouse;        
+        public double Width = 1;
+        public bool IsBelowMouse;
         public int MultiInputIndex;
         public OperatorPart ConnectedToOutput;
         public bool InsertAtMultiInputIndex;
@@ -40,11 +41,11 @@ namespace Framefield.Tooll.Components.CompositionView
         static public List<OperatorWidgetInputZone> ComputeInputZonesForOp(IConnectionLineTarget op)
         {
             var opWidget = op as OperatorWidget;
-            if(opWidget != null)
+            if (opWidget != null)
                 return ComputeInputZonesForOperatorWidget(opWidget);
 
             var outputWidget = op as OutputWidget;
-            if(outputWidget != null)
+            if (outputWidget != null)
                 return ComputeIntputZonesForOutputWidget(outputWidget);
 
             throw new Exception("Can't compute input zones for unknown widget type");
@@ -58,7 +59,7 @@ namespace Framefield.Tooll.Components.CompositionView
             {
                 Input = outputWidget.OperatorPart,
                 MetaInput = null,
-                Width = outputWidget.Width,                
+                Width = outputWidget.Width,
                 InsertAtMultiInputIndex = true
             });
 
@@ -86,21 +87,22 @@ namespace Framefield.Tooll.Components.CompositionView
                 {
                     if (input.Connections.Count() > 0)
                     {
-                        if (Animation.GetRegardingAnimationOpPart(input.Connections[0]) == null)
+                        var animationConnection = Animation.GetRegardingAnimationOpPart(input.Connections[0]);
+                        if (animationConnection == null)
                         {
-                            // ignore animation inputs
+                            // Add non-animated connections
                             relevantOrConnectedInputs.Add(input);
                         }
                     }
                 }
             }
 
-            const double WIDTH_OF_MULTIINPUT_ZONES = 1.0/3.0;
+            const double WIDTH_OF_MULTIINPUT_ZONES = 1.0 / 3.0;
 
             /* Roll out zones multi-inputs and the slots for prepending
              * a connection at the first field or inserting connections
              * between existing connections.
-             *  
+             *
              */
             foreach (var input in relevantOrConnectedInputs)
             {
@@ -109,7 +111,7 @@ namespace Framefield.Tooll.Components.CompositionView
                 {
                     if (!input.Connections.Any())
                     {
-                        // empty multi-input 
+                        // empty multi-input
                         zones.Add(new OperatorWidgetInputZone()
                         {
                             Input = input,
@@ -172,7 +174,7 @@ namespace Framefield.Tooll.Components.CompositionView
             double posX = 0;
             for (var i = 0; i < zones.Count; ++i)
             {
-                var widthInsideOp = zones[i].Width/widthSum*opWidget.Width;
+                var widthInsideOp = zones[i].Width / widthSum * opWidget.Width;
                 zones[i].Width = widthInsideOp - 1; // requires zones to be a class
                 zones[i].LeftPosition = posX;
                 posX += widthInsideOp;
@@ -180,7 +182,6 @@ namespace Framefield.Tooll.Components.CompositionView
 
             return zones;
         }
-
 
         public static OperatorWidgetInputZone FindZoneBelowMouse(List<OperatorWidgetInputZone> zones, Point mousePosition)
         {
@@ -193,6 +194,6 @@ namespace Framefield.Tooll.Components.CompositionView
                 }
             }
             return null;
-        }        
+        }
     }
 }

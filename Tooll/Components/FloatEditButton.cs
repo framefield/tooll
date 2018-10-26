@@ -36,21 +36,20 @@ namespace Framefield.Tooll
         public bool DisplayAsTimeStamp { get; set; }
         public virtual bool IsLocked() { return false; }
 
-        public FloatEditButton() {                        
+        public FloatEditButton()
+        {
             Scale = 0.1f;
             Precision = 4;
 
-            Min=0.0f;
-            Max=10.0f;
+            Min = 0.0f;
+            Max = 10.0f;
             ClampToMin = false;
             ClampToMax = false;
 
             Loaded += LoadedHandler;
 
             System.Windows.Resources.StreamResourceInfo info = Application.GetResourceStream(new Uri("Images/cursors/CursorSlideNormal.cur", UriKind.Relative));
-            this.Cursor = new System.Windows.Input.Cursor(info.Stream); 
-
-            //Cursor= (this.Resources[""])
+            this.Cursor = new System.Windows.Input.Cursor(info.Stream);
         }
 
         #region dependency properties
@@ -103,9 +102,6 @@ namespace Framefield.Tooll
 
         #endregion
 
-        
-
-       
 
         #region events
 

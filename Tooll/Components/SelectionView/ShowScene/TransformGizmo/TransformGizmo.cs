@@ -118,26 +118,26 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
         {
             _transformGizmoTargetOp = null;
             _transformGizmoTargetValueFunction = null;
-            
+
             if (selectedOperators.Length != 1)
                 return false;
 
             var op = selectedOperators.First();
-            if (op.InternalParts.Count > 0 &&  op.InternalParts[0].Func is ICameraProvider)
+            if (op.InternalParts.Count > 0 && op.InternalParts[0].Func is ICameraProvider)
                 return false;
 
-            _translateInputs = FindVec3Inputs(op, new String[] {"Center", "Position","Translate","Translation", "Move"});
+            _translateInputs = FindVec3Inputs(op, new String[] { "Center", "Position", "Translate", "Translation", "Move" });
             _pivotInputs = FindVec3Inputs(op, "Pivot");
             _rotateInputs = FindVec3Inputs(op, "Rotate");
             _scaleInputs = FindVec3Inputs(op, "Scale");
 
-            if (!_translateInputs.Valid) 
+            if (!_translateInputs.Valid)
                 return false;
 
             _context = context;
             _transformGizmoTargetOp = op;
             _transformGizmoTargetValueFunction = op.Outputs[0].Func as Utilities.ValueFunction;
-            _transformGizmoTargetValueFunction.EvaluatedEvent += GizmoValueFunc_EvaluatedEvent; // Setup Evaluation Callback                
+            _transformGizmoTargetValueFunction.EvaluatedEvent += GizmoValueFunc_EvaluatedEvent; // SetupContextForRenderingCamToBuffer Evaluation Callback                
             _translateXParam.Input = _translateInputs.X;
             _translateYParam.Input = _translateInputs.Y;
             _translateZParam.Input = _translateInputs.Z;
@@ -145,7 +145,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
         }
 
         /*
-         * Returns GizmoPart below mouse or null if nothing hit
+         * Returns index of GizmoPart below mouse or -1 if nothing hit
          */
         public int CheckForManipulationByRay(Ray rayInWorld)
         {
@@ -170,6 +170,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
         }
 
 
+
+
         private GizmoPart FindGizmoPartHitByRay(Ray rayInWorld)
         {
             if (_transformGizmoTargetOp == null)
@@ -177,7 +179,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
 
             _rayInObject = ComputeRayInObject(rayInWorld, GizmoToWorld);
 
-            var minDistance = (float) Double.PositiveInfinity;
+            var minDistance = (float)Double.PositiveInfinity;
             GizmoPart nearestPartHitByRay = null;
 
             foreach (GizmoPart gizmoPart in GizmoParts)
@@ -201,7 +203,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
                 IsGizmoActive = false;
                 return;
             }
-            IsGizmoActive = true;                
+            IsGizmoActive = true;
 
             var invalidator3 = new OperatorPart.InvalidateAllVariableAccessors();
             _sceneTransformGizmoOperator.Outputs[0].TraverseWithFunction(null, invalidator3);
@@ -209,9 +211,12 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
 
             GizmoToWorld = ObjectToWorldWithGizmo(context);
 
+            var keepObjectToWorld = context.ObjectTWorld;
             context.ObjectTWorld = GizmoToWorld;
 
             _sceneTransformGizmoOperator.Outputs[0].Eval(context);
+
+            context.ObjectTWorld = keepObjectToWorld;
 
             if (_transformGizmoTargetValueFunction != null)
                 _transformGizmoTargetValueFunction.EvaluatedEvent -= GizmoValueFunc_EvaluatedEvent;
@@ -232,8 +237,8 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
                                                                         orgTranslate);
 
             var translate = _translateInputs.EvaluateOrDefault(context, Vector3.Zero);
-            var rotate = _rotateInputs.EvaluateOrDefault(context,Vector3.Zero);
-            var pivot = _pivotInputs.EvaluateOrDefault(context, Vector3.Zero);           
+            var rotate = _rotateInputs.EvaluateOrDefault(context, Vector3.Zero);
+            var pivot = _pivotInputs.EvaluateOrDefault(context, Vector3.Zero);
 
             var tmpMatrix = context.ObjectTWorld * _gizmoToParent;
             var scaleFactor = Vector4.Transform(tmpMatrix.Row4, context.WorldToCamera).Z / 20f;
@@ -254,13 +259,14 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
             _translateYParam.Value = translate.Y;
             _translateZParam.Value = translate.Z;
 
-            transformIncludingOpTransform = _gizmoToParent*Matrix.Translation(pivot.X, pivot.Y, pivot.Z)*
+            transformIncludingOpTransform = _gizmoToParent * Matrix.Translation(pivot.X, pivot.Y, pivot.Z) *
                                             transformWithNormalizedScale;
 
             return transformIncludingOpTransform;
         }
 
         private Matrix _gizmoToParent;
+        public int IndexOfGizmoPartBelowMouse { get; set; }
 
         public void HandleLeftMouseDown()
         {
@@ -274,7 +280,7 @@ namespace Framefield.Tooll.Components.SelectionView.ShowScene.TransformGizmo
 
         public void HandleLeftMouseUp()
         {
-            if (State != GizmoStates.Dragged) 
+            if (State != GizmoStates.Dragged)
                 return;
 
             if (_activeGizmoPart != null)

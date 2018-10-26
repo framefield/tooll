@@ -5,8 +5,8 @@
 
         Background="#333"
         Foreground="#FFFFFF"
-        
-        Title="T2 - Create Operator" 
+
+        Title="T2 - Create Operator"
         Height="500" Width="550"
         Loaded="OnLoaded"
         FontSize="14"
@@ -15,33 +15,33 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/ScrollbarStyles.xaml"/>
+                <ResourceDictionary Source="/Themes/ScrollbarStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type ListViewItem}">
-                <Setter Property="Foreground" Value="#aaa"/>
+                <Setter Property="Foreground" Value="#aaa" />
                 <Style.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151717" Opacity="1"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF151717" Opacity="1" />
                 </Style.Resources>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid VerticalAlignment="Stretch" >
+    <Grid VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="340"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="340" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Margin="7" Orientation="Horizontal">
             <Border BorderBrush="Black" Background="#222" BorderThickness="1" Width="230">
                 <!-- Searchfield with placeholder text -->
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Canvas Grid.Column="0" Width="20">
                         <Path StrokeThickness="2" StrokeDashArray="" StrokeDashCap="Flat" StrokeDashOffset="0" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeMiterLimit="10" Stroke="#888">
@@ -55,35 +55,33 @@
                             </Path.Data>
                         </Path>
                     </Canvas>
-                    <TextBlock 
-        			    x:Name="XSearchPlaceholder" 
+                    <TextBlock
+        			    x:Name="XSearchPlaceholder"
                         Grid.Column="1"
                         VerticalAlignment="Center"
-        			    
+
                         Background="Transparent"
-                        Foreground="#555"        			    
-                        FontSize="14" 
-                        TextAlignment="Left" 
-        			    			    
-        			    Keyboard.PreviewKeyUp="OnKeyUpHandler" 
+                        Foreground="#555"
+                        FontSize="14"
+                        TextAlignment="Left"
+
+        			    Keyboard.PreviewKeyUp="OnKeyUpHandler"
         			    Padding="2"
-        			    Text="Operator, Category, Keywords"            
-                    />
-                    <TextBox 
-        			    x:Name="XSearchTextBox" 
-                        Grid.Column="1"        			    
+        			    Text="Operator, Category, Keywords" />
+                    <TextBox
+        			    x:Name="XSearchTextBox"
+                        Grid.Column="1"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         BorderThickness="0"
                         Foreground="#fff"
-        			    VerticalContentAlignment="Center" 
-                        FontSize="14" 
-                        TextAlignment="Left"         			    
-        			    TextChanged="OnSearchTextChanged" 
-        			    Keyboard.PreviewKeyUp="OnKeyUpHandler" 
+        			    VerticalContentAlignment="Center"
+                        FontSize="14"
+                        TextAlignment="Left"
+        			    TextChanged="OnSearchTextChanged"
+        			    Keyboard.PreviewKeyUp="OnKeyUpHandler"
         			    Padding="2"
-                        CaretBrush="White"
-                    />                    
+                        CaretBrush="White" />
                 </Grid>
             </Border>
             <CheckBox x:Name="XPreviewCheckbox"
@@ -93,61 +91,62 @@
         </StackPanel>
 
         <!-- Search Results -->
-        <Grid 
+        <Grid
             x:Name="XSearchResults"
             Visibility="Collapsed"
             Grid.Row="1"
-            Margin="0 7 0 0 "
-        >
+            Margin="0 7 0 0 ">
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>                
+                <RowDefinition Height="3*" />
             </Grid.RowDefinitions>
 
-            <ListView  Grid.Row="0" 
-                   Name="XResultList" 
-                   SelectionMode="Single"                     
-                   SelectedIndex="1" 
+            <ListView  Grid.Row="0"
+                   Name="XResultList"
+                   SelectionMode="Single"
+                   SelectedIndex="1"
                    BorderThickness="0"
                    BorderBrush="Transparent"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                   
-                   Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=GridViewRowPresenter, AncestorLevel=1}, Path=ActualHeight}" 
+
+                   Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=GridViewRowPresenter, AncestorLevel=1}, Path=ActualHeight}"
                    SelectionChanged="OnSelectionChanged"
                    Background="Transparent">
                 <ListViewItem></ListViewItem>
             </ListView>
         </Grid>
-                           
-        <quickCreate:IngredientsFinder 
+
+        <quickCreate:IngredientsFinder
             x:Name="XIngredientsFinder"
-            Grid.Row="1"/>
+            Grid.Row="1" />
 
         <GridSplitter  Background="BlueViolet" Grid.Column ="1" Grid.RowSpan="10" Width="20"
                 HorizontalAlignment="Left" VerticalAlignment="Stretch" IsEnabled="False">
-            <GridSplitter.Template><ControlTemplate>
-                <Grid Background="#00000000">
+            <GridSplitter.Template>
+                <ControlTemplate>
+                    <Grid Background="#00000000">
                         <Canvas Width="1" Margin="4 0 4 0" Background="Black"></Canvas>
-                </Grid>                
-            </ControlTemplate></GridSplitter.Template>
+                    </Grid>
+                </ControlTemplate>
+            </GridSplitter.Template>
         </GridSplitter>
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="20 10 10 10 ">
             <TextBlock x:Name="XNamespace" FontSize="12"
-                       FontWeight="Light"   
+                       FontWeight="Light"
                        TextWrapping="Wrap"
-                       Opacity="0.5" TextOptions.TextFormattingMode="Display"/>
-            <TextBlock x:Name="XName" 
-                       FontWeight="SemiBold" FontSize="12" Margin="0 0 0 10"/>
+                       Opacity="0.5" TextOptions.TextFormattingMode="Display" />
+            <TextBlock x:Name="XName"
+                       FontWeight="SemiBold" FontSize="12" Margin="0 0 0 10" />
+            <Button x:Name="XShowExampleButton" Click="XShowExampleButton_Click">Show example</Button>
             <TextBlock x:Name="XDescription" FontSize="12" Opacity="0.7" FontWeight="Regular"
-                        Margin="0 0 0 0" TextWrapping="Wrap" >
+                        Margin="0 0 0 0" TextWrapping="Wrap">
                 This is selection of common operators. Hover to read documentation and click to add it to the workspace. It will be connected to previously selected Operator if possible.
-                <LineBreak/>
-                <LineBreak/>
-                Add several operators by clicking with ALT-key. 
-                <LineBreak/>
-                <LineBreak/>
-                Start typing to start searching. Then press Return or click to add.                
+                <LineBreak />
+                <LineBreak />
+                Add several operators by clicking with ALT-key.
+                <LineBreak />
+                <LineBreak />
+                Start typing to start searching. Then press Return or click to add.
             </TextBlock>
         </StackPanel>
-
     </Grid>
 </Window>

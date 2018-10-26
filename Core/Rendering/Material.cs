@@ -55,6 +55,7 @@ namespace Framefield.Core
         Texture2D Metal { get; }
         Texture2D NormalMap { get; }
         Texture2D AO { get; }
+        Texture2D Emissive { get; }
     }
 
     public struct DefaultPbrMaterial : IPbrMaterial
@@ -64,5 +65,26 @@ namespace Framefield.Core
         public Texture2D Metal { get { return null; } }
         public Texture2D NormalMap { get { return null; } }
         public Texture2D AO { get { return null; } }
+        public Texture2D Emissive { get { return null; } }
+    }
+
+    public interface IPbrImageBasedLightingSetup
+    {
+        Texture2D PrefilteredSpecularCubeMap { get; }
+        Texture2D BrdfLookupTexture { get; }
+        Matrix DiffuseR { get; }
+        Matrix DiffuseG { get; }
+        Matrix DiffuseB { get; }
+        float Brightness { get; }
+    }
+
+    public struct DefaultPbrImageBasedLightingSetup : IPbrImageBasedLightingSetup
+    {
+        public Texture2D PrefilteredSpecularCubeMap => null;
+        public Texture2D BrdfLookupTexture => null;
+        public Matrix DiffuseR => Matrix.Identity;
+        public Matrix DiffuseG => Matrix.Identity;
+        public Matrix DiffuseB => Matrix.Identity;
+        public float Brightness => 1.0f;
     }
 }

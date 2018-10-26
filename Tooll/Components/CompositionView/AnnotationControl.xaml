@@ -1,101 +1,104 @@
 ﻿<UserControl x:Class="Framefield.Tooll.AnnotationControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Framefield.Tooll"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              xmlns:VM="clr-namespace:Framefield.Tooll.Components"
              Height="{Binding Height, FallbackValue=200}"
              Width="{Binding Width, FallbackValue=200}"
-             d:Height="300"
-             d:Width="300"
-             x:Name="XTimeMarkerControl" Loaded="OnLoaded" 
-             >
-    <UserControl.Resources>        
-        <local:ColorToBrushConverter x:Key="colorToBrushConverter"/>
+
+             x:Name="XAnnotationControl" Loaded="OnLoaded">
+    <UserControl.Resources>
+        <local:ColorToBrushConverter x:Key="colorToBrushConverter" />
     </UserControl.Resources>
     <UserControl.RenderTransform>
-        <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}"/>
+        <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}" />
     </UserControl.RenderTransform>
 
-    <UserControl.Template>
-        <ControlTemplate>
-            <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="*"/>                                                    
-            </Grid.RowDefinitions>
-                <Border x:Name="XBorder"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border x:Name="XBorder"
                     Background="#22000000"
-                    BorderThickness="1" 
+                    BorderThickness="1"
                     IsHitTestVisible="False"
-                    Grid.RowSpan="2"
-                >
-                <Border.Style>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="Border.BorderBrush" Value="Transparent" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=IsSelected, FallbackValue=false}" Value="true">
-                                <Setter Property="Border.BorderBrush" Value="White" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                </Border>
+                    Grid.RowSpan="2">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Border.BorderBrush" Value="Transparent" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsSelected, FallbackValue=false}" Value="true">
+                            <Setter Property="Border.BorderBrush" Value="White" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
 
-                <Thumb x:Name="XHeader_Thumb"
+        <Thumb x:Name="XHeader_Thumb"
                         Cursor="Hand"
                         DragDelta="XHeaderThumb_DragDelta"
                         DragStarted="XHeaderThumb_DragStarted"
-                        DragCompleted="XHeaderThumb_DragCompleted"
-                    >
-                    <Thumb.Template>
-                        <ControlTemplate>                               
-                            <Rectangle>                                    
-                            <Rectangle.Style>
-                                <Style TargetType="Rectangle">
-                                        <Setter Property="Rectangle.Fill" Value="#00ffffff"/>
-                                        <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Rectangle.Fill" Value="#22ffffff"/>
-                                        </Trigger>
-                                </Style.Triggers>                                            
-                                </Style>
-                            </Rectangle.Style>                                    
-                            </Rectangle>
-                        </ControlTemplate>
-                    </Thumb.Template>
-                    </Thumb>
-                    <TextBlock Text="{Binding Path=Text, FallbackValue='Test me'}"
-                               Grid.RowSpan="2"
-                               Padding="6 6 6 6"  
-                               Foreground="{Binding Path=Color, Converter={StaticResource colorToBrushConverter}}" 
-                               IsHitTestVisible="False"  
-                               FontSize="{Binding Path=FontSize, FallbackValue=14}"  TextWrapping="Wrap" 
-                               FontWeight="Normal"  FontStyle="Italic"
-                    />
-                    <Thumb 
-                        DragDelta="XSizeThumb_DragDelta"
-                        DragStarted="XSizeThumb_DragStarted"
-                        DragCompleted="XSizeThumb_DragCompleted"
-                        Cursor="SizeNWSE"
-                        
-                        Grid.RowSpan="2"
-                        
-                        Height="15" Width="15" 
-                        VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                        >
-                    <Thumb.Template>
-                        <ControlTemplate>
-                            <Canvas Background="#00000000">
-                                <Path  Data="M 15 5 L 5 15 " Stroke="#555" StrokeThickness="0.6"/>
-                            </Canvas>                                    
-                        </ControlTemplate>
-                    </Thumb.Template>
-                    </Thumb>
-                </Grid>
-            
-        </ControlTemplate>
-    </UserControl.Template>    
+                        DragCompleted="XHeaderThumb_DragCompleted">
+            <Thumb.Template>
+                <ControlTemplate>
+                    <Rectangle>
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
+                                <Setter Property="Rectangle.Fill" Value="#00ffffff" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Rectangle.Fill" Value="#22ffffff" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
+        <TextBlock x:Name="XTextBlock"
+            Text="{Binding Path=Text, FallbackValue='Test me'}"
+            Grid.RowSpan="2"
+            Padding="6 6 6 6"
+            Foreground="{Binding Path=Color, Converter={StaticResource colorToBrushConverter}}"
+            IsHitTestVisible="False"
+            FontSize="{Binding Path=FontSize, FallbackValue=14}"  TextWrapping="Wrap"
+            FontWeight="Normal"  FontStyle="Italic" />
+
+        <Thumb
+            x:Name="XThumb"
+            DragDelta="XSizeThumb_DragDelta"
+            DragStarted="XSizeThumb_DragStarted"
+            DragCompleted="XSizeThumb_DragCompleted"
+            Cursor="SizeNWSE"
+
+            Grid.RowSpan="2"
+
+            Height="15" Width="15"
+            VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <Thumb.Template>
+                <ControlTemplate>
+                    <Canvas Background="#00000000">
+                        <Path  Data="M 15 5 L 5 15 " Stroke="#555" StrokeThickness="0.6" />
+                    </Canvas>
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
+        <TextBox x:Name="XTextBox"
+            Text="{Binding Path=Text, FallbackValue='Test me'}"
+            Grid.RowSpan="2"
+            Padding="6 6 6 6"
+            Visibility="Hidden"
+            FontSize="{Binding Path=FontSize, FallbackValue=14}"
+            TextWrapping="Wrap"
+            FontWeight="Normal"
+            FontStyle="Italic"
+            LostFocus="XTextBox_LostFocus"
+                 KeyUp="XTextBox_KeyUpHandler" />
+    </Grid>
 </UserControl>

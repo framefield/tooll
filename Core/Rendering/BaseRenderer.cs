@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SharpDX;
 using SharpDX.Direct3D;
@@ -117,6 +116,7 @@ namespace Framefield.Core.Rendering
             if (bufferSizeInBytes == 0)
             {
                 Utilities.DisposeObj(ref structuredBuffer);
+                Utilities.DisposeObj(ref srv);
                 return false;
             }
 
@@ -133,26 +133,26 @@ namespace Framefield.Core.Rendering
                     Utilities.DisposeObj(ref structuredBuffer);
                     Utilities.DisposeObj(ref srv);
                     var bufferDesc = new BufferDescription
-                    {
-                        Usage = ResourceUsage.Dynamic,
-                        SizeInBytes = elementSizeInBytes * numElements,
-                        StructureByteStride = elementSizeInBytes,
-                        OptionFlags = ResourceOptionFlags.BufferStructured,
-                        CpuAccessFlags = CpuAccessFlags.Write,
-                        BindFlags = BindFlags.ShaderResource
-                    };
+                                     {
+                                         Usage = ResourceUsage.Dynamic,
+                                         SizeInBytes = elementSizeInBytes*numElements,
+                                         StructureByteStride = elementSizeInBytes,
+                                         OptionFlags = ResourceOptionFlags.BufferStructured,
+                                         CpuAccessFlags = CpuAccessFlags.Write,
+                                         BindFlags = BindFlags.ShaderResource
+                                     };
                     structuredBuffer = new Buffer(device, data, bufferDesc);
                     var bufferResource = new ShaderResourceViewDescription.ExtendedBufferResource()
-                    {
-                        ElementCount = numElements,
-                        FirstElement = 0,
-                    };
+                                         {
+                                             ElementCount = numElements,
+                                             FirstElement = 0,
+                                         };
                     var srvDesc = new ShaderResourceViewDescription()
-                    {
-                        Format = Format.Unknown,
-                        Dimension = ShaderResourceViewDimension.Buffer,
-                        BufferEx = bufferResource
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = ShaderResourceViewDimension.Buffer,
+                                      BufferEx = bufferResource
+                                  };
                     srv = new ShaderResourceView(device, structuredBuffer, srvDesc);
                 }
             }
@@ -190,30 +190,30 @@ namespace Framefield.Core.Rendering
             {
                 Utilities.DisposeObj(ref structuredBuffer);
                 var bufferDesc = new BufferDescription
-                {
-                    Usage = ResourceUsage.Default,
-                    SizeInBytes = elementSizeInBytes * numElements,
-                    StructureByteStride = elementSizeInBytes,
-                    OptionFlags = ResourceOptionFlags.BufferStructured,
-                    CpuAccessFlags = CpuAccessFlags.None,
-                    BindFlags = BindFlags.ShaderResource | BindFlags.UnorderedAccess
-                };
+                                 {
+                                     Usage = ResourceUsage.Default,
+                                     SizeInBytes = elementSizeInBytes*numElements,
+                                     StructureByteStride = elementSizeInBytes,
+                                     OptionFlags = ResourceOptionFlags.BufferStructured,
+                                     CpuAccessFlags = CpuAccessFlags.None,
+                                     BindFlags = BindFlags.ShaderResource | BindFlags.UnorderedAccess
+                                 };
                 structuredBuffer = new Buffer(device, bufferDesc);
 
                 if (createSRV)
                 {
                     Utilities.DisposeObj(ref srv);
                     var bufferResource = new ShaderResourceViewDescription.ExtendedBufferResource
-                    {
-                        ElementCount = numElements,
-                        FirstElement = 0,
-                    };
+                                         {
+                                             ElementCount = numElements,
+                                             FirstElement = 0,
+                                         };
                     var srvDesc = new ShaderResourceViewDescription()
-                    {
-                        Format = Format.Unknown,
-                        Dimension = ShaderResourceViewDimension.Buffer,
-                        BufferEx = bufferResource
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = ShaderResourceViewDimension.Buffer,
+                                      BufferEx = bufferResource
+                                  };
                     srv = new ShaderResourceView(device, structuredBuffer, srvDesc);
                 }
 
@@ -221,16 +221,16 @@ namespace Framefield.Core.Rendering
                 {
                     Utilities.DisposeObj(ref uav);
                     var uavDesc = new UnorderedAccessViewDescription
-                    {
-                        Format = Format.Unknown,
-                        Dimension = UnorderedAccessViewDimension.Buffer,
-                        Buffer = new UnorderedAccessViewDescription.BufferResource
-                        {
-                            FirstElement = 0,
-                            ElementCount = numElements,
-                            Flags = UnorderedAccessViewBufferFlags.None
-                        }
-                    };
+                                  {
+                                      Format = Format.Unknown,
+                                      Dimension = UnorderedAccessViewDimension.Buffer,
+                                      Buffer = new UnorderedAccessViewDescription.BufferResource
+                                               {
+                                                   FirstElement = 0,
+                                                   ElementCount = numElements,
+                                                   Flags = UnorderedAccessViewBufferFlags.None
+                                               }
+                                  };
                     uav = new UnorderedAccessView(device, structuredBuffer, uavDesc);
                 }
             }
@@ -249,6 +249,21 @@ namespace Framefield.Core.Rendering
             }
         }
 
+        protected void SetupPbrSphereLightsStructuredBufferForEffect(OperatorPartContext context, string effectVariableName, ref Buffer sphereLightsBuffer, ref ShaderResourceView sphereLightsSRV)
+        {
+            var sphereLightVariable = context.Effect.GetVariableByName(effectVariableName).AsShaderResource();
+            if (sphereLightVariable != null)
+            {
+                var sphereLights = (List<IPbrSphereLight>)context.Objects[OperatorPartContext.PBR_SPHERE_LIGHT_CONTAINER_ID];
+                bool success = SetupStructuredBuffer(context.D3DDevice, sphereLights.ToArray(), pl => new PbrSphereLightBufferLayout(pl),
+                                                     ref sphereLightsBuffer, ref sphereLightsSRV);
+                sphereLightVariable.SetResource(success ? sphereLightsSRV : null);
+            }
+            else
+            {
+                Logger.Warn("Found no PBR sphere light effect variable '{0}'.", effectVariableName);
+            }
+        }
 
         protected void SetupFogSettingsConstBuffer(OperatorPartContext context)
         {
@@ -353,18 +368,33 @@ namespace Framefield.Core.Rendering
             }
 
             var v2 = effect.GetVariableByName("txDiffuse").AsShaderResource();
-            v2.SetResource(context.Texture0);
+            if (v2 != null && v2.IsValid)
+            {
+                v2.SetResource(context.Texture0);
+            }
+
+            var v3 = effect.GetVariableByName("cubeMapSideIndex");
+            if (v3 != null && v3.IsValid)
+            {
+                float index = 0;
+                context.Variables.TryGetValue(OperatorPartContext.PREFERRED_CUBEMAP_SIDE_INDEX, out index);
+                v3.AsScalar().Set((int)index);
+            }
         }
+        
 
         public virtual void Render(Mesh mesh, OperatorPartContext context)
         {
-            Render(mesh, context, 0);
+            if(mesh != null)
+                Render(mesh, context, 0);
         }
 
         public virtual void Render(Mesh mesh, OperatorPartContext context, int techniqueIdx)
-        {
+        {            
             if (context.DepthStencilView != null && context.RenderTargetViews != null)
                 context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.DepthStencilView, context.RenderTargetViews);
+            else if (context.DepthStencilView == null && context.RenderTargetViews != null)
+                context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.RenderTargetViews);
             else if (context.DepthStencilView != null && context.RenderTargetView != null)
                 context.D3DDevice.ImmediateContext.OutputMerger.SetTargets(context.DepthStencilView, context.RenderTargetView);
             else if (context.RenderTargetView != null)
@@ -399,22 +429,28 @@ namespace Framefield.Core.Rendering
                 technique.GetPassByIndex(i).Apply(context.D3DDevice.ImmediateContext);
                 context.D3DDevice.ImmediateContext.Draw(mesh.NumTriangles*3, 0);
             }
+            // unbind RTs immediately in case the image created here is used without setting new RTs
+            context.D3DDevice.ImmediateContext.OutputMerger.SetTargets((DepthStencilView)null, (RenderTargetView)null);
         }
+
+
 
         public virtual void RenderToScreen(Texture2D image, OperatorPartContext context)
         {
+
             var subContext = new OperatorPartContext(context)
                                  {
-                                     Effect = ScreenRenderEffect,
                                      DepthStencilView = null,
                                      CameraProjection = Matrix.OrthoLH(1, 1, -100, 100),
                                      WorldToCamera = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
-                                     InputLayout = ScreenQuadInputLayout
+                                     InputLayout = ScreenQuadInputLayout,
+                                     BlendState = DefaultBlendState,
                                  };
 
             var shaderResourceViewDescription = new ShaderResourceViewDescription();
             if (image.Description.ArraySize > 1)
             {
+                // Assume its a Cube-map
                 shaderResourceViewDescription.Format = image.Description.Format;
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
                 shaderResourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource
@@ -427,12 +463,14 @@ namespace Framefield.Core.Rendering
             }
             else if (image.Description.Format == Format.R32_Typeless)
             {
+                // Depth-Buffer
                 shaderResourceViewDescription.Format = Format.R32_Float;
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
                 shaderResourceViewDescription.Texture2D.MipLevels = 1;
             }
             else
             {
+                // Normal Texture
                 shaderResourceViewDescription.Format = image.Description.Format; 
                 shaderResourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
                 shaderResourceViewDescription.Texture2D = new ShaderResourceViewDescription.Texture2DResource
@@ -475,6 +513,8 @@ namespace Framefield.Core.Rendering
         private InputLayout _sceneDefaultInputLayout;
 
         private Effect _screenRenderEffect;
+        private Effect _screenQuadCubeMapSideEffect;
+        private Effect _screenRenderGammaCorrectionEffect;
         private InputLayout _screenQuadInputLayout;
 
         public InputLayout ScreenQuadInputLayout
@@ -503,6 +543,33 @@ namespace Framefield.Core.Rendering
                 return _screenRenderEffect;
             }
         }
+
+        public Effect ScreenQuadCubeMapSideEffect
+        {
+            get
+            {
+                if (_screenQuadCubeMapSideEffect == null && D3DDevice.Device != null)
+                {
+                    using (var bytecode = ShaderBytecode.CompileFromFile("assets-common/fx/ScreenQuadCubeMapSide.fx", "fx_5_0"))
+                        _screenQuadCubeMapSideEffect = new Effect(D3DDevice.Device, bytecode);
+                }
+                return _screenQuadCubeMapSideEffect;
+            }
+        }
+
+        public Effect ScreenRenderGammaCorrectionEffect
+        {
+            get
+            {
+                if (_screenRenderGammaCorrectionEffect == null && D3DDevice.Device != null)
+                {
+                    using (var bytecode = ShaderBytecode.CompileFromFile("assets-common/fx/GammaCorrection.fx", "fx_5_0"))
+                        _screenRenderGammaCorrectionEffect = new Effect(D3DDevice.Device, bytecode);
+                }
+                return _screenRenderGammaCorrectionEffect;
+            }
+        }
+
 
         private DepthStencilState _defaultDepthStencilState;
 
@@ -557,8 +624,8 @@ namespace Framefield.Core.Rendering
                     blendStateDescription.RenderTarget[0].SourceBlend = BlendOption.SourceAlpha;
                     blendStateDescription.RenderTarget[0].DestinationBlend = BlendOption.InverseSourceAlpha;
                     blendStateDescription.RenderTarget[0].BlendOperation = BlendOperation.Add;
-                    blendStateDescription.RenderTarget[0].SourceAlphaBlend = BlendOption.SourceAlpha;
-                    blendStateDescription.RenderTarget[0].DestinationAlphaBlend = BlendOption.DestinationAlpha;
+                    blendStateDescription.RenderTarget[0].SourceAlphaBlend = BlendOption.One;
+                    blendStateDescription.RenderTarget[0].DestinationAlphaBlend = BlendOption.InverseSourceAlpha;
                     blendStateDescription.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
                     blendStateDescription.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
                     blendStateDescription.AlphaToCoverageEnable = false;

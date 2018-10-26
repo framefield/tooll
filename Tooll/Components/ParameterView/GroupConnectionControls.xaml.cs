@@ -23,26 +23,46 @@ namespace Framefield.Tooll
     /// </summary>
     public partial class GroupConnectionControls : UserControl
     {
-        public GroupConnectionControls(List<OperatorPart> opParts) {
-            m_OperatorParts = opParts;
+        public GroupConnectionControls(List<OperatorPart> opParts)
+        {
+            _operatorParts = opParts;
+            if (opParts[0].Connections.Any())
+            {
+                var input = opParts[0].Connections[0];
+                if(input.Connections.Any())
+                {
+                    var connectedTo = input.Connections[0];
+                    m_SourceOperator = connectedTo.Parent;
+                    this.ToolTip = "Connected to " + m_SourceOperator;
+                }
 
-            //this.ToolTip = "Connected to " + opParts[0].Connections[0].ToString();  // ToDo: Must be set to the source of the connection
+            }
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) {
-            foreach (var el in App.Current.MainWindow.CompositionView.CompositionGraphView.XOperatorCanvas.Children) {
-                var opwi = el as OperatorWidget;
-                if (opwi != null) {
-                    if (opwi.Operator == m_SourceOperator) {
-                        App.Current.MainWindow.CompositionView.CompositionGraphView.SelectionHandler.SetElement(opwi);
-                        return;
-                    }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            SelectConnectedOperators();
+        }
+
+        private void SelectConnectedOperators(bool center = false)
+        {
+            var ops = new List<Operator>();
+            foreach (var opPart in _operatorParts)
+            {
+                foreach (var input in opPart.Connections)
+                {
+                    ops.Add(input.Parent);
                 }
             }
+            if (ops.Count == 0)
+                return;
+
+            var CGV = App.Current.MainWindow.CompositionView.CompositionGraphView;
+            CGV.SelectOperators(ops, true);
         }
 
         private Operator m_SourceOperator = null;
-        private List<OperatorPart> m_OperatorParts;
+        private List<OperatorPart> _operatorParts;
     }
 }
