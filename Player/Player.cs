@@ -302,14 +302,35 @@ namespace Framefield.Player
             Logger.Info("Precalculating ...");
             ProgressVisualizer pv = null;
 
+            // load custom progress operator
             var loaderOp = ProjectSettings.TryGet("LoaderProgressOperator", "");
             if (!String.IsNullOrEmpty(loaderOp))
             {
-                Logger.Info("Loading loader progress operator ...");
-                MetaManager.Instance.PrepareMetaOperators();
-                pv = new ProgressOpProxy(this, MetaManager.Instance.LoadMetaOperator(new Guid(loaderOp)).CreateOperator(Guid.NewGuid()));
+                Guid id = Guid.Empty;
+                try
+                {
+                    id = new Guid(loaderOp);
+                }
+                catch (FormatException)
+                {
+                    Logger.Warn("Malformed GUID for loader progress operator: {0}", loaderOp);
+                }
+                MetaOperator meta = null;
+                if (!id.Equals(Guid.Empty))
+                {
+                    Logger.Info("Loading loader progress operator ...");
+                    MetaManager.Instance.PrepareMetaOperators();
+                    meta = MetaManager.Instance.LoadMetaOperator(id);
+                }
+                if (meta != null)
+                {
+                    pv = new ProgressOpProxy(this, meta.CreateOperator(Guid.NewGuid()));
+                }
             }
-            else {
+
+            // use simple loader bar if no custom progress operator available
+            if (pv == null)
+            {
                 pv = new SimpleLoadingBar(_form, D3DDevice.Device, D3DDevice.SwapChain);
             }
             pv.Update(0.0f);
