@@ -259,9 +259,12 @@ namespace Framefield.Player
             return context;
         }
 
-        private void DrawFrame(float t)
+        private void DrawFrame(float t, Operator op)
         {
-            _model.GlobalTime = t;
+            if (_model != null)
+            {
+                _model.GlobalTime = t;
+            }
 
             D3DDevice.Device.ImmediateContext.ClearDepthStencilView(_renderTargetDepthView, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil, 1.0f, 0);
             D3DDevice.Device.ImmediateContext.ClearRenderTargetView(_renderTargetView, new SharpDX.Color4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -269,17 +272,46 @@ namespace Framefield.Player
 
             //invalidate all time accessors
             var invalidator = new OperatorPart.InvalidateInvalidatables();
-            _model.HomeOperator.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
+            op.Outputs[0].TraverseWithFunctionUseSpecificBehavior(null, invalidator);
 
-            var context = GetNewContext((float)_model.GlobalTime);
+            var context = GetNewContext(t);
 
-            _model.HomeOperator.Outputs[0].Eval(context);
+            op.Outputs[0].Eval(context);
         }
 
+        private class ProgressOpProxy : ProgressVisualizer
+        {
+            private Player _parent;
+            private Operator _op;
+            public ProgressOpProxy(Player parent, Operator op)
+            {
+                _parent = parent;
+                _op = op;
+            }
+            public void Update(float progress)
+            {
+                D3DDevice.BeginFrame();
+                _parent.DrawFrame(progress, _op);
+                D3DDevice.EndFrame();
+                D3DDevice.SwapChain.Present(0, PresentFlags.None);
+            }
+            public void Dispose() { }
+        }
+        
         public void Precalc() {
             Logger.Info("Precalculating ...");
+            ProgressVisualizer pv = null;
 
-            var pv = new ProgressVisualizer(_form, D3DDevice.Device, D3DDevice.SwapChain);
+            var loaderOp = ProjectSettings.TryGet("LoaderProgressOperator", "");
+            if (!String.IsNullOrEmpty(loaderOp))
+            {
+                Logger.Info("Loading loader progress operator ...");
+                MetaManager.Instance.PrepareMetaOperators();
+                pv = new ProgressOpProxy(this, MetaManager.Instance.LoadMetaOperator(new Guid(loaderOp)).CreateOperator(Guid.NewGuid()));
+            }
+            else {
+                pv = new SimpleLoadingBar(_form, D3DDevice.Device, D3DDevice.SwapChain);
+            }
             pv.Update(0.0f);
 
             MetaManager.InitializeCallback = progress => pv.Update(_operatorLoadEndProgress * progress);
@@ -348,7 +380,7 @@ namespace Framefield.Player
                 {
                     Logger.Debug("pre-rendering frame at t={0}", t);
                     D3DDevice.BeginFrame();
-                    DrawFrame((float)t);
+                    DrawFrame((float)t, _model.HomeOperator);
                     D3DDevice.EndFrame();
                     i++;
                     pv.Update(_preCacheStartProgress + (1.0f - _preCacheStartProgress) * i / preCacheTimes.Count);
@@ -397,7 +429,7 @@ namespace Framefield.Player
             TimeLogger.BeginFrame(time);
             D3DDevice.BeginFrame();
 
-            DrawFrame((float)time);
+            DrawFrame((float)time, _model.HomeOperator);
 
             D3DDevice.SwapChain.Present(_settings.VSyncEnabled ? 1 : 0, PresentFlags.None);
 
