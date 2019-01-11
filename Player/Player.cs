@@ -291,7 +291,7 @@ namespace Framefield.Player
             public void Update(float progress)
             {
                 D3DDevice.BeginFrame();
-                _parent.DrawFrame(progress, _op);
+                _parent.DrawFrame(progress - 1.0f, _op);
                 D3DDevice.EndFrame();
                 D3DDevice.SwapChain.Present(0, PresentFlags.None);
             }
