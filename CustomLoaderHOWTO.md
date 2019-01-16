@@ -47,7 +47,7 @@ get a bunch of JSON data; the `MetaID` line is what you're looking for.
 
 Close the Tooll editor (so it won't overwrite the file you're going to edit)
 and open `Config/ProjectSettings.json` in a text editor. Set the entry
-`LoaderProgressOpeator` to the GUID you noted; if such an entry doesn't
+`LoaderProgressOperator` to the GUID you noted; if such an entry doesn't
 exist, create it. The result should look like something like this:
 
     "LoaderProgressOperator": "1e784f0c-595d-4aa4-b4e6-ca0e558b55c5"
