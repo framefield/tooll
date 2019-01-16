@@ -57,3 +57,16 @@ exist, create it. The result should look like something like this:
 
 Now save the file and test the demo in the player. It should now show your
 custom operator instead of the normal progress bar while loading.
+
+
+------------------------------------------------------
+
+
+## Known Issues
+
+* Progress isn't updated during the pre-caching phase at the end of the
+  loading process (if enabled).
+
+* The default camera settings aren't correct. If your loader scene renders a
+  full scene (not just a `Layer2d`) and doesn't use a `Camera` operator by
+  itself, please add one explicitly and leave it at the default settings.
