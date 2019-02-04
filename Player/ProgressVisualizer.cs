@@ -17,9 +17,14 @@ using Utilities = Framefield.Core.Utilities;
 
 namespace Framefield.Player
 {
-    public class ProgressVisualizer : IDisposable
+    public interface ProgressVisualizer : IDisposable
     {
-        public ProgressVisualizer(RenderForm form, SharpDX.Direct3D11.Device device, SwapChain swapChain) {
+        void Update(float progress);
+    }
+
+    public class SimpleLoadingBar : ProgressVisualizer
+    {
+        public SimpleLoadingBar(RenderForm form, SharpDX.Direct3D11.Device device, SwapChain swapChain) {
             _form = form;
             _device = device;
             _swapChain = swapChain;
