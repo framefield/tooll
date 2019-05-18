@@ -34,11 +34,15 @@ namespace Framefield.Tooll.Components.SelectionView
 
         private void XRenderView_Unloaded(object sender, RoutedEventArgs e)
         {
-            var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
+            if (App.Current.MainWindow != null) // DART fix
+            {
+                var CGV = App.Current.MainWindow.CompositionView.XCompositionGraphView;
+                CGV.OperatorHoverStartEvent -= CGV_OperatorHoverStartEvent;
+                CGV.OperatorHoverUpdateEvent -= CGV_OperatorHoverUpdateEvent;
+                CGV.OperatorHoverEndEvent -= CGV_OperatorHoverEndEvent;
+            }
+
             ContextMenuOpening -= ContextMenuOpening_Handler;
-            CGV.OperatorHoverStartEvent -= CGV_OperatorHoverStartEvent;
-            CGV.OperatorHoverUpdateEvent -= CGV_OperatorHoverUpdateEvent;
-            CGV.OperatorHoverEndEvent -= CGV_OperatorHoverEndEvent;
         }
 
 

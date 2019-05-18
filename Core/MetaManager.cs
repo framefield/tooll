@@ -72,22 +72,16 @@ namespace Framefield.Core
 //             }
         }
 
-        private static bool _metaOpsPrepared = false;
-
-        public void PrepareMetaOperators()
+        public void LoadMetaOperators()
         {
-            if (_metaOpsPrepared)
-            {
-                return;
-            }
-
             var coreAssembly = (from asm in AppDomain.CurrentDomain.GetAssemblies()
                                 where asm.GetName().Name == "Core"
                                 select asm).First();
 
             Logger.Info("Loading operator definition parts...");
-            try
-            {
+            var watch = new Stopwatch();
+            watch.Start();
+            try {
                 Type[] t = coreAssembly.GetTypes();
             }
             catch (Exception e)
@@ -96,30 +90,23 @@ namespace Framefield.Core
                 if (e is System.Reflection.ReflectionTypeLoadException)
                 {
                     var typeLoadException = e as ReflectionTypeLoadException;
-                    var loaderExceptions = typeLoadException.LoaderExceptions;
+                    var loaderExceptions  = typeLoadException.LoaderExceptions;
                 }
             }
             var metaOpPartTypes = (from type in coreAssembly.GetTypes()
                                    let properties = type.GetProperties(BindingFlags.Public | BindingFlags.Static)
                                    from p in properties
-                                   where p.PropertyType == typeof(MetaOperatorPart)
-                                   select new { Type = type, PropInfo = p }).ToList();
+                                   where p.PropertyType == typeof (MetaOperatorPart)
+                                   select new {Type = type, PropInfo = p}).ToList();
 
             metaOpPartTypes.ForEach(metaType =>
                                     {
-                                        AddMetaOperatorPart((MetaOperatorPart)(metaType.PropInfo.GetValue(metaType.Type, null)));
+                                        AddMetaOperatorPart((MetaOperatorPart) (metaType.PropInfo.GetValue(metaType.Type, null)));
                                         Logger.Debug("loaded: '{0}'", metaType.PropInfo.Name);
                                     });
 
             AppDomain.CurrentDomain.AssemblyResolve += ResolveEventHandler;
-            _metaOpsPrepared = true;
-        }
 
-        public void LoadMetaOperators()
-        {
-            var watch = new Stopwatch();
-            watch.Start();
-            PrepareMetaOperators();
             Logger.Info("Loading operator types...");
             if (Directory.Exists(MetaPath) && ReadMetaOpsOnInit)
             {

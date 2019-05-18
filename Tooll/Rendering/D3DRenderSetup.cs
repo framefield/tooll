@@ -463,7 +463,7 @@ namespace Framefield.Tooll.Rendering
 
         private void SetupContextForRenderingGeometry(OperatorPartContext context, bool withGammaCorrection)
         {
-            context.D3DDevice = D3D11Device;
+            context.D3DDevice = D3DDevice.Device;// D3D11Device; 
             context.Effect = _renderer.SceneDefaultEffect;
             context.InputLayout = _renderer.SceneDefaultInputLayout;
             context.RenderTargetView = withGammaCorrection

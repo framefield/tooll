@@ -63,7 +63,7 @@ namespace Framefield.Tooll
                                {
                                    var errorText = string.Format("Unable to download operators from: {0}\n\nYou may find more details in your log-file.",
                                                                  repos.RemotePath + " (" + repos.Branch + ")");
-                                   throw new ShutDownException(errorText, "Connection Failure");
+                                   // throw new ShutDownException(errorText, "Connection Failure");
                                }
                            });
         }

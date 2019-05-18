@@ -119,6 +119,8 @@ namespace Framefield.Core.Curve
         public List<KeyValuePair<double, VDefinition>> GetPoints()
         {
             var points = new List<KeyValuePair<double, VDefinition>>();
+            if (State == null ) // exception was here
+                return points;
             foreach (var item in State.Table)
                 points.Add(new KeyValuePair<double, VDefinition>(item.Key, item.Value.Clone()));
             return points;
@@ -128,6 +130,8 @@ namespace Framefield.Core.Curve
         public VDefinition GetV(double u)
         {
             VDefinition foundValue;
+            if (State == null) // exception was here
+                return null;
             if (State.Table.TryGetValue(u, out foundValue))
                 return foundValue.Clone();
 
@@ -137,6 +141,8 @@ namespace Framefield.Core.Curve
         public double GetSampledValue(double u)
         {
             var state = State;
+            if (state == null) // exception was here
+                return 0.0;
             if (state.Table.Count < 1 || double.IsNaN(u) || double.IsInfinity(u))
                 return 0.0;
 

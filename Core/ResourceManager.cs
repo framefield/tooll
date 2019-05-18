@@ -92,8 +92,15 @@ namespace Framefield.Core
     {
         internal override FileResource ReadFromDisc(string filename)
         {
-            var image = SharpDX.Direct3D11.Resource.FromFile<Texture2D>(D3DDevice.Device, filename);
-            return new ImageResource() { Filename = filename, Image = image };
+            try
+            {
+                var image = SharpDX.Direct3D11.Resource.FromFile<Texture2D>(D3DDevice.Device, filename);
+                return new ImageResource() { Filename = filename, Image = image };
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
@@ -402,8 +409,10 @@ namespace Framefield.Core
             if (!_filenameToResourceDict.TryGetValue(filename, out fileResource))
             {
                 fileResource = resourceReader.ReadFromDisc(filename);
-                CacheFileResource(fileResource);
-                Logger.Debug("Caching resource {0}...", fileResource.Filename);
+                if (fileResource != null) {
+                    CacheFileResource(fileResource);
+                    Logger.Debug("Caching resource {0}...", fileResource.Filename);
+                }
             }
             else
             {
@@ -418,7 +427,7 @@ namespace Framefield.Core
             FileInfo fi = new FileInfo(filename);
             var resource = LookUpOrCreateResource(_imageFileResourceReader, fi.FullName) as ImageResource;
             if (resource == null)
-                Logger.Error("read or cached resource could not be treated as image");
+                Logger.Error( "read or cached resource: '{0}' could not be treated as image", filename );
             return resource;
         }
 
