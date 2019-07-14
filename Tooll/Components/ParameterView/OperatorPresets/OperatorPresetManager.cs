@@ -1,20 +1,20 @@
 ﻿// Copyright (c) 2016 Framefield. All rights reserved.
 // Released under the MIT license. (see LICENSE.txt)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
-using System.Windows;
-using Newtonsoft.Json;
 using Framefield.Core;
 using Framefield.Core.Commands;
 using Framefield.Core.Rendering;
 using Framefield.Tooll.Rendering;
+using Newtonsoft.Json;
 using SharpDX.Direct3D11;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
 {
@@ -461,9 +461,17 @@ namespace Framefield.Tooll.Components.ParameterView.OperatorPresets
         private void SerializePresetDict(SortedDictionary<Guid, List<OperatorPreset>> dict, string filePath)
         {
             var serializedPresets = JsonConvert.SerializeObject(dict, Formatting.Indented);
-            using (var sw = new StreamWriter(filePath))
+            try
             {
-                sw.Write(serializedPresets);
+                using (var sw = new StreamWriter(filePath))
+                {
+                    sw.Write(serializedPresets);
+                }
+
+            }
+            catch (IOException e)
+            {
+                Logger.Debug(" can't save presets: " + e);
             }
         }
         #endregion

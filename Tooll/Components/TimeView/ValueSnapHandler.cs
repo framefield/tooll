@@ -12,17 +12,18 @@ namespace Framefield.Tooll
     {
         List<IValueSnapAttractor> snapAttractors = new List<IValueSnapAttractor>();
 
-
         public void AddSnapAttractor(IValueSnapAttractor sp)
         {
-            if (!snapAttractors.Contains(sp)) {
+            if (!snapAttractors.Contains(sp))
+            {
                 snapAttractors.Add(sp);
             }
         }
 
         public void RemoveSnapAttractor(IValueSnapAttractor sp)
         {
-            if (snapAttractors.Contains(sp)) {
+            if (snapAttractors.Contains(sp))
+            {
                 snapAttractors.Remove(sp);
             }
         }
@@ -42,10 +43,13 @@ namespace Framefield.Tooll
         {
             double bestSnapValue = Double.NaN;
             double maxSnapForce = 0;
-            foreach (var sp in snapAttractors) {
-                if (!ignoreSnapAttractors.Contains(sp)) {
+            foreach (var sp in snapAttractors)
+            {
+                if (!ignoreSnapAttractors.Contains(sp))
+                {
                     var snapResult = sp.CheckForSnap(time);
-                    if (snapResult != null && snapResult.Force > maxSnapForce) {                        
+                    if (snapResult != null && snapResult.Force > maxSnapForce)
+                    {
                         bestSnapValue = snapResult.SnapToValue;
                         maxSnapForce = snapResult.Force;
                     }
@@ -54,7 +58,7 @@ namespace Framefield.Tooll
             if (!Double.IsNaN(bestSnapValue))
             {
                 if (SnappedEvent != null)
-                    SnappedEvent(this, new SnapEventArgs() { Value = bestSnapValue });                 
+                    SnappedEvent(this, new SnapEventArgs() { Value = bestSnapValue });
             }
             else
             {

@@ -1,14 +1,14 @@
 // Copyright (c) 2016 Framefield. All rights reserved.
 // Released under the MIT license. (see LICENSE.txt)
 
-using System;
-using System.Linq;
 using Framefield.Core;
 using Framefield.Core.OperatorPartTraits;
 using Framefield.Core.Rendering;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using System;
+using System.Linq;
 using Device = SharpDX.Direct3D11.Device;
 using Utilities = Framefield.Core.Utilities;
 
@@ -165,18 +165,18 @@ namespace Framefield.Tooll.Rendering
                         break;
 
                     case FunctionType.Mesh:
+                    {
+                        Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
                         {
-                            Action<OperatorPartContext, int> lambdaForMeshes = (OperatorPartContext context2, int outputIdx) =>
-                            {
-                                var mesh = RenderConfig.Operator.Outputs[outputIdx].Eval(context2).Mesh;
-                                context2.Renderer.SetupEffect(context2);
-                                context2.Renderer.Render(mesh, context2);
-                            };
-                            RenderGeometry(
-                                context,
-                                lambdaForMeshes);
-                            break;
-                        }
+                            var mesh = RenderConfig.Operator.Outputs[outputIdx].Eval(context2).Mesh;
+                            context2.Renderer.SetupEffect(context2);
+                            context2.Renderer.Render(mesh, context2);
+                        };
+                        RenderGeometry(
+                            context,
+                            lambdaForMeshes);
+                        break;
+                    }
 
                     case FunctionType.Image:
                         SetupContextForRenderingImage(
@@ -274,8 +274,9 @@ namespace Framefield.Tooll.Rendering
         public void RenderValuePlot(OperatorPartContext context, RenderViewConfiguration renderConfig)
         {
             SetupContextForGeometry(context);
-
-            renderConfig.Operator.Outputs[renderConfig.ShownOutputIndex].Eval(context);
+            var opPart = renderConfig.Operator.Outputs[renderConfig.ShownOutputIndex];
+            if (opPart.Func != null)
+                opPart.Eval(context);
 
             context.Variables[OperatorPartContext.PLOT_FLOAT_VALUE] = context.Value;
 

@@ -53,6 +53,9 @@ namespace Framefield.Tooll
             if (m_OperatorParts == null)
                 return;
 
+            if (App.Current == null || App.Current.Model == null)
+                return;
+
             App.Current.Model.GlobalTimeChangedEvent -= GlobalTimeChangedHandler;
 
             foreach (var el in m_Animations)
