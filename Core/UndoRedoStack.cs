@@ -297,7 +297,7 @@ namespace Framefield.Core
 
         public void Add(ICommand command)
         {
-            if (command.IsUndoable)
+            if (command != null && command.IsUndoable)
             {
                 var jsonCommand = SerializeCommand(command);
 #if USE_COUCHDB
