@@ -1,6 +1,14 @@
-# TOOLL.io
 
-[![Watch Overview](http://i.imgur.com/XrazgLt.png)](https://www.youtube.com/watch?v=B-GU4I5Xv_g)
+
+
+
+# T2 is outdated. 
+Version 2 of Tooll is no longer actively maintained. 
+Please refer to https://github.com/still-scene/t3 for Version 3
+
+
+----------------------
+# TOOLL.io 
 
 TOOLL.io is a new multi-purpose application for creating interactive 3D content and animations. It combines the best aspects of animation, compositing, and coding into a lightweight and intuitive UI. Your designs can be shared as executable, rendered to movies or as live visuals driven by sound, midi-controllers, or sensors.
 
