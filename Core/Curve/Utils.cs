@@ -62,7 +62,7 @@ namespace Framefield.Core.Curve
             var compositionOp = curveFunc.OperatorPart.Parent.Parent;
             var animatedOpPart = (from connection in compositionOp.Connections
                                   where connection.SourceOp == curveFunc.OperatorPart.Parent
-                                  select connection.TargetOpPart).SingleOrDefault();
+                                  select connection.TargetOpPart).FirstOrDefault(); // Exception with SingleOrDefault();
 
             return animatedOpPart;
         }

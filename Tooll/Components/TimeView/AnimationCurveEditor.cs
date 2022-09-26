@@ -263,6 +263,9 @@ namespace Framefield.Tooll
                 parameterNamesWithKeys =
                     JsonConvert.DeserializeObject<Dictionary<String, List<Keyframe>>>(
                         Clipboard.GetText());
+
+                if (parameterNamesWithKeys == null) // DART FIX: Falls here
+                    return;
             }
             catch ( Exception e)
             {

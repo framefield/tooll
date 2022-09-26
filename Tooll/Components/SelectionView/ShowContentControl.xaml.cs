@@ -78,7 +78,8 @@ namespace Framefield.Tooll.Components.SelectionView
                 App.Current.UpdateAfterUserInteractionEvent -= App_UpdateAfterUserInteractionHandler;
                 App.Current.CompositionTargertRenderingEvent -= App_CompositionTargertRenderingHandler;
 
-                CameraInteraction.Discard();
+                if (CameraInteraction != null) // DART:BUG FIXED
+                    CameraInteraction.Discard();
             }
             //_renderSetup.CleanUp();
             Utilities.DisposeObj(ref _renderSetup);

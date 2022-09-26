@@ -154,6 +154,7 @@ namespace Framefield.Core
         public List<MetaOutput> Outputs { get; internal set; }
         internal Dictionary<Guid, Tuple<MetaOperator, InstanceProperties>> Operators { get; set; }
 
+
         public List<Tuple<Guid, MetaOperatorPart>> OperatorParts
         {
             get { return _operatorParts; }
@@ -926,7 +927,10 @@ namespace Framefield.Core
 
         private InstanceProperties GetOperatorProperties(Guid opId)
         {
-            return Operators[opId].Item2;
+            Tuple<MetaOperator, InstanceProperties> op;
+            if (!Operators.TryGetValue(opId, out op)) // DART FIX: Exceptions was too long
+                return null;
+            return op.Item2;
         }
 
         internal string GetName(Guid opId)

@@ -81,7 +81,7 @@ namespace Framefield.Tooll
                 using (Surface Surface = SharedTexture.GetSurfaceLevel(0))
                 {
                     Lock();
-                    SetBackBuffer(D3DResourceType.IDirect3DSurface9, Surface.NativePointer);
+                    SetBackBuffer(D3DResourceType.IDirect3DSurface9, Surface.NativePointer, true);
                     Unlock();
                 }
             }
@@ -104,6 +104,8 @@ namespace Framefield.Tooll
                 presentparams.MultiSampleType = 0;
 
                 D3DDevice = new DeviceEx(D3DContext, 0, DeviceType.Hardware, IntPtr.Zero, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded | CreateFlags.FpuPreserve, presentparams);
+
+                //SetBackBuffer(D3DResourceType.IDirect3DSurface9, IntPtr, Boolean)
             }
         }
 
