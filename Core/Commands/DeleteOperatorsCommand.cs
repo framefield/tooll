@@ -107,6 +107,11 @@ namespace Framefield.Core.Commands
 
         public void Do()
         {
+            if (_removeKeyframesCommand == null)
+            {
+                return;
+            }
+
             _removeKeyframesCommand.Do();
             
             var parent = MetaManager.Instance.GetMetaOperator(_parentMetaID);
